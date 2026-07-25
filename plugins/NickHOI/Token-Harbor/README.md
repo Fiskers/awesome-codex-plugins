@@ -149,7 +149,7 @@ After restarting Codex, each `response.completed` event credits token use at `10
 
 ## Save Safety
 
-The primary save is written through a flushed temporary file and the last verified save is retained as `harbor-state.json.bak`. If the primary file is unreadable, Token Harbor quarantines it and restores the backup. If both copies are unreadable, both are quarantined before a new harbor is created. The interface displays a recovery notice in either case. Save files and durable action/telemetry receipts live under `TOKEN_HARBOR_DATA_DIR`, `PLUGIN_DATA`, or the project-local `.token-harbor-data` directory, in that order.
+The primary save is written through a flushed temporary file and the last verified save is retained as `harbor-state.json.bak`. If the primary file is unreadable, Token Harbor quarantines it and restores the backup. If both copies are unreadable, both are quarantined before a new harbor is created. The interface displays a recovery notice in either case. Save files and durable action/telemetry receipts live under `TOKEN_HARBOR_DATA_DIR`, `PLUGIN_DATA`, or `%LOCALAPPDATA%\TokenHarbor\data` on Windows, in that order.
 
 ## Plugin Layout
 

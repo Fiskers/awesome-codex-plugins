@@ -1,6 +1,6 @@
 # using-gc
 
-Operate an explicitly selected Gas City as an optional executor for supplied packets. Triggers: "using gc", "gas city", "dispatch through gc".
+Drive a caller-selected Gas City through its Mayor dispatch shepherd; keep GC runtime state out of AgentOps verdicts. Triggers: "using gc", "gas city", "drive the mayor", "dispatch through gc".
 
 ## Instructions
 

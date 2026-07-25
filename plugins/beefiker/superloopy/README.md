@@ -90,6 +90,8 @@ Upgrades from pre-managed Superloopy releases are hash-bound: a complete exact l
 
 Resolution finishes before launch, with no post-launch retry or model switch. The TOML pins configure routing, but a host that does not expose `agent_type` plus resolved-model attestation remains `model_unverified`; Superloopy never presents that as a proven GPT-5.6 runtime gate. The policy details are in `docs/superloopy-model-policy.md` (Codex) and `docs/superloopy-model-policy-claude.md` (Claude Code).
 
+**Installed-plugin truth.** `installedPluginTruth` runs the read-only `codex plugin list --json` authority probe. A confirmed `superloopy@beefiker` version mismatch is informational in source scope, but fails installed scope. Missing Codex, no registered plugin, and invalid authority output stay informational and do not fail doctor. Never infer the installed version from cache directory names or repair without approval.
+
 <table>
   <tr>
     <td align="center" width="33%"><img src=".github/assets/franky.png" width="190" alt="franky" /><br /><b>franky</b><br /><sub>builds it</sub></td>
@@ -169,11 +171,13 @@ Superloopy checks for updates on `SessionStart`. Marketplace installs are Codex-
 
 Restart Codex after the upgrade. If hooks show up as Modified, approve them; the following approved `SessionStart` automatically reconciles the generated wrapper, all six agents, and model-routing state from the new plugin version. No Superloopy migration command is required. If definitions changed, follow only the Codex restart notice so the host reloads them.
 
-If the plugin still looks stale or degraded after that, do a repair reinstall from the refreshed marketplace:
+If a confirmed `installedPluginTruth` version mismatch still looks stale or degraded after that, approve a repair reinstall from the refreshed marketplace:
 
 ```
-codex plugin add superloopy@beefiker
+codex plugin add superloopy@beefiker --json
 ```
+
+Then start a new Codex session.
 
 If you installed from a checkout, update the checkout and rerun the installer:
 
@@ -187,15 +191,15 @@ Checkout installs are not `npx`-managed. `npx` self-update is reserved for a fut
 
 ### Claude Code
 
-Refresh the marketplace, reinstall to resolve the new version, then reload — no restart needed:
+Refresh the marketplace, update the installed plugin, then reload — no restart needed:
 
 ```
 /plugin marketplace update beefiker
-/plugin install superloopy@beefiker
+/plugin update superloopy@beefiker
 /reload-plugins
 ```
 
-There is no separate `/plugin update` command: reinstalling from the refreshed marketplace resolves the new version, and `/reload-plugins` applies it in the current session (no Claude Code restart, and hooks do not need re-approval). Verify with `node "${CLAUDE_PLUGIN_ROOT}/src/cli.js" doctor --json`. If you loaded a checkout with `--plugin-dir`, just `git pull --ff-only` and run `/reload-plugins`.
+`/plugin update` resolves the new version from the refreshed marketplace, and `/reload-plugins` applies it in the current session (no Claude Code restart, and hooks do not need re-approval). Verify with `node "${CLAUDE_PLUGIN_ROOT}/src/cli.js" doctor --json`. If you loaded a checkout with `--plugin-dir`, just `git pull --ff-only` and run `/reload-plugins`.
 
 ## Troubleshooting
 
@@ -223,10 +227,14 @@ codex plugin marketplace remove beefiker
 
 Restart Codex after uninstalling. Optional local bootstrap cleanup: plugin removal handles Codex's plugin config and cache, but the `superloopy` wrapper and copied personal agents can remain. Review before deleting them, especially if you customized any agent file.
 
-```
+```sh
 rm -f ~/.local/bin/superloopy
-Remove-Item "$env:APPDATA\npm\superloopy.cmd" -ErrorAction SilentlyContinue
 rm -f ~/.codex/agents/franky.toml ~/.codex/agents/zoro.toml ~/.codex/agents/usopp.toml ~/.codex/agents/jinbe.toml ~/.codex/agents/robin.toml ~/.codex/agents/nami.toml
+```
+
+```powershell
+Remove-Item "$env:APPDATA\npm\superloopy.cmd" -ErrorAction SilentlyContinue
+Remove-Item "$env:USERPROFILE\.codex\agents\franky.toml", "$env:USERPROFILE\.codex\agents\zoro.toml", "$env:USERPROFILE\.codex\agents\usopp.toml", "$env:USERPROFILE\.codex\agents\jinbe.toml", "$env:USERPROFILE\.codex\agents\robin.toml", "$env:USERPROFILE\.codex\agents\nami.toml" -ErrorAction SilentlyContinue
 ```
 
 If you installed with `CODEX_HOME`, `SUPERLOOPY_BIN_DIR`, or `CODEX_LOCAL_BIN_DIR`, clean up those configured paths instead.

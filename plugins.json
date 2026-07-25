@@ -2,8 +2,8 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "awesome-codex-plugins",
   "version": "1.0.0",
-  "last_updated": "2026-07-22",
-  "total": 180,
+  "last_updated": "2026-07-25",
+  "total": 179,
   "categories": [
     "Development & Workflow",
     "Tools & Integrations"
@@ -1350,6 +1350,16 @@
       "install_url": "https://raw.githubusercontent.com/zfifteen/gh-project-plugin/HEAD/.codex-plugin/plugin.json"
     },
     {
+      "name": "Haunt",
+      "url": "https://github.com/Darko893/haunt-mcp-server",
+      "owner": "Darko893",
+      "repo": "haunt-mcp-server",
+      "description": "Web extraction for AI agents: any permitted public page to structured JSON or clean Markdown from a plain-English prompt, plus Reddit posts and comments with no Reddit app or OAuth, company profiles from a URL, and GitHub repo data. Login walls and CAPTCHAs return typed errors instead of fabricated data, and failed calls are not charged.",
+      "category": "Tools & Integrations",
+      "source": "awesome-codex-plugins",
+      "install_url": "https://raw.githubusercontent.com/Darko893/haunt-mcp-server/HEAD/.codex-plugin/plugin.json"
+    },
+    {
       "name": "Hermes Tweet",
       "url": "https://github.com/Xquik-dev/hermes-tweet",
       "owner": "Xquik-dev",
@@ -1560,16 +1570,6 @@
       "install_url": "https://raw.githubusercontent.com/papersflow-ai/papersflow-codex-plugin/HEAD/.codex-plugin/plugin.json"
     },
     {
-      "name": "PDF Monster",
-      "url": "https://github.com/jbaehova/pdf-monster",
-      "owner": "jbaehova",
-      "repo": "pdf-monster",
-      "description": "Analyzes PDFs as extracted text, OCR text, rendered page images, and embedded figures for coding agents.",
-      "category": "Tools & Integrations",
-      "source": "awesome-codex-plugins",
-      "install_url": "https://raw.githubusercontent.com/jbaehova/pdf-monster/HEAD/.codex-plugin/plugin.json"
-    },
-    {
       "name": "plori",
       "url": "https://github.com/plori-ai/codex-plugin",
       "owner": "plori-ai",
@@ -1638,16 +1638,6 @@
       "category": "Tools & Integrations",
       "source": "awesome-codex-plugins",
       "install_url": "https://raw.githubusercontent.com/ScrapeGraphAI/just-scrape/HEAD/.codex-plugin/plugin.json"
-    },
-    {
-      "name": "SEO Dungeon",
-      "url": "https://github.com/avalonreset/seo-dungeon",
-      "owner": "avalonreset",
-      "repo": "seo-dungeon",
-      "description": "Gamified local SEO audits that turn website issues into 16-bit dungeon battles for Codex, Claude, and Gemini CLI workflows.",
-      "category": "Tools & Integrations",
-      "source": "awesome-codex-plugins",
-      "install_url": "https://raw.githubusercontent.com/avalonreset/seo-dungeon/HEAD/.codex-plugin/plugin.json"
     },
     {
       "name": "Shots",

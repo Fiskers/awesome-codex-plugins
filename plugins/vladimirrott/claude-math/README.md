@@ -1,16 +1,19 @@
 # claude-math
 
-Make math in Claude Code legible.
+Make math in Claude Code and Codex legible.
 
 <p align="center">
   <img src="assets/demo.svg" alt="Without claude-math, LaTeX prints as raw dollar-sign noise; with it, the same answer renders as clean Unicode math." width="760">
 </p>
 
-Claude Code's terminal does not render LaTeX. Without help, a formula like
-`$f(x) = \sum_{i=1}^n x_i$` appears as raw dollar signs and backslashes,
-exactly the noise you wanted formatting to remove. This plugin ships a single
-skill (`math-unicode`) that instructs Claude to emit math as Unicode glyphs
-inline, which every terminal already renders.
+Terminal coding agents do not render LaTeX. In both **Claude Code** and
+**OpenAI Codex CLI**, a formula like `$f(x) = \sum_{i=1}^n x_i$` appears as raw
+dollar signs and backslashes, exactly the noise you wanted formatting to
+remove. This project ships a single skill (`math-unicode`) that instructs the
+model to emit math as Unicode glyphs inline. Unicode-capable terminals with a
+suitable font render these glyphs directly. It installs as a Claude Code plugin
+and, via the identical `SKILL.md`, as a Codex skill (`claude-math install
+--codex`).
 
 ## Before / after
 
@@ -73,16 +76,32 @@ once is the easiest path.
 /plugin install claude-math@vladimirrott
 ```
 
+The skill normally activates for mathematical output. To load the complete
+rule set explicitly in Claude Code, run `/math-unicode` before the request.
+
 ### Codex CLI
 
-The `math-unicode` skill works in [OpenAI Codex CLI](https://developers.openai.com/codex/) too: Codex reads skills from `$CODEX_HOME/skills/<name>/SKILL.md` using the same `name` + `description` frontmatter format, so the exact same skill drops straight in.
+claude-math works in [OpenAI Codex CLI](https://developers.openai.com/codex/) too — the skill uses the same `name` + `description` `SKILL.md` frontmatter Codex reads. Two install paths:
+
+**Native Codex plugin (recommended — no npm):**
+
+```
+codex plugin marketplace add vladimirrott/claude-math
+codex plugin add claude-math@vladimirrott
+```
+
+Codex installs the plugin (manifest: `.codex-plugin/plugin.json`) and loads its `math-unicode` skill. Restart Codex if it does not appear; invoke with `/skills` or by mentioning `$math-unicode`. Remove with `codex plugin remove claude-math@vladimirrott`.
+
+**Via npm (drops just the skill file):**
 
 ```bash
 npm install -g claude-math
 claude-math install --codex
 ```
 
-This copies the skill into `$CODEX_HOME/skills/math-unicode/` (default `~/.codex/skills/`). Codex auto-detects new skills (restart Codex if it does not appear); invoke it with `/skills` or by mentioning `$math-unicode`. Use `claude-math status --codex` to check and `claude-math uninstall --codex` to remove.
+This copies the skill into `~/.agents/skills/math-unicode/` (the current Codex user-skills dir; the older `~/.codex/skills/` path is deprecated but still read for backward compatibility). Use `claude-math status --codex` to check and `claude-math uninstall --codex` to remove. Set `CLAUDE_MATH_CODEX_SKILLS_DIR` to target a non-default skills directory.
+
+Use one path or the other, not both — installing via the plugin *and* the CLI would load two copies of the same skill.
 
 ### Hacking on this repo
 
@@ -98,8 +117,8 @@ node --test test/                   # run the test suite
 a sandbox without touching your real `~/.claude` state, useful for
 contributing.
 
-The `math-unicode` skill auto-triggers any time Claude writes or explains math.
-No configuration required.
+The `math-unicode` skill auto-triggers any time the model (Claude or Codex)
+writes or explains math. No configuration required.
 
 ## Graphical rendering (sixel / kitty): not inside the chat
 
@@ -123,9 +142,10 @@ equation on demand, not in-chat rendering.
 | Sixel / kitty graphics | ✗ (not in chat) | partial | ✗ | ✗ images | separate render CLI (roadmap) |
 | Pipe through external viewer | ✗ TUI breaks | n/a | ✓ if `--print` | ✓ | shell wrapper |
 
-Unicode is the only path that survives every distribution channel a Claude
-Code session ends up in. The graphical path is roadmap-only and, even then,
-would run as a separate terminal command outside the chat.
+Unicode is the only approach that preserves text across the distribution
+channels a Claude Code session commonly uses. The graphical path is
+roadmap-only and, even then, would run as a separate terminal command outside
+the chat.
 
 ## Related issues & prior art
 

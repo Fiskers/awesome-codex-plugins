@@ -1,4 +1,4 @@
-# Hermes Tweet
+# Hermes Tweet: X Search, Timelines, Followers & Actions for AI Agents
 
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/13725/badge)](https://www.bestpractices.dev/projects/13725)
 [![CI](https://github.com/Xquik-dev/hermes-tweet/actions/workflows/ci.yml/badge.svg)](https://github.com/Xquik-dev/hermes-tweet/actions/workflows/ci.yml)
@@ -13,6 +13,12 @@ Hermes Tweet includes:
 - Separate read and action tools.
 - Actions disabled by default.
 - A bundled Hermes Skill and 2 slash commands.
+
+## Choose Hermes Tweet
+
+Choose this plugin when Hermes needs catalog-guided Xquik tools.
+It separates discovery, reads, and confirmed actions.
+Use an SDK for application code outside Hermes.
 
 ## Install
 
@@ -64,6 +70,22 @@ Use `tweet_explore` first. Then pass a listed `/api/v1/...` path to the matching
 
 Copied Xquik URLs work when their paths match the catalog.
 
+## Common Agent Tasks
+
+Start with `tweet_explore`. Invoke only the path returned by the catalog.
+
+| Customer Question | Catalog Query | Live Tool |
+| --- | --- | --- |
+| How can an agent search X posts? | `search tweets by query` | `tweet_read` |
+| How can an agent read profile timelines? | `list recent tweets posted by a user` | `tweet_read` |
+| How can an agent export followers? | `run extraction` | `tweet_action` |
+| How can an agent export following accounts? | `run extraction` | `tweet_action` |
+| How can an agent monitor an account? | `create monitor` | `tweet_action` |
+| How can an agent post or reply? | `create tweet` | `tweet_action` |
+
+Set `include_actions` for extraction, monitoring, and writing searches.
+`tweet_action` always follows the approval rules below.
+
 ## Safety
 
 - Tools never accept credentials as arguments.
@@ -100,6 +122,7 @@ uv run --python 3.12 --group dev basedpyright
 uv run --python 3.12 --group dev pytest --cov=hermes_tweet --cov=tests --cov-report=term-missing --cov-fail-under=100
 uv run --python 3.12 --group dev bandit -c pyproject.toml -r hermes_tweet scripts fuzz
 uv run --python 3.12 --group dev pip-audit
+uv run --python 3.12 --group dev bash scripts/check_reproducible.sh
 uv run --python 3.12 --group dev python -m build
 uv run --python 3.12 --group dev twine check dist/*
 ```
@@ -111,6 +134,9 @@ uv run --python 3.12 --group dev twine check dist/*
 - [Context7 guide](https://context7.com/xquik-dev/hermes-tweet)
 - [Integration patterns](docs/INTEGRATION_PATTERNS.md)
 - [Hermes surfaces](docs/HERMES_SURFACES.md)
+- [Organization support policy](https://github.com/Xquik-dev/.github/blob/main/SUPPORT.md)
+- [Security policy](SECURITY.md)
+- [Contribution guide](https://github.com/Xquik-dev/.github/blob/main/CONTRIBUTING.md)
 
 ## License
 

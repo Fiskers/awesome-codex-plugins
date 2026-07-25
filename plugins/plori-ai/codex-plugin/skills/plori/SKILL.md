@@ -5,7 +5,7 @@ description: Create and drive plori agents (each an AI agent on its own cloud co
 
 # Using plori from an agent
 
-plori (https://plori.ai) hosts AI agents. Each agent runs on its own cloud computer with a
+plori (https://plori.ai) gives you AI agents. Each agent runs on its own cloud computer with a
 persistent disk, a shell, developer tools, and memory. You can create agents, send them
 work, and read their replies programmatically.
 

@@ -2,7 +2,7 @@
   "generator": "manual-maintained",
   "source_root": "skills",
   "layout": "modular",
-  "codex_override_catalog_hash": "d05da256388554908b917c51baebc47425925df7cbee17d004dcc1e124f04edc",
+  "codex_override_catalog_hash": "fae62f93c46c2111ea890e25afff256a081b6b07c6944f8f5ac2a94115943437",
   "codex_override_catalog": {
     "version": 1,
     "description": "Machine-readable Codex treatment map for the full skill catalog.",
@@ -320,6 +320,12 @@
         "treatment": "parity_only",
         "wave": "catalog-parity",
         "reason": "Live source skill; generate a parity twin and keep runtime-specific behavior in the source contract."
+      },
+      {
+        "name": "craft-goal",
+        "treatment": "parity_only",
+        "wave": "catalog-parity",
+        "reason": "Auto-generated parity twin (codex-sync): skills/craft-goal is the source of truth; no durable Codex-specific divergence yet."
       }
     ]
   },
@@ -397,6 +403,12 @@
       "generated_hash": "7f43f5ac4f8fe296e36370245c4c9db44f56b841c5c5139c1b06abde1619ae2a"
     },
     {
+      "name": "craft-goal",
+      "source_skill": "skills/craft-goal",
+      "source_hash": "5f5ce0aa57b749cbd7367e55c2afabcc0c977f9c0b6a8daa89aeab2ec76d964f",
+      "generated_hash": "dcf692b00ca40f83b7ec56ad980692e7cf3de060a599079f0207be7100decd3d"
+    },
+    {
       "name": "dcg",
       "source_skill": "skills/dcg",
       "source_hash": "91e765d6363f7234da33c3bae9c2ed11e9319a2de1e58f57ac931023b2c0a360",
@@ -471,8 +483,8 @@
     {
       "name": "plan",
       "source_skill": "skills/plan",
-      "source_hash": "52b1a430e92c6e0758d8bfb63a7b7fb5a7bcde2580a877b2139f0d81164054e8",
-      "generated_hash": "1a45337fb4092eaee0bf2f17b74516014efc7a9891ed7b8843af9b0f337b1a7f"
+      "source_hash": "1c9c85fd6634c58aa41d16b24f7f3e5e1b49d1e0204b1b85d24c3e1ce56d4952",
+      "generated_hash": "1786e7562de5d20e408cc5e3ea5ba8dc1e7b1f89873545906843f9f22b85e844"
     },
     {
       "name": "postmortem",
@@ -483,8 +495,8 @@
     {
       "name": "premortem",
       "source_skill": "skills/premortem",
-      "source_hash": "c57717b51b943e8ca3883643f45b596eef1e9b4b39fd282dbe32914861bee42c",
-      "generated_hash": "8c37dedba4b3c042beb19dc30cacc370565fbe4635a8a01db65758cd5c66e0da"
+      "source_hash": "06fa5f32dd993d969371c99aabd78a2d5c5057b409c75323bfe372048a2c191c",
+      "generated_hash": "4aba81740a48d49fa43412609d235e8ea9f23a915945b7f11301bf3671f4b6a6"
     },
     {
       "name": "product",
@@ -525,8 +537,8 @@
     {
       "name": "rpi",
       "source_skill": "skills/rpi",
-      "source_hash": "8483b9800e8c0d0a9247271cc67f8c7bb51fe8ed50fc1f6dcd379006530c53fc",
-      "generated_hash": "98669531f0481581d7ad115c54371dbf88b16dd7ff8a9cf0476c641f9d07eee4"
+      "source_hash": "927af465bfa536352c3364921fbe99c40ae6fb3d79fba13f012005937ba4391f",
+      "generated_hash": "3a5b79fcfd13ac1d36a7c9d74729b2277c914a104954f3690d78f9baf10bc00c"
     },
     {
       "name": "sbh",
@@ -597,8 +609,8 @@
     {
       "name": "using-gc",
       "source_skill": "skills/using-gc",
-      "source_hash": "bc3345222cd40cc9abe4d4b7f259850be709bf408ed25ee7d1e9feec49c87f1f",
-      "generated_hash": "6c4272598850d324e8c6ecdf50b01fe0cebb3ec20797b059e7ccc91750b3f401"
+      "source_hash": "0cb0e528e918fda28e1bb45b599f47013db377d7793c761eae7e6ff26750872d",
+      "generated_hash": "aca67da82384024023ff901b57ef7baebad71097dc152638c65afa52861222e9"
     },
     {
       "name": "validate",
@@ -613,5 +625,5 @@
       "generated_hash": "30f72769961a244749883e03cb04e329cd0feb03dd5b641d2a73a2e5dc8e9d42"
     }
   ],
-  "package_count": 48
+  "package_count": 49
 }

@@ -1,6 +1,7 @@
 ---
 name: roadmap-update
 description: Update ROADMAP.md truthfully based on real code. Full-scan the repo, evaluate evidence per task, propose a diff for user approval. Never flips [x] without verifiable evidence in code.
+version: 1.4.0
 ---
 
 # roadmap-update
@@ -65,6 +66,8 @@ Intentar en este orden, quedarse con el PRIMERO que resuelve una versión semver
 5. `bin/**/*.js` — const `TOOL_VERSION` / `VERSION` / `PACKAGE_VERSION` (CLI zero-dep)
 6. `git describe --tags --abbrev=0` (último tag semver del repo)
 
+**Guard de placeholders (v1.4):** después de leer un candidato, si la versión matchea `/^0\.0\.[0-9]+$/`, o es literal `"unreleased"` / `"dev"` / `"TBD"`, o es `"0.1.0"` en un archivo con mtime <7 días (scaffold reciente sin release real) → **fall-through al siguiente item de la cascada**. No confiar en el criterio del modelo. Si ninguna resuelve un semver real, emitir automáticamente en WARNINGS: `"no real semver source detected (todos los candidatos eran placeholders)"`.
+
 Si NINGUNA resuelve, avisar al user en el turno 0 y pedir explícito:
 ```
 No pude detectar un version source. ¿Cuál usás?
@@ -96,6 +99,12 @@ Contar tasks del bloque que contengan alguna de estas frases (case-insensitive):
 - `"Add automated test harness for <Language>"` (Shell, JavaScript, Python, etc.)
 - `"Document <X> public API"` / `"Add test coverage for <X>"` (sin nombre específico de módulo)
 
+**v1.4 — categoría "task vaga" (amplía cobertura más allá de las 4 frases):**
+También matchea cualquier bullet cuyo título sea *solo* un verbo genérico (`Add` / `Document` / `Improve` / `Stabilize` / `Setup` / `Configure`) + sustantivo global (`baseline` / `metrics` / `harness` / `tests` / `coverage` / `docs` / `pipeline`) SIN sujeto específico (nombre de archivo, módulo, función, comando).
+
+- Match: `- [ ] Improve test coverage`, `- [ ] Add automated pipeline`
+- No-match: `- [ ] Improve test coverage for parser/tokenizer.js`
+
 Si **>50%** de las tasks del bloque matchean, agregar WARNING al reporte:
 ```
 MANAGED BLOCK STALE: el bloque <!-- rs:managed --> parece boilerplate legacy
@@ -110,18 +119,36 @@ No modifico el managed block automáticamente.
 
 ### 3. Evaluar evidence por task (multi-signal)
 
-Para cada task, combinar estas señales:
+Para cada task, combinar señales con **pesos explícitos (v1.4)**:
 
-- **Grep**: extraer 2-3 keywords significativos del texto (nombres propios, function names, paths). Buscar en los code files.
-- **File/function match**: si la task menciona un archivo o función específica (ej: `src/auth.js`, `loginUser()`), verificar que exista.
-- **Session context**: si en el chat actual ya leíste/escribiste files que matchean la task, contar como señal.
-- **Git log**: si un commit reciente menciona la task, weight it.
+| Señal | Peso | Notas |
+|-------|------|-------|
+| Git log commit específico que mencione la task | 2 | Persistente, versionado. Más fuerte. |
+| File+function match exacto (task nombra `src/x.js` o `foo()` y existe) | 2 | Estructural. |
+| Grep hit de 2-3 keywords significativos en code files | 1 | Menos específico. |
+| Session context (file leído/escrito en este mismo turno) | 0.5 | Efímero — no puede sostener [x] solo. |
 
-Asignar un nivel de evidence a cada task:
-- **strong**: múltiples señales convergen en files específicos
-- **weak**: 1 sola señal, ambigua o genérica
-- **none**: cero señal en el repo
-- **ambiguous**: > 5 candidatos, no confident
+**Umbrales:**
+- **strong** = suma ≥ 3 con al menos 1 señal persistente (git / file / grep). Session context sola NUNCA es strong.
+- **weak** = suma entre 1 y 2.5
+- **none** = suma == 0
+- **ambiguous** = > 5 candidatos plausibles en grep, sin dominante
+
+**Output requerido:** al reportar evidence de cada task, listar las señales concretas y el peso resultante. Ej: `"evidence: git-log a1b2c3d + file:src/parser.js, weight=strong"` o `"evidence: session-only, weight=weak"`. Sin este detalle, un [x] es no-auditable.
+
+### 3a. Detectar warnings legacy roadmapsmith CLI (v1.4)
+
+Al leer el ROADMAP.md, buscar líneas que matcheen `/⚠️.*no implementation evidence found.*roadmapsmith update/`. Cada match va a WARNINGS con acción:
+
+```
+Bullet legacy del CLI roadmapsmith pre-v1.0 detectado en línea NN.
+El skill v1.4 ya evalúa evidence en cada corrida — este bullet es ruido.
+Sugerido: (a) eliminar el bullet, (b) reemplazarlo por Evidence: line humana,
+o (c) marcarlo como task de evaluación explícita si el objetivo es rastrear
+algo que aún no tiene código.
+```
+
+El skill NUNCA borra estos bullets automático — solo warnea.
 
 ### 3b. Detectar features shippeadas sin task (v1.3)
 
@@ -210,6 +237,10 @@ Aplicar los cambios aprobados a ROADMAP.md via Edit tool. Preservar formatting, 
 
 Emitir el reporte final estructurado confirmando lo que se escribió.
 
+## Nota sobre markers `rs:` y warnings legacy (v1.4)
+
+Los markers `<!-- rs:task=... -->` y el bloque `<!-- rs:managed:start -->` son residuos del CLI `roadmapsmith` (npm package pre-v1.0). El skill v1.4 los **preserva** por compatibilidad con ROADMAPs generados antes de la pivote a skills-only, pero **no los emite** en tasks nuevas. Si aparece un warning con `roadmapsmith update --task <id>` en un bullet, viene del generator viejo — el skill actual no lo produce (ver Step 3a).
+
 ## Invariantes (jamás violar)
 
 - **NUNCA** flipear `[x]` sin evidence verificable (nivel `strong`).
@@ -259,3 +290,12 @@ NEW (propuestas para agregar):
 
 ═══ end report ═══
 ```
+
+**Regla terse (v1.4):** si `DONE=0` AND `PROSE=0` AND `RENAME=0` AND `NEW=0` AND `WARNINGS<=2`, emitir 1-liner en lugar del template completo:
+
+```
+✓ no drift · MODE:<x> · VERSION:<source> · <N> pending · <N> warnings
+[WARNINGS expandidos si N>0, uno por línea]
+```
+
+Report completo solo si hay cambios propuestos o >2 warnings. Evita 40+ líneas de `(ninguno)` en corridas de repos estables.
