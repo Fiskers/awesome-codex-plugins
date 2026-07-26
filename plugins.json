@@ -2,8 +2,8 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "awesome-codex-plugins",
   "version": "1.0.0",
-  "last_updated": "2026-07-25",
-  "total": 179,
+  "last_updated": "2026-07-26",
+  "total": 180,
   "categories": [
     "Development & Workflow",
     "Tools & Integrations"
@@ -1238,6 +1238,16 @@
       "category": "Tools & Integrations",
       "source": "awesome-codex-plugins",
       "install_url": "https://raw.githubusercontent.com/douglasmonsky/codex-usage-tracker/HEAD/.codex-plugin/plugin.json"
+    },
+    {
+      "name": "Computer Usage Summary",
+      "url": "https://github.com/liuyewang/computer-usage-summary-skill",
+      "owner": "liuyewang",
+      "repo": "computer-usage-summary-skill",
+      "description": "Privacy-first, local ActivityWatch reports for app time, AFK time, projects, billable work, and redacted timelines across macOS, Windows, and Linux.",
+      "category": "Tools & Integrations",
+      "source": "awesome-codex-plugins",
+      "install_url": "https://raw.githubusercontent.com/liuyewang/computer-usage-summary-skill/HEAD/.codex-plugin/plugin.json"
     },
     {
       "name": "CONTAM Tools",

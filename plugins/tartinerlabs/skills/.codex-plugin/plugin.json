@@ -1,6 +1,6 @@
 {
   "name": "tartinerlabs",
-  "version": "1.30.0",
+  "version": "1.32.0",
   "description": "Deprecated: install the workflow, quality, security, and tooling plugins instead. Language-agnostic agent skills for git/GitHub workflows, code quality, and project tooling, with first-class JS/TS support.",
   "author": {
     "name": "Tartiner Labs",
@@ -14,7 +14,6 @@
     "security",
     "refactoring",
     "testing",
-    "tailwind",
     "commit",
     "pull-request",
     "branch",

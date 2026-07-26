@@ -32,7 +32,7 @@ Full authentication instructions: https://plori.ai/auth.md
 
 ## Tools
 
-Account and agents: `list_brains`, `list_agents`, `get_agent`, `create_agent`
+Account and agents: `list_agents`, `get_agent`, `create_agent`
 (name, optional model), `set_agent_model`, `delete_agent`, `get_credits`,
 `get_usage`, `get_disk`.
 

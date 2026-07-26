@@ -50,6 +50,12 @@ from a lifecycle hook. Until wrapping is loaded, SessionStart repeats the
 installing software and requires the published SHA-256 for the selected
 gitleaks archive.
 
+Plugin executions maintain a version-independent sibling path at
+`current/bin/agent-guard`; hook manifests and `setup-shell` use it and can fall
+back to the newest installed version directory after a cache upgrade. Scanner
+infrastructure failures use `AGENT_GUARD_INFRA_FAILURE_MODE=open|closed`
+(`open` by default) and warn once per session. Secret detections always block.
+
 ## Hooks and data scope
 
 The Claude plugin registers:
@@ -61,6 +67,12 @@ The Claude plugin registers:
 - `Stop` to scan changed files in the current Git work tree.
 - `SessionStart` to report missing dependencies and, on Claude Code,
   shell-integration version drift. It never installs software.
+
+Recognized checksum fields in `go.sum`, `package-lock.json`, `yarn.lock`,
+`Cargo.lock`, and `uv.lock` are allowlisted only when both their path and exact
+hash-line shape match. Other content in those files remains subject to normal
+secret detection. Output masking likewise replaces assignment values, not
+secret-like key names or surrounding prose.
 
 Default processing is local, ephemeral, and has no telemetry. PII hook handling
 is off by default. Selecting the optional `pleno` or `http` PII provider sends

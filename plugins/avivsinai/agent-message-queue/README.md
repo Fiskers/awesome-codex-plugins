@@ -52,7 +52,7 @@ Installs to `~/.local/bin` or `~/go/bin` (no sudo required). Verify: `amq --vers
 curl -fsSL https://raw.githubusercontent.com/avivsinai/agent-message-queue/main/scripts/install.sh | bash -s -- --skill
 ```
 
-Review the script before running; it verifies release checksums when possible.
+Review the script before running. Installation fails unless `checksums.txt` has exactly one valid entry for the selected asset and `sha256sum` or `shasum` verifies it before extraction.
 
 ### 2. Install Skill
 
@@ -223,11 +223,12 @@ an unsupported platform. AMQ leaves `unverified` locks in place; inspect the PID
 and remove the named `.wake.lock` manually only after confirming no matching
 `amq wake` still owns that agent/root.
 
-`amq wake repair` is an explicit live-session repair path. It only runs when
-the lock is proven `stale`, the lock was created for `--inject-via`, and the
-agent has a saved `agents/<agent>/.wake.target` whose digest matches the lock's
-repair metadata. It also requires AMQ's private `.wake.repair-floor` to match
-the exact dead generation, boot, physical queue root, owner state, and target.
+`amq wake repair` is an explicit live-session repair path. It runs when the lock
+is proven `stale` or is an unverified ownerless generic claim, the lock was
+created for `--inject-via`, and the agent has a saved
+`agents/<agent>/.wake.target` whose digest matches the lock's repair metadata.
+It also requires AMQ's private `.wake.repair-floor` to match the exact dead
+generation, boot, physical queue root, owner state, and target.
 That floor carries only the existing-message identities already suppressed by
 the dead wake (device, inode, and ctime), never message IDs. A repaired wake
 inherits it instead of re-snapshotting `inbox/new`, so messages delivered while
@@ -235,8 +236,9 @@ the notifier was down remain eligible to notify and same-name DLQ retries
 remain eligible when their file identity changes. Missing, corrupt, or
 mismatched continuity state fails closed and requires a normal wake restart.
 Repair refuses raw terminal wake targets, leftover targets from old locks, and
-`unverified` locks to avoid double-injecting into an active session or injecting
-into the wrong terminal. Repaired wake output goes to
+unverified owner-bound or invalid claims. It supersedes an unverified ownerless
+generic claim only after the saved target and continuity state pass the same
+fail-closed validation. Repaired wake output goes to
 `agents/<agent>/.wake.repair.log`; `doctor --ops` can report whether repair is
 available, but it never starts a wake process.
 
@@ -420,12 +422,32 @@ Common command groups:
 
 | Area | Commands |
 |------|----------|
-| Core messaging | `init`, `send`, `list`, `read`, `drain`, `reply`, `thread`, `watch`, `monitor`, `receipts` |
+| Core messaging | `init`, `send`, `list`, `read`, `drain`, `reply`, `thread`, `trace`, `watch`, `monitor`, `receipts` |
 | Collaboration | `coop init`, `coop exec`, `swarm list`, `swarm join`, `swarm tasks`, `swarm bridge` |
 | Integrations | `integration symphony init`, `integration symphony emit`, `integration kanban bridge` |
 | Operations | `presence set`, `presence list`, `route explain`, `who`, `doctor`, `doctor --ops`, `wake repair`, `wake recover-owner`, `wake retire`, `cleanup`, `dlq *`, `upgrade`, `env`, `shell-setup` |
 
+### Exit codes
+
+AMQ exposes stable process exit codes for scripts and agent consumers:
+
+| Code | Meaning |
+|------|---------|
+| `0` | Success. The command completed normally. |
+| `1` | General error. The failure has no more specific exit-code classification. |
+| `2` | Usage error. Arguments, flags, or command input are invalid. |
+| `3` | Not found. A requested resource such as a mailbox, message, session, agent, or configuration does not exist. |
+| `4` | Timeout. A watch, monitor, receipt wait, or delivery wait reached its deadline. |
+| `5` | Context mismatch. A syntactically valid command was refused because its resolved mailbox root conflicts with the `AM_BASE_ROOT`/`AM_SESSION` pin. |
+
+The numeric meaning is the machine contract; stderr is human-readable context
+and should not be parsed as a stable discriminator. `--json` does not change
+these process exit codes. A read-only `list` on a mismatched session pin warns
+and continues; commands that consume or mutate mailbox state fail with code
+`5`.
+
 For the full CLI syntax, examples, and message schema, see [CLAUDE.md](CLAUDE.md).
+For the read-only trace contract and its evidence limits, see [docs/trace.md](docs/trace.md).
 
 ## How It Works
 

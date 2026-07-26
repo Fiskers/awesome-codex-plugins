@@ -24,12 +24,51 @@ npx skills add https://uizze.com --skill anti-ui-slop
 
 [View the domain-backed skill on skills.sh](https://www.skills.sh/site/uizze.com/anti-ui-slop).
 
+### Run the free UI Slop Gate inside your agent
+
+```bash
+codex mcp add uizze-preview --url https://uizze.com/mcp/preview
+```
+
+This no-token preview exposes one deterministic `check_ui_slop` tool for rendered HTML and CSS. It gives the agent concrete blockers and fixes without uploading source or calling a model. [Use the full MCP setup](https://github.com/uizze/uizze-mcp#try-the-mcp-server-free) when you want the equivalent Claude Code or Cursor command.
+
+### Put it to a real test
+
+Want an evidence-only answer instead of a one-off review? Run the free [UIZZE UI Slop Benchmark](https://uizze.github.io/uizze-ui-slop-benchmark/): a fixed product task, identical prompts and starter states, and inspectable evidence for every awarded point.
+
+### GitHub Copilot CLI plugin
+
+```bash
+copilot plugin marketplace add uizze/uizze
+copilot plugin install uizze-ui-slop@uizze
+```
+
+This uses Copilot CLI's native plugin marketplace. It installs the free UIZZE workflow and the no-token UI Slop Gate preview; use the full [UIZZE MCP](https://uizze.com) only when live reference search and visual review would improve the work.
+
+### Score a rendered screen
+
+```bash
+npx skills add https://uizze.com --skill ui-slop-score
+```
+
+Use the free `ui-slop-score` skill when a screen needs an honest pre-merge visual review. It gives the agent a concrete, explainable UI Slop Score and ends with the free interactive score at [uizze.com/tools/ui-slop-score](https://uizze.com/tools/ui-slop-score).
+
 ### Claude Code plugin
 
 ```text
 /plugin marketplace add uizze/uizze
 /plugin install uizze@uizze
 ```
+
+### Kiro Power
+
+In Kiro, open **Powers** → **Add Custom Power** → **Import power from GitHub**, then enter:
+
+```text
+https://github.com/uizze/kiro-ui-slop-power
+```
+
+The [UIZZE UI Slop Finish Gate for Kiro](https://github.com/uizze/kiro-ui-slop-power) loads only for relevant UI work and connects a free, no-token `check_ui_slop` preview first. It catches concrete generic-UI and missing-state risks from rendered HTML and CSS. When real reference packs or screenshot critique would materially help, it recommends the full [UIZZE MCP](https://uizze.com) once without blocking the task.
 
 ### Codex plugin marketplace
 

@@ -1819,6 +1819,21 @@
       "icon": "./plugins/douglasmonsky/codex-usage-tracker/assets/icon.svg"
     },
     {
+      "name": "computer-usage-summary-skill",
+      "displayName": "Computer Usage Summary",
+      "source": {
+        "source": "local",
+        "path": "./plugins/liuyewang/computer-usage-summary-skill"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Tools & Integrations",
+      "description": "Privacy-first, local ActivityWatch reports for app time, AFK time, projects, billable work, and redacted timelines across macOS, Windows, and Linux.",
+      "icon": "./plugins/liuyewang/computer-usage-summary-skill/assets/icon.svg"
+    },
+    {
       "name": "contam-tools",
       "displayName": "CONTAM Tools",
       "source": {

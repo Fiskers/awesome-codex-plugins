@@ -151,7 +151,15 @@ More install paths: [Install Guide](docs/install.md).
 
 ## Platform Support
 
-The core app is not macOS-only. The CLI, SQLite index, dashboard generator, and localhost server are Python-based and CI-tested on Ubuntu for Python 3.10-3.14. The installed-package Docker smoke path uses `python:3.14-slim` by default so packaged resources and CLI entry points are exercised on the newest supported runtime. It defaults to `~/.codex` for local Codex logs and `~/.codex-usage-tracker` for tracker data; pass `--codex-home` or `--db` when your local layout differs. Codex plugin discovery depends on Codex's local plugin directories on your machine, so run `codex-usage-tracker doctor` after setup if plugin registration does not appear in Codex.
+The core app is not macOS-only. The CLI, SQLite index, and localhost server are
+Python-based and CI-tested on Ubuntu for Python 3.10-3.14. The installed-package
+Docker smoke path uses `python:3.14-slim` by default so packaged resources and
+CLI entry points are exercised on the newest supported runtime. It defaults to
+`~/.codex` for local Codex logs and `~/.codex-usage-tracker` for tracker data;
+pass `--codex-home` or `--db` when your local layout differs. Codex plugin
+discovery depends on Codex's local plugin directories on your machine, so run
+`codex-usage-tracker doctor` after setup if plugin registration does not appear
+in Codex.
 
 ## Why This Exists
 
@@ -201,7 +209,7 @@ Then:
    supporting records.
 5. Use explicit local context controls only when aggregate and indexed evidence
    are insufficient; selected raw context is read on demand and is not written
-   to SQLite or generated dashboard HTML.
+   to SQLite or returned by aggregate exports.
 
 Optional allowance context:
 
@@ -214,11 +222,11 @@ The tracker cannot read your logged-in ChatGPT plan or live remaining usage auto
 ## What It Includes
 
 - Local SQLite index at `~/.codex-usage-tracker/usage.sqlite3`.
-- Static dashboard generation plus localhost live refresh.
+- Localhost Evidence Console serving with live refresh.
 - Focused Evidence Console with Home, Calls/Threads Explore, Limits, utility
   Settings, and contextual Evidence.
 - Active-only dashboards by default, with an explicit `All history` toggle for archived sessions.
-- CLI summaries, queries, CSV export, dashboard generation, doctor checks, and support bundles.
+- CLI summaries, queries, CSV/JSON export, doctor checks, and support bundles.
 - MCP tools for Codex sessions that want to query local usage data.
 - Companion Codex skills for operational setup and conversational usage analysis.
 - Optional local pricing, Codex credit, allowance, threshold, project alias, and privacy-mode configuration, including per-call long-context pricing above 272K input tokens for OpenAI service tiers that publish long-context rates.
@@ -281,7 +289,7 @@ codex-usage-tracker service serve --no-context-api --open
 For shared artifacts, use:
 
 ```bash
-codex-usage-tracker --privacy-mode redacted dashboard --open
+codex-usage-tracker --privacy-mode redacted open
 codex-usage-tracker --privacy-mode strict export --output usage-redacted.csv
 ```
 
@@ -329,15 +337,25 @@ This is optional. The normal shell install above is the fastest trusted path for
 
 ## Roadmap
 
-The next phase is adoption hardening: better first-run setup, safer support bundles, clearer guided diagnostics, and scale/reliability checks now that more people are trying the project. See [Adoption Hardening Roadmap](docs/adoption-hardening-roadmap.md) for the branch-by-branch plan.
+The active [Product Kernel Reset](docs/roadmap/product-kernel-reset.md) turns the
+tracker into a lean local observability kernel:
 
-- Keep Python runtime support validated with CI matrix coverage, package classifiers, release docs, and installed-package smoke tests.
-- Improve the `Set limits` flow with a paste/import experience for 5-hour and weekly allowance snapshots.
-- Track allowance snapshot history so local Codex credits can be compared against visible remaining-usage changes over time.
-- Clarify top-card token accounting by showing output tokens and reasoning output as a subset instead of implying all token cards add together.
-- Add more insight presets for cache drift, context growth, subagent-heavy workflows, and pricing/credit confidence gaps.
-- Keep the allowance provider boundary ready for an official usage or allowance API if one becomes available.
-- Continue reducing setup friction for pipx installs, local plugin discovery, and Codex companion skill usage.
+- the tracker owns exact incremental facts, bounded calculations, freshness,
+  and evidence;
+- Codex owns inference, explanation, and recommendations;
+- K1A quarantines retired beta code from the active integration tree so kernel
+  agents work against a lean, classified surface while v0.25.1 remains a
+  separate read-only reference;
+- Release 0.26.0 cuts over to a side-by-side schema-v1 cache, a six-tool MCP
+  surface, live evidence timelines, and a focused Evidence Console;
+- Release 0.27.0 adds guided exploration and optional, separately stored
+  context-composition estimates; and
+- Release 0.28.0 is feature-free stabilization and contract freeze.
+
+The former MCP-first program is
+[archived with its execution evidence](docs/roadmap/archive/2026-07-21-mcp-first-pivot/README.md).
+The reset preserves its accounting, privacy, identity, packaging, and release
+lessons while deleting the beta analysis and compatibility shell.
 
 ## Development
 

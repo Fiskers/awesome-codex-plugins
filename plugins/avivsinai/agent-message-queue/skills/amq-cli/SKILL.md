@@ -1,6 +1,6 @@
 ---
 name: amq-cli
-version: 0.47.1 # x-release-please-version
+version: 0.49.0 # x-release-please-version
 description: >-
   Coordinate agents via the AMQ CLI for file-based inter-agent messaging. Use
   this skill whenever you need to send messages to another agent (codex, claude,
@@ -121,6 +121,25 @@ Without `--session` or `--root`, `coop exec` defaults to `--session collab`.
 
 Add `--no-gitignore` when `coop exec` should auto-initialize the project without changing `.gitignore`.
 
+### Standalone wake interrupt safety
+
+Standalone wake keeps urgent interrupt notices and the bell without injecting
+Ctrl+C by default:
+```bash
+amq wake --me claude --interrupt-cmd none &
+```
+
+Swarm bridge events are hardcoded `priority=normal` plus label `swarm`, so do
+not bind that combination to Ctrl+C. Use ordinary non-destructive wake:
+```bash
+amq wake --me codex --interrupt-cmd none &
+```
+
+`--interrupt-cmd ctrl-c` sends a real SIGINT to the foreground process group
+and can interrupt or crash the agent. Use it only with a separate,
+operator-controlled label/priority when process-level interruption is
+intentional; the `interrupt` label alone never enables Ctrl+C.
+
 ## Statusline (Claude Code)
 
 To show the current AMQ session in your Claude Code status bar, add this snippet to your statusline script (e.g., `~/.claude/statusline.sh`):
@@ -168,6 +187,24 @@ amq integration kanban bridge --me codex --workspace-id my-workspace
 amq doctor --ops
 amq doctor --ops --json
 ```
+
+## Exit Codes
+
+Treat AMQ's process exit code as the stable machine contract:
+
+| Code | Meaning |
+|------|---------|
+| `0` | Success. The command completed normally. |
+| `1` | General error. The failure has no more specific exit-code classification. |
+| `2` | Usage error. Arguments, flags, or command input are invalid. |
+| `3` | Not found. A requested resource such as a mailbox, message, session, agent, or configuration does not exist. |
+| `4` | Timeout. A watch, monitor, receipt wait, or delivery wait reached its deadline. |
+| `5` | Context mismatch. A syntactically valid command was refused because its resolved mailbox root conflicts with the `AM_BASE_ROOT`/`AM_SESSION` pin. |
+
+Do not parse stderr prose as a stable discriminator. `--json` preserves the
+same process exit codes. A read-only `list` on a mismatched session pin warns
+and continues; commands that consume or mutate mailbox state fail with code
+`5`.
 
 ## Delivery Receipts
 
