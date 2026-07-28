@@ -5,9 +5,11 @@ description: "Plan paid advertising campaigns. Use when: managing Google Ads, Me
 
 # Paid Advertising
 
-## Recent platform API changes (as of June 2026)
+## Recent platform API changes (as of July 2026)
 
-Target **Google Ads API v24.2** (released 24 June 2026 — current latest). v24.0 was the last release with breaking changes; v24.1 and v24.2 are non-breaking additive releases. Full detail — including AI Max — lives in [`google-ads.md`](google-ads.md), the single source for the Google Ads API surface. Source: [Google Ads API release notes](https://developers.google.com/google-ads/api/docs/release-notes).
+Target **Google Ads API v24.2** for stable integrations (v24 line supported into 2027). **v25 (July 2026) is the new major release with breaking changes**: the legacy `CustomerLifecycleGoal`/`CampaignLifecycleGoal` resources are removed (migrate to the unified `Goal` + `CampaignGoalConfig` schema), plus new loyalty-retention optimization goals, social-engagement metrics for Shorts ads, duration-level breakdowns for non-skippable YouTube inventory, and YouTube third-party conversion attribution. Adopt v25 deliberately, not by default. Full detail — including AI Max — lives in [`google-ads.md`](google-ads.md), the single source for the Google Ads API surface. Sources: [release notes](https://developers.google.com/google-ads/api/docs/release-notes) · [v25 announcement](https://ads-developers.googleblog.com/2026/07/announcing-v25-of-google-ads-api.html).
+
+**Meta (Marketing API v25, in effect):** standalone Advantage+ Shopping / App campaigns can no longer be created via the API on any version (since 19 May 2026); v26 (Sept 2026) pauses remaining ones — use the unified Advantage+ setup ([details in meta-ads.md](meta-ads.md)). The new **Page Viewer metric** replaces legacy reach (Post/Page Reach, Video Impressions, and Story Impressions retire from the Graph API) — update any reporting that reads those fields. **LinkedIn:** version `202607` is live (monthly cadence); it adds an automatic "Not Interested" CTA on Message Ads and a `SHA256_IP_ADDRESS` identifier in the Conversions API.
 
 **Highlights that affect campaign construction:**
 
@@ -102,7 +104,7 @@ Before executing, gather the following from the user (ask if not provided):
 
 ### Platform-Specific Expertise
 - **Google Ads**: Search, Display, Performance Max, YouTube (in-stream, Shorts, Discovery), Shopping, Demand Gen
-- **Meta Ads**: Advantage+ Shopping, Advantage+ App, manual campaigns, catalog ads, lead gen forms
+- **Meta Ads**: unified Advantage+ campaigns (ASC/AAC legacy formats retiring — see meta-ads.md), manual campaigns, catalog ads, lead gen forms
 - **LinkedIn Ads**: Sponsored Content, Message Ads, Lead Gen Forms, Document Ads, ABM list targeting
 - **TikTok Ads**: In-Feed, TopView, Spark Ads, TikTok Shop product ads, Branded Effects
 - **Programmatic**: DSP selection (DV360, The Trade Desk, Amazon DSP), CTV, DOOH, audio

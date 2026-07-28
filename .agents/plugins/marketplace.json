@@ -1143,6 +1143,21 @@
       "icon": "./plugins/Maksim-Burtsev/simple-man/assets/icon.png"
     },
     {
+      "name": "skill-sync-publisher",
+      "displayName": "skill-sync-publisher",
+      "source": {
+        "source": "local",
+        "path": "./plugins/liuyewang/skill-sync-publisher"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Development & Workflow",
+      "description": "Safely synchronize this Codex skill across public agent-skill registries.",
+      "icon": "./plugins/liuyewang/skill-sync-publisher/assets/skill-sync-publisher.svg"
+    },
+    {
       "name": "spec-driven",
       "displayName": "Spec-Driven Development",
       "source": {
@@ -1169,7 +1184,7 @@
         "authentication": "ON_INSTALL"
       },
       "category": "Development & Workflow",
-      "description": "Spec-first workflow with nine skills, auditable recovery commands, guarded workflow-path recommendations, Node 20 support, and evidence-based review gates.",
+      "description": "Spec-first workflow with nine skills, user-controlled Quick / Hotfix / Tweak / Full paths, auditable recovery commands, hardened delta-spec sync, and guarded review gates.",
       "icon": "./plugins/MageByte-Zero/spec-superflow/assets/icon.svg"
     },
     {
@@ -1815,8 +1830,7 @@
         "authentication": "ON_INSTALL"
       },
       "category": "Tools & Integrations",
-      "description": "Track aggregate Codex token usage from local session logs with MCP tools for summaries, session detail, CSV export, and dashboard generation.",
-      "icon": "./plugins/douglasmonsky/codex-usage-tracker/assets/icon.svg"
+      "description": "Track aggregate Codex token usage from local session logs with MCP tools for summaries, session detail, CSV export, and dashboard generation."
     },
     {
       "name": "computer-usage-summary-skill",

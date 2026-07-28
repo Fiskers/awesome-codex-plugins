@@ -92,7 +92,7 @@ A practitioner's guide to AI-powered marketing tools across every discipline. Co
 | **Target ROAS** | Google, Meta | eCommerce with conversion value tracking |
 | **Target CPA** | Google, Meta | Lead gen with consistent lead values |
 | **Maximize conversions** | Google | When volume matters more than efficiency |
-| **Advantage+ campaigns** | Meta | When creative testing at scale is the priority |
+| **Advantage+ (unified setup)** | Meta | When creative testing at scale is the priority (standalone ASC/AAC campaign types are retiring — v26 pauses them Sept 2026) |
 
 ### AI-Powered Audience Discovery
 

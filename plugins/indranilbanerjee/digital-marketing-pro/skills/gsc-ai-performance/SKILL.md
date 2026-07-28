@@ -21,7 +21,9 @@ Google rolled out a new **GSC AI Performance Report** on **3 June 2026** ([Searc
 | Date range filtering | NEW |
 | **Click data** | **NOT INCLUDED** (Google explicitly excluded — important caveat for attribution) |
 | Opt-out toggle in Search Console | NEW (replaces having to ship robots.txt / meta tags for AI-specific exclusion) |
-| API surface | **NOT YET PUBLISHED** — UI only at launch |
+| API surface | **NOT YET PUBLISHED** — UI only (still true as of July 2026) |
+| **Discover generative surfaces** | **NEW (June–July 2026)** — the report family now also covers generative AI features in Discover ([Google announcement](https://developers.google.com/search/blog/2026/06/gen-ai-performance-reports)) |
+| Data availability | Backfilled from **18 May 2026**; access expanded broadly in July 2026, with a companion deep-dive help doc on AI controls |
 | Geographic rollout | UK first, then global ([source](https://searchengineland.com/google-search-console-ai-performance-reports-and-controls-to-block-your-content-in-ai-responses-479298)) |
 
 **Critical interpretation guidance:** The report shows when your pages were SHOWN in AI Overviews / AI Mode, not when users clicked through to them. Because click data is absent, all downstream attribution to AI traffic must come from your analytics (GA4's new `AI Assistant` channel — added 13 May 2026 — is the matching analytics-side surface; see `/digital-marketing-pro:analytics-insights`).

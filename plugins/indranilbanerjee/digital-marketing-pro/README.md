@@ -2,22 +2,22 @@
 
 > **Your agency just signed a 50-brand client. The previous agency left no playbook. Three brands are bleeding budget, two have stale positioning, one is launching in a regulated jurisdiction next month. Where do you start?**
 
-Run `/digital-marketing-pro:engagement` against each brand. Same 12-Part Strategy Flow, same Four Core Documents, same 61-step structure — auditable across the entire portfolio in ~60 minutes per brand on Claude Opus 4.8. No more inconsistent depth between brands. No more "what did the last agency do?" mysteries. No more compliance gaps in regulated jurisdictions.
+Run `/digital-marketing-pro:engagement` against each brand. Same 12-Part Strategy Flow, same Four Core Documents, same 61-step structure — auditable across the entire portfolio in ~60 minutes per brand on Claude Opus-class models (measured on Opus 4.8; Opus 5 is the current equivalent at the same price). No more inconsistent depth between brands. No more "what did the last agency do?" mysteries. No more compliance gaps in regulated jurisdictions.
 
 Open-source AI marketing plugin — **158 skills, 24 specialist agents, EU AI Act Article 50 ready, Cowork team-persistent**. Built for marketing agencies, in-house teams running 50–200 brands, and consultancies. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, and **OpenClaw** + 35+ Agent Skills platforms. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-[![Version](https://img.shields.io/badge/version-3.15.1-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.16.0-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/digital-marketing-pro?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/digital-marketing-pro/stargazers)
 [![Forks](https://img.shields.io/github/forks/indranilbanerjee/digital-marketing-pro?style=flat&logo=github&color=blue)](https://github.com/indranilbanerjee/digital-marketing-pro/network/members)
 [![Issues](https://img.shields.io/github/issues/indranilbanerjee/digital-marketing-pro?logo=github)](https://github.com/indranilbanerjee/digital-marketing-pro/issues)
 [![Last commit](https://img.shields.io/github/last-commit/indranilbanerjee/digital-marketing-pro?logo=github)](https://github.com/indranilbanerjee/digital-marketing-pro/commits/main)
-[![Tests](https://img.shields.io/badge/tests-207%2F207%20passing-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-208%2F208%20passing-brightgreen.svg)](tests/)
 [![Platforms](https://img.shields.io/badge/platforms-8%20native%20%2B%2035%20Agent%20Skills-success.svg)](#works-on-40-agent-harnesses-via-the-agent-skills-open-standard)
-[![Cowork](https://img.shields.io/badge/cowork-team%20persistent-purple.svg)](#supported-surfaces-v3151)
+[![Cowork](https://img.shields.io/badge/cowork-team%20persistent-purple.svg)](#supported-surfaces-v3160)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](skills/context-engine/compliance-rules.md)
 
-> 🆕 **Just shipped — v3.15.1 (July 12, 2026):** Self-containment patch — removed every cross-plugin capability reference from skills. Visual-production handoffs, C2PA signing, workflow resume, and publish-dir checks are all DMP-native paths now; install DMP alone and every documented capability works. [Read what's new →](#whats-new) · [Full changelog →](CHANGELOG.md)
+> 🆕 **Just shipped — v3.16.0 (July 12, 2026): the July Market Refresh.** Primary-source verified same-day: **final EU Transparency Code of Practice** (published June 10 — standardized EU icons, signatory window closes July 22, Article 50 applies Aug 2), **Claude 5 family + GPT-5.6 Sol/Terra/Luna in the model registry** (62→68 entries; aliases now resolve to Opus 5 / GPT-5.6 Sol; Opus 4.1 retirement flagged), **Meta API v25 truth pass** (standalone ASC/AAC creation blocked — unified Advantage+ is the path), Google Ads v25 + LinkedIn 202607 documented, GSC AI reports now cover Discover. Also today: v3.15.1 self-containment patch — every cross-plugin capability reference removed; DMP is fully standalone. [Read what's new →](#whats-new) · [Full changelog →](CHANGELOG.md)
 >
 > <sub>Previously — **v3.15.0 (July 7, 2026):** The **Reliability & Truth** release — a full-repo audit fixed ~200 findings in one pass. Connectors are honestly opt-in (the shipped `.mcp.json` is empty; fictional npm packages purged), all 18 execution skills carry a uniform typed-approval gate (closes issue #6), the Tessl review workflow moved to the `tessl review` CLI (closes issue #8), agents consolidated 25 → 24, C2PA gained the Article 50 `--ai-disclosure` assertion, and a new doc-vs-argparse contract linter + state-layer tests grew the suite from 123 to 207 passing. [Read what's new →](#whats-new) · [Full changelog →](CHANGELOG.md)</sub>
 
@@ -100,7 +100,7 @@ Most AI marketing tools generate isolated outputs — a campaign brief here, an 
 
 ## What you get in 60 minutes
 
-Run `/digital-marketing-pro:engagement` and the plugin produces a full brand-strategy engagement in roughly 60 minutes on Opus 4.8 — **~50–60 canonical files** organized by part:
+Run `/digital-marketing-pro:engagement` and the plugin produces a full brand-strategy engagement in roughly 60 minutes on Opus 4.8/Opus 5-class models — **~50–60 canonical files** organized by part:
 
 - **Part 1** — Stone-vs-Opinion intake (what the client knows for certain vs what they believe)
 - **Part 2** — External market research (unbiased, no client docs)
@@ -115,7 +115,7 @@ Run `/digital-marketing-pro:engagement` and the plugin produces a full brand-str
 - **Part 11** — AI creative briefs (with Nano Banana Pro / Veo 3.1 / Gemini Omni model guidance and C2PA + deepfake-disclosure clauses)
 - **Part 12** — Continuous improvement loop
 
-Cost: roughly **$15–40 in Claude API spend** for a full 12-part engagement using Opus 4.8. The plugin itself is MIT-licensed and free.
+Cost: roughly **$15–40 in Claude API spend** for a full 12-part engagement using Opus 4.8 or Opus 5 (same $5/$25 per-MTok pricing). The plugin itself is MIT-licensed and free.
 
 ---
 
@@ -198,7 +198,7 @@ See the [Multi-Brand & Agency Guide](docs/multi-brand-guide.md) for the multi-cl
 ```
 /digital-marketing-pro:brand-setup "ACME Corp"        # interactive: voice, audience, channels, jurisdiction
 /digital-marketing-pro:competitor-analysis            # multi-dimensional deep-dive on top 5 competitors
-/digital-marketing-pro:engagement                     # full 12-Part Strategy Flow (~60 min on Opus 4.8)
+/digital-marketing-pro:engagement                     # full 12-Part Strategy Flow (~60 min on Opus-class)
 /digital-marketing-pro:check  engagements/.../03-four-core/*.md   # pre-publish gate before client review
 ```
 Output: ~50–60 canonical files. Cost: $15–40 in API spend. Time saved: ~3 weeks of senior-strategist labor.
@@ -245,7 +245,7 @@ Output: real API calls fired against your stack with audit logging at `~/.claude
 
 ---
 
-## Supported surfaces (v3.15.1)
+## Supported surfaces (v3.16.0)
 
 | Platform | Install command | Manifest path | Status |
 |---|---|---|---|
@@ -355,7 +355,10 @@ If you run into a platform-specific install snag, file a [GitHub issue](https://
 
 ## What's new
 
-DM Pro is updated against the **actual current marketing ecosystem state** — June 2026 platform refresh, Google I/O 2026, the active broad core algorithm update, EU AI Act draft implementing guidelines, Meta platform expansions, and the latest AI image/video model landscape. No "trained on 2024 data" surprises in your client outputs.
+DM Pro is updated against the **actual current marketing ecosystem state** — the July 2026 market refresh (GPT-5.6 Sol/Terra/Luna, the Claude 5 family, the **final** EU AI Act Article 50 guidelines + Transparency Code of Practice), Google I/O 2026, the Google Ads v25 / Meta v25 API shifts, and the latest AI image/video model landscape. No "trained on 2024 data" surprises in your client outputs.
+
+**v3.16.0 — July Market Refresh (July 12)**
+Everything verified against primary sources on ship day. The **final EU Code of Practice on Transparency of AI-Generated Content** (10 June 2026) replaces all second-draft guidance in the compliance docs — standardized EU disclosure icons are live, the initial-signatory window closes **22 July**, and the final Article 50 Guidelines are in (`compliance-rules.md`). The model registry adds the **Claude 5 family** (`claude-fable-5` with refusal/fallback semantics, `claude-opus-5` — the new `latest-text-anthropic`, `claude-sonnet-5`) and **GPT-5.6 Sol/Terra/Luna** (`latest-text-openai` → Sol), flags Opus 4.1's Aug 5 retirement, and is mirrored to the shared suite registry. Paid docs get the **Meta v25 truth pass** (standalone Advantage+ Shopping/App creation blocked via API — unified Advantage+ documented as the go-forward path; Page Viewer metric replaces legacy reach) plus Google Ads v25 breaking changes and LinkedIn 202607. `gsc-ai-performance` adds the Discover generative surfaces. README claims rotated to the current model lineup.
 
 **v3.15.1 — Self-containment patch (July 12)**
 Removed every cross-plugin capability reference from the skill surface: `ad-creative` and the engagement's Part 11 hand visual production to your own tooling (design team, AI generators, or connected design platforms) instead of naming a sibling plugin; `launch-campaign` C2PA signing and checkpoint-resume route through DMP's own `c2pa-metadata` and `/digital-marketing-pro:resume`; `validate-profile` checks DMP's own publish dir (`$DIGITAL_MARKETING_PRO_PUBLISH_DIR` / `~/Documents/DigitalMarketingPro/`); the EU compliance reference docs are DMP-centric. DMP is fully standalone — no other plugin is ever required for any documented capability. Cross-promo links in this README stay; capability delegation is gone.
@@ -730,7 +733,7 @@ Those are frameworks. DM Pro is a **packaged, opinionated methodology** with exp
 | Recommended for | Terminal workflows + scripting | Visual desktop workflows | Quick content | One-off questions |
 
 **Q: How much does a full engagement cost in API spend?**
-Roughly **$15–40** for a complete 12-part engagement using Opus 4.8 across ~50–60 documents. Track per-brand consumption via Claude Code v2.1.149+ `/usage` (now integrated into `/digital-marketing-pro:agency-dashboard`).
+Roughly **$15–40** for a complete 12-part engagement using Opus 4.8 or Opus 5 (same pricing) across ~50–60 documents. Track per-brand consumption via Claude Code v2.1.149+ `/usage` (now integrated into `/digital-marketing-pro:agency-dashboard`).
 
 **Q: Can I run multiple brands in parallel?**
 Yes. Each brand has its own `~/.claude-marketing/<brand-slug>/` directory and Python script state. Switch with `/digital-marketing-pro:switch-brand`.
@@ -739,7 +742,7 @@ Yes. Each brand has its own `~/.claude-marketing/<brand-slug>/` directory and Py
 Skip to `/digital-marketing-pro:campaign-plan`. Every individual surface (campaign / SEO / content / competitor / email / report) is independently runnable. The full engagement is the canonical path, not the only path.
 
 **Q: Will this work on Codex / Cursor / Copilot CLI / Antigravity?**
-Yes — verified-real native manifests ship for all 8 surfaces (CC, Cowork, Codex, Cursor, Copilot CLI, Antigravity, Hermes Agent, OpenClaw). See [Supported surfaces](#supported-surfaces-v3151) above for per-platform install commands.
+Yes — verified-real native manifests ship for all 8 surfaces (CC, Cowork, Codex, Cursor, Copilot CLI, Antigravity, Hermes Agent, OpenClaw). See [Supported surfaces](#supported-surfaces-v3160) above for per-platform install commands.
 
 **Q: I run my team on Anthropic Cowork. Does brand state persist between sessions?**
 Yes — but you need to run `/digital-marketing-pro:cowork-setup` once per team first (v3.12.0). Cowork's per-session filesystem is ephemeral, and `${CLAUDE_PLUGIN_DATA}` is too ([open issue #51398](https://github.com/anthropics/claude-code/issues/51398)). The setup wizard routes brand profiles + plans + reports through a Google Drive MCP so everything survives across sessions and is shared across the team. Multi-team isolation via per-team folder names.

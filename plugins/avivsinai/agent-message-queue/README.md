@@ -70,6 +70,12 @@ For manual installation or troubleshooting, see [INSTALL.md](INSTALL.md).
 
 ### Updating
 
+For Homebrew installations:
+```bash
+brew upgrade amq
+```
+
+For installations made with the install script or another manual binary install:
 ```bash
 amq upgrade
 ```
@@ -84,35 +90,54 @@ amq coop init
 
 Creates `.amqrc`, mailboxes for `claude`, `codex`, and the reserved `user` operator handle, and updates `.gitignore`.
 
-Optionally add shell aliases (`amc` for Claude, `amx` for Codex, and `amg` for Grok CLI as an optional peer):
-```bash
-eval "$(amq shell-setup)"
-```
-
 ### 2. Start Agent Sessions
 
 ```bash
 # Terminal 1 — Claude Code
-amc
+amq coop exec claude
 
 # Terminal 2 — Codex CLI
-amx
+amq coop exec codex
 ```
 
-Each alias sets up the environment, starts wake notifications, and launches the agent. For isolated sessions (multiple pairs working on different features):
+Each command sets up the environment, starts wake notifications, and launches
+the agent.
+
+> **First-message check:** start both agents before sending the test message.
+> A newly started wake deliberately baselines messages that were already
+> waiting, so they remain unread but do not trigger a notification. If you sent
+> first, run `amq drain --include-body` in the target agent.
+
+For isolated sessions (multiple pairs working on different features):
 
 ```bash
-amc feature-a          # Claude in feature-a session
-amx feature-a          # Codex in feature-a session
-amg feature-a          # Grok CLI in feature-a session (optional third peer)
+amq coop exec --session feature-a claude
+amq coop exec --session feature-a codex
+amq coop exec --session feature-a grok     # Optional third peer
 ```
 
-Without aliases, use `amq coop exec` directly:
+Pass agent flags after `--`:
 ```bash
 amq coop exec claude -- --dangerously-skip-permissions
-amq coop exec --session feature-a codex
-amq coop exec grok     # Grok CLI as an optional peer; caller flags forwarded unchanged
+amq coop exec codex -- --dangerously-bypass-approvals-and-sandbox
 ```
+
+Optional aliases are a convenience, not part of the canonical quickstart.
+A bare `eval "$(amq shell-setup)"` affects only the current shell. To make
+aliases such as `amc`, `amx`, and `amg` available in future terminals, add the
+setup command to your shell startup file:
+
+```bash
+# zsh
+amq shell-setup --shell zsh >> ~/.zshrc
+
+# bash
+amq shell-setup --shell bash >> ~/.bashrc
+```
+
+Run the appropriate append command once, then open a new terminal or source
+that startup file. Use the bare `eval` only when you intentionally want aliases
+in one already-open shell.
 
 Add `--no-gitignore` when `coop exec` should auto-initialize the project without changing `.gitignore`.
 Managed launchers can add `--require-wake` to fail instead of launching the agent when the wake watcher cannot start.
@@ -131,6 +156,13 @@ cannot silently take over the handle. If the owner or wake exits unexpectedly,
 use `amq wake recover-owner` instead of the ownerless repair path. When a
 required owner capability is conclusively unsupported before any claim exists,
 AMQ warns and starts one ownerless wake instead.
+
+AMQ identifies an external injector by its resolved executable and ordered
+fixed arguments. Put any provider target identity needed to distinguish a pane,
+window, or session in `--wake-inject-arg` (`--inject-arg` when starting
+`amq wake` directly). Ambient environment variables and provider configuration
+are not part of this identity, so repair, recovery, and retirement cannot
+detect target changes made only through those channels.
 
 ### 3. Send & Receive
 
@@ -176,15 +208,34 @@ sibling deliberately. For deliberate raw-root access, `--ignore-session-pin`
 is accepted only together with a non-empty explicit `--root`; blank `--root`
 and `--session` values are usage errors. `list` remains a non-destructive
 inspection path: it warns on a pin mismatch but still lists the resolved
-mailbox. Unpinned scripts and CI retain the existing fail-open behavior.
+mailbox. The exact base-backlog inspection path is quieter: an explicit
+`--root` equal to the current pin's own base root does not warn (and is
+identity-authenticated when identity tokens are present). Implicit, sibling,
+foreign, stale, and malformed contexts still warn. Unpinned scripts and CI
+retain the existing fail-open behavior.
+
+`amq doctor --root <path>` follows the same inspection-versus-mutation split:
+the explicit root selects the exact target but does not repin the shell or
+waive its session pin. Read-only inspection continues with a mismatch warning.
+`--fix-mailboxes` and `--ops --fix-wake-locks` refuse a mismatched target unless
+`--ignore-session-pin` is also supplied; that override requires an explicit
+non-empty `--root`. For a session whose roster lives only in its base, use
+`amq doctor --root <session> --base-root <base> --ignore-session-pin --fix-mailboxes`.
+`--base-root` is config authority only, must be the target itself or its direct
+parent, and never overrides the session pin.
 
 A missing mailbox is an error, not an empty inbox. When `drain` or `list --new`
 finds an actually empty inbox, it prints a stderr-only note if the same handle
 has pending messages in a sibling session, including an exact non-destructive
 `amq list --session <name> --me <handle> --new` command. `doctor --ops` reports
-the same condition as a `sibling_backlog` warning. The pin is an operational
-safety check, not access control: a local process can still repin the
-environment or use the explicit override.
+the same condition as a `sibling_backlog` warning. When the active root is a
+session, an empty `drain` or `list --new` also notes unread mail for the same
+handle in the base root, while `doctor --ops` reports it as a `base_backlog`
+warning. Both include an exact non-destructive `amq list --root ...` command.
+In JSON output, `base_backlog` hints also include a structured `backlog` object
+with `root`, `current_session`, `agent`, `pending`, and `command`.
+The pin is an operational safety check, not access control: a local process can
+still repin the environment or use the explicit override.
 
 Git worktrees are isolated by default when the project root is relative (for
 example `{"root":".agent-mail"}`): the same session name resolves beneath each
@@ -347,11 +398,12 @@ eval "$(amq env --session auth --me claude --export)"
 ```
 
 Every shell-mode `amq env` output replaces the complete context: `AM_ROOT`,
-`AM_ME`, `AM_BASE_ROOT`, and `AM_SESSION`. Sessionless output sets
-`AM_BASE_ROOT` to the exact root and writes an empty `AM_SESSION`, so changing
-to another sessionless root is detectable. `--export` additionally prints a
-stderr note that the terminal is pinned. Treat this as one terminal, one
-session.
+`AM_ROOT_ID`, `AM_ME`, `AM_BASE_ROOT`, `AM_BASE_ROOT_ID`, and `AM_SESSION`.
+The two `_ID` values are opaque physical-identity tokens emitted or unset by
+AMQ; do not set them manually. Sessionless output sets `AM_BASE_ROOT` to the
+exact root and writes an empty `AM_SESSION`, so changing to another sessionless
+root is detectable. `--export` additionally prints a stderr note that the
+terminal is pinned. Treat this as one terminal, one session.
 
 Auto-detect covers the default `.agent-mail` layout, including `.agent-mail/<session>` session roots without `.amqrc`. Custom root names and peer config still require `.amqrc` or explicit flags/env.
 This same chain is used by `amq env`, `amq doctor`, and the integration commands, so Symphony and Kanban-launched agents can find the correct queue even when they are not started from the project directory.
@@ -495,7 +547,9 @@ Files are universal, debuggable, and work everywhere. No connection strings, no 
 Those require infrastructure. AMQ is for local inter-process communication where agents share a filesystem. No server to configure or keep running.
 
 **What about Windows?**
-The core queue works on Windows. The `amq wake` notification feature requires WSL. `doctor --ops` can still report wake lock files on unsupported platforms, but it cannot verify live wake process identity there and will not auto-fix `unverified` locks.
+Native Windows supports the core queue, but not `coop exec` or `wake`. Use WSL
+with the Linux binary for the complete co-op workflow. See the explicit
+[platform capability matrix](INSTALL.md#platform-capability-matrix).
 
 **Is this production-ready?**
 For local development workflows, yes. AMQ is intentionally simple—it's not trying to be a distributed message broker.

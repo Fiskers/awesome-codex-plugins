@@ -181,12 +181,24 @@ read emulo-out/RUN_ME.md and follow it
 
 Your agent makes one pass per chunk, merges them, writes `you.md`, and prints the install command. Nothing to paste and nothing else to download.
 
+### Check the receipts
+
+A profile is only worth loading if its evidence is real. The failure that matters is not a missing rule, it is a confident rule quoting something you never said:
+
+```bash
+emulo verify you.md
+```
+
+It pulls every quote out of the profile and searches the mined sessions for it. Quotes it cannot find are reported and the command exits non-zero, because a receipt that cannot be traced was invented. Quotes resting on a single session are flagged separately: one session is context, not a rule. Add `--json` for machine-readable output, including which session ids support each quote.
+
+This checks what is mechanically checkable. Whether a rule is vague, generic, or true of every developer alive is still a judgment call, and still yours.
+
 ### Native Codex plugin
 
 The native plugin adds `emulo:mine`, `emulo:work`, `emulo:design`, `emulo:write`, and `emulo:video`:
 
 ```bash
-codex plugin marketplace add ohad6k/emulo --ref v0.6.1 --json
+codex plugin marketplace add ohad6k/emulo --ref v0.6.2 --json
 codex plugin add emulo@emulo --json
 ```
 
@@ -299,7 +311,7 @@ See [SECURITY.md](SECURITY.md) for the exact boundary.
 The legacy extractor remains available and backward compatible:
 
 ```bash
-curl -O https://raw.githubusercontent.com/ohad6k/emulo/v0.6.1/emulo.py
+curl -O https://raw.githubusercontent.com/ohad6k/emulo/v0.6.2/emulo.py
 python emulo.py --dry-run
 python emulo.py --chunks 4 --out emulo-out
 ```

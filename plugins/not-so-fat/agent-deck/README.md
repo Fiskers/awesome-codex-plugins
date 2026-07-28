@@ -130,6 +130,10 @@ For contributors, dev ports (`:3000` / `:8000` / `:3001`) and env vars → [Setu
 
 **CLI:** `agent-deck use` · `agent-deck export` / `import` · `credential` · `exec` (inject keys) · `upgrade`
 
+### Data & portability
+
+Your collection and decks live as files under `~/.agent-deck/` (playbooks as `.md`, services/decks as JSON, credential metadata as YAML). You can put that tree in **your own git repo** for ongoing sync across laptops — **Agent Deck never runs git**; you commit, push, and pull, then `agent-deck reindex`. Secrets stay in Keychain per machine. For one-shot moves or sharing a deck template without git, use `.agent-deck.json` export/import ([format](docs/STORE_FORMAT.md) · [export PRD](docs/PRD_EXPORT_IMPORT.md)).
+
 ## Install & run
 
 After first-time [Quick Start](#quick-start):

@@ -8,7 +8,7 @@
       "name": "computer-usage-summary-skill",
       "source": {
         "source": "local",
-        "path": "./plugins/computer-usage-summary-skill"
+        "path": "."
       },
       "policy": {
         "installation": "AVAILABLE",

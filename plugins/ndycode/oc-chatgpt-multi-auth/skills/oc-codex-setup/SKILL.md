@@ -7,13 +7,37 @@ description: Install or refresh oc-codex-multi-auth in OpenCode, choose the righ
 
 Use this skill when the user wants to install, reinstall, upgrade, or troubleshoot `oc-codex-multi-auth` in OpenCode.
 
-## Default install (compact modern)
+## Default install (provider preserving)
 
 ```bash
 npx -y oc-codex-multi-auth@latest
 ```
 
-This is the default. It installs the compact modern catalog: 12 base OAuth model families with OpenCode variant presets (53 total variants). The TUI model picker shows bases such as `gpt-5.5` and `gpt-5.6-sol`; reasoning depth is selected with `--variant`.
+This is the default. It registers the OpenCode and TUI plugin entries without changing `provider.openai`.
+
+## Compact modern catalog
+
+```bash
+npx -y oc-codex-multi-auth@latest --modern
+```
+
+Use this when the shipped 12 base OAuth model families and 53 OpenCode variant presets are required.
+
+## Config-safe update
+
+```bash
+npx -y oc-codex-multi-auth@latest update
+```
+
+Use this to refresh an existing installation. It only clears the managed package cache and never reads or writes `opencode.json` or `tui.json`. Restart OpenCode afterward.
+
+## Plugin-only install
+
+```bash
+npx -y oc-codex-multi-auth@latest install --plugin-only
+```
+
+Use this when the user already manages `provider.openai`. It registers the OpenCode and TUI plugin entries without changing that provider configuration.
 
 ## Full install (explicit selector IDs)
 
@@ -33,9 +57,10 @@ Use this on older OpenCode versions that do not support variant-based model entr
 
 ## Other installer flags
 
-- `--dry-run` — show planned actions without writing files
+- `--dry-run` — show changed config paths without values or writes
 - `--no-cache-clear` — skip clearing the OpenCode plugin cache
-- `--modern` — same compact modern catalog as the default
+- `--modern` — install the compact modern catalog
+- `--plugin-only` — preserve `provider.openai`; cannot be combined with a catalog mode
 
 ## Standalone CLI (no agent cost)
 
@@ -51,7 +76,7 @@ Also available: `limits`, `dashboard`, `health`, `diag`.
 ## Login and verification
 
 1. Run `opencode auth login`.
-2. Run a quick verification request with **compact modern** selectors (default install):
+2. Run a quick verification request after OpenCode or `--modern` supplies the selector:
 
 ```bash
 opencode run "Explain this repository" --model=openai/gpt-5.5 --variant=medium

@@ -246,7 +246,7 @@ Each agent prompt MUST include:
 2. **Full context**: file paths, current code structure, issue description. If a bite-sized executable plan exists at `docs/plans/<feature>.md` for the wave's tasks (see `skills/write-executable-plan/SKILL.md`), include the path in each agent's prompt and instruct the agent to follow the plan's 5-step structure verbatim.
 3. **Acceptance criteria**: measurable definition of done
 4. **Rule references**: the wave's applicable rules are injected automatically as the `<APPLICABLE-RULES>` block produced by `scripts/print-applicable-rules.mjs` (see `wave-loop.md` § "Pre-Dispatch: Glob-Scoped Rule Injection (#336/#694)"). The block is computed once per wave from the wave's `allowedPaths` and prepended to every agent prompt — do not hand-copy rule paths into the prompt.
-5. **Testing expectation**: "Write tests for your changes" or "Run existing tests"
+5. **Testing expectation** (need-gated): "Before writing any test, name the concrete bug a NEW test would catch that the existing suite does not. No nameable bug → write NO test and report `no-tests-needed: <reason>` — that is a SUCCESS outcome, not a gap. With a nameable bug: exactly one test for it. Running existing tests is always mandatory."
 6. **Commit instruction**: "Do NOT commit. The coordinator handles commits."
 7. **Turn limit**: Include the maxTurns instruction from `circuit-breaker.md`
 8. **Verification before completion**: Before claiming any task done, run the verification command and quote the evidence inline. See `.claude/rules/verification-before-completion.md`.
@@ -272,9 +272,12 @@ During this wave, you may propose a learning to the session's memory via the CLI
       --subject "one-line title (max 100 chars, no newlines)" \
       --insight "your discovery paragraph (max 2000 chars)" \
       --evidence "concrete proof: code citation / log excerpt / commit ref (max 5000 chars)" \
-      --confidence <0.5 to 1.0>
+      --confidence <0.5 to 1.0> \
+      --file-paths "scripts/lib/a.mjs,scripts/lib/b.mjs"
 
 MUST prefix with `SO_WAVE_AGENT=1` — without it the CLI returns exit 3 `rejected-wrong-context`. The env-var is the per-process guard that distinguishes wave-executor agents from coordinator-context invocations.
+
+`--file-paths` is optional but strongly encouraged: repo-relative path(s) this learning applies to (repeatable and/or comma-separated, deduped; rejects absolute paths, `..` segments, embedded newlines, entries over 256 chars, and more than 20 entries). Without `--file-paths` this learning can never become `/reconcile`-eligible — the reconciliation engine can only convert a learning into a conditional `.claude/rules/*.md` rule when it carries a non-empty scope (issue #900).
 
 Exit code 0 = queued (the coordinator will present at session-end via AskUserQuestion); 1 = quota-exceeded; 2 = rejected-low-confidence (below floor 0.5); 3 = rejected-wrong-context (STATE.md not active OR SO_WAVE_AGENT != "1"); 4 = error (arg validation or internal).
 

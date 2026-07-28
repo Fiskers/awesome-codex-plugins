@@ -43,7 +43,10 @@ poll `get_run_result`. `list_runs` lists recent runs.
 Human in the loop: a run can pause on an approval or input request (status
 `awaiting_input`). Read the queue with `list_pending_inputs` and reply with
 `answer_pending_input` (run_id + tool_call_id, then approved=true/false for approvals
-or value for input requests).
+or value for input requests). A queued row carrying a `consent_tool` is an outward-facing
+write held for consent: approving it with `always_allow=true` also stops the agent asking
+for that tool again. That is a standing grant, so set it only when the human explicitly
+said to stop being asked, never on your own judgment.
 
 Deferred work: `schedule_run` (agent_id, prompt, and delay_seconds or an RFC3339
 fire_at) invokes the agent later as an ordinary run.
@@ -67,7 +70,9 @@ accepts `--json`.
 - `plori result <name> <run-id>` (add `--wait` to block) and `plori runs <name>` read
   run status and history.
 - `plori inputs <name>` lists runs paused on a human request; `plori answer <run-id>
-  <tool-call-id> --approve|--deny|--value <v>` replies.
+  <tool-call-id> --approve|--deny|--value <v>` replies. Add `--always-allow` to an
+  `--approve` (only on the human's explicit instruction) to also grant the standing
+  write consent.
 - `plori schedule <name> "prompt" --in <seconds>` (or `--at <rfc3339>`) defers a run;
   `plori schedules <name>` and `plori unschedule <name> <id>` manage them.
 - `plori workflows list`, `plori workflows create <name> [--trigger cron --cron <expr>]`,

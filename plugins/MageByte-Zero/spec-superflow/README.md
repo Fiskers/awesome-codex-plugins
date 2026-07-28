@@ -102,7 +102,7 @@ gemini extensions install https://github.com/MageByte-Zero/spec-superflow
 gemini extensions update spec-superflow   # 升级
 ```
 
-### 更多平台（Cline / Kiro / Windsurf / Qwen / Amazon Q / Roo Code / Continue / Pi / Qoder / OpenCode / WorkBuddy / Trae）
+### 更多平台（Cline / Kiro / Windsurf / Qwen / Amazon Q / Roo Code / Continue / Pi / Qoder / OpenCode / WorkBuddy / CodeBuddy / Trae）
 
 | 平台 | 安装方式 | 状态 |
 |------|---------|------|
@@ -117,9 +117,10 @@ gemini extensions update spec-superflow   # 升级
 | **Qoder** | `npx spec-superflow@latest install-qoder` | 已提供安装器 |
 | **OpenCode** | `.opencode/plugins/spec-superflow.js` 或 `.agents/skills -> skills/` | 已提供入口 |
 | **WorkBuddy** | `npx spec-superflow@latest install-workbuddy` | 已提供安装器 |
+| **CodeBuddy Code CLI** | `ssf install-codebuddy` | 已提供安装器 |
 | **Trae IDE / TRAE Work** | `.trae/skills/`、`~/.trae/skills/` 或上传 zip/.skill | 手动/导入 |
 
-> 共支持 18 个平台，完整安装说明见 [INSTALL.md](INSTALL.md)，支持矩阵见 [docs/platform-matrix.md](docs/platform-matrix.md)。
+> 共支持 19 个平台，完整安装说明见 [INSTALL.md](INSTALL.md)，支持矩阵见 [docs/platform-matrix.md](docs/platform-matrix.md)。
 
 ### CLI 工具链
 
@@ -154,6 +155,8 @@ npx spec-superflow list          # 或通过 npx 使用
 | `ssf execution review <dir> ...` | 为一个计划 wave 记录 review receipt |
 | `ssf install-cursor` | 部署到 Cursor `.cursor/` 目录 |
 | `ssf install-workbuddy` | 部署到 WorkBuddy marketplace 插件（含 skills/rules/runtime） |
+| `ssf install-codebuddy` | 部署到 `~/.codebuddy/`（CodeBuddy Code CLI） |
+| `ssf uninstall-codebuddy` | 从 `~/.codebuddy/` 移除 spec-superflow（CodeBuddy Code CLI） |
 | `ssf install-cline` | 部署到 Cline `.cline/` + `.clinerules/` |
 | `ssf install-kiro` | 部署到 Kiro `.kiro/` + `.kiro/steering/` |
 | `ssf install-windsurf` | 部署到 Windsurf `.windsurf/` + `.windsurf/rules/` |
@@ -166,7 +169,7 @@ npx spec-superflow list          # 或通过 npx 使用
 
 ### 版本
 
-- 当前版本：`v0.11.0`
+- 当前版本：`v0.12.1`
 - v0.9.1 highlights：DP-4 执行模式推荐、跨 17 个平台的 portable runtime，以及无插件根路径的 raw-package smoke；详见 [CHANGELOG.md](CHANGELOG.md)
 - v0.9.0 highlights：支持 Node 20/22、model profiles 只读解析，以及 code-reviewer 的最小性审查
 - 自包含插件，不需要运行时安装 OpenSpec 或 Superpowers
@@ -199,6 +202,18 @@ ssf handoff create changes/my-change --type research --objective "Compare approa
 Prototype 只在用户明确确认后创建；后端、CLI、配置和内部重构不会自动进入 prototype 流程。handoff 结果不会自动修改 `design.md` 或 `tasks.md`。
 
 Delta spec 的规范路径是 `specs/<capability>/spec.md`；扁平的 `specs/<capability>.md` 和根级 `specs/spec.md` 不会被视为合法规范。
+
+Requirement 标题的规范形式是 `### Requirement: 名称`。为兼容已存在的中文工件，解析器也接受 `### 需求：名称` 和 `### REQ-<ID>: 名称`；其它三级标题不会被当作需求。`ssf sync` 会先校验全部 delta，再一次性发布，任一 delta 无效时不会写入基线或发布回执。
+
+### 活动规格与发布基线
+
+活动工作流只以 `changes/<change>/` 为事实来源：其中的 `specs/` 是可审计的 delta spec。项目根 `specs/` 是发布后的规范基线，不参与活动 change 的状态转换。运行 `ssf sync changes/<change>` 时，CLI 会把 ADDED/MODIFIED/REMOVED/RENAMED 操作应用到根基线的 `## Requirements`，并在 change 状态写入可重算的发布回执。closing 会同时核验 delta 与基线；任一侧同步后被修改，都必须重新同步，`spec_merged: true` 不能绕过该检查。
+
+### 插件仓库与使用项目的边界
+
+本仓库发布的是 workflow、模板、脚本、测试和文档，不是某一次真实运行的工作目录。因此不会提交 `changes/<change>/`、`.spec-superflow.yaml`、`.superpowers/` 或 `ssf sync` 生成的根 `specs/`；它们默认由 `.gitignore` 排除。需要展示完整流程时，只维护脱敏、固定的 `docs/examples/` 示例。
+
+在**使用此插件的项目**中，活动输入仍是 `changes/<change>/specs/`，根 `specs/` 仍是可选的发布基线。消费者可按自己的审计或发布要求决定是否将这些项目工件纳入版本控制；这不会改变活动工作流只读取 change 的规则。
 
 ### 受 guard 保护的执行计划
 
@@ -319,11 +334,11 @@ overlay，不会增加第九个状态；其 CLI 与 CodeBuddy/WorkBuddy Markdown
    closing            CLOSED 成功终态（无 next skill）
 ```
 
-**关键约束：** Full/legacy Hotfix 没有 `execution-contract.md`、current execution plan 或 `pass` review receipt → 不允许推进；Quick/direct Hotfix/Tweak 以有效 receipt、边界检查与 `test_result: pass` 放行。任何风险升级转 Full。
+**关键约束：** Full/legacy Hotfix 没有 `execution-contract.md`、current execution plan 或 `pass` review receipt → 不允许推进；Quick/direct Hotfix/Tweak 以有效 receipt、边界检查与 `test_result: pass` 放行。风险只触发建议与用户选择，绝不自动升级到 Full。
 
 ### 快速路径（Quick / Hotfix / Tweak）
 
-- **Quick** — ≤3 文件/任务、低风险代码：同轮推荐/接受，`exploring -> approved-for-build -> executing`，跑定向验证。
+- **Quick** — ≤3 文件/任务、单模块代码：低风险时同轮推荐/接受；触及 PRD、Spec/Design、API、数据/权限或跨模块时，展示风险后由用户选择 Quick 或 Full。选择 Quick 会记录 `tdd`、`new-test` 或 `bounded` 验证策略。
 - **direct Hotfix** — incident 且≤2 文件/任务：同一路径，必须验证原症状回归。
 - **legacy Hotfix** — 既有或无 direct receipt：保留最小契约、DP-3、plan/review。
 - **tweak** — ≤4 文件、纯配置/文档修改时，跳过规划+桥接，直接编辑

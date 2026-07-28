@@ -18,13 +18,13 @@ Memi gives coding agents repository-specific interface evidence before they edit
 Install one focused skill directly:
 
 ```bash
-npx skills add sarveshsea/memi --skill audit-frontend-design
+npx skills add memi-design/memi --skill audit-frontend-design
 ```
 
 ## Compact Preflight
 
 ```bash
-npx -y @memi-design/cli@2.6.2 agent brief . --intent "<interface task>" --detail compact --json
+npx -y @memi-design/cli@2.6.4 agent brief . --intent "<interface task>" --detail compact --json
 ```
 
 Use `--detail standard` only when the compact brief lacks evidence needed for the edit.

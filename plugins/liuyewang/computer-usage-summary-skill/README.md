@@ -1,6 +1,7 @@
 # Computer Usage Summary Skill
 
 [![CI](https://github.com/liuyewang/computer-usage-summary-skill/actions/workflows/test.yml/badge.svg)](https://github.com/liuyewang/computer-usage-summary-skill/actions/workflows/test.yml)
+[![skills.sh](https://skills.sh/b/liuyewang/computer-usage-summary-skill)](https://skills.sh/liuyewang/computer-usage-summary-skill)
 [![License: MIT](https://img.shields.io/badge/License-MIT-0f766e.svg)](LICENSE)
 [![Local first](https://img.shields.io/badge/privacy-local--first-0f766e.svg)](PRIVACY.md)
 
@@ -35,15 +36,15 @@ repository never downloads, installs, or starts ActivityWatch automatically.
 ## Install In Codex
 
 Install the repository as a skill-only Codex plugin, or install the
-`plugins/computer-usage-summary-skill/skills/computer-usage-summary` directory
-directly with Codex's skill installer.
+`skills/computer-usage-summary` directory directly with Codex's skill
+installer.
 For a local clone, the skill directory can also be copied into
 `~/.codex/skills/computer-usage-summary/`.
 
 After this repository is published, a GitHub-directory install looks like:
 
 ```text
-$skill-installer install https://github.com/liuyewang/computer-usage-summary-skill/tree/main/plugins/computer-usage-summary-skill/skills/computer-usage-summary
+$skill-installer install https://github.com/liuyewang/computer-usage-summary-skill/tree/main/skills/computer-usage-summary
 ```
 
 ## Usage
@@ -54,28 +55,28 @@ Or run the bundled script directly:
 
 ```bash
 # Default JSON report for an agent or another program
-python3 plugins/computer-usage-summary-skill/skills/computer-usage-summary/scripts/activitywatch_summary.py --date today
+python3 skills/computer-usage-summary/scripts/activitywatch_summary.py --date today
 
 # Paste an application table into Excel, Numbers, or Feishu Sheets
-python3 plugins/computer-usage-summary-skill/skills/computer-usage-summary/scripts/activitywatch_summary.py --date today --format tsv --table apps
+python3 skills/computer-usage-summary/scripts/activitywatch_summary.py --date today --format tsv --table apps
 
 # Review the Monday-Sunday week containing the anchor date
-python3 plugins/computer-usage-summary-skill/skills/computer-usage-summary/scripts/activitywatch_summary.py --date 2026-07-26 --period week --format markdown --table trend
+python3 skills/computer-usage-summary/scripts/activitywatch_summary.py --date 2026-07-26 --period week --format markdown --table trend
 
 # Review the month containing the anchor date
-python3 plugins/computer-usage-summary-skill/skills/computer-usage-summary/scripts/activitywatch_summary.py --date 2026-07-26 --period month --format tsv --table categories
+python3 skills/computer-usage-summary/scripts/activitywatch_summary.py --date 2026-07-26 --period month --format tsv --table categories
 
 # A readable timeline in Markdown
-python3 plugins/computer-usage-summary-skill/skills/computer-usage-summary/scripts/activitywatch_summary.py --date today --format markdown --table timeline
+python3 skills/computer-usage-summary/scripts/activitywatch_summary.py --date today --format markdown --table timeline
 
 # Keep timeline titles out of the output
-python3 plugins/computer-usage-summary-skill/skills/computer-usage-summary/scripts/activitywatch_summary.py --date today --format tsv --table timeline --hide-titles
+python3 skills/computer-usage-summary/scripts/activitywatch_summary.py --date today --format tsv --table timeline --hide-titles
 
 # An Excel-friendly CSV file with a UTF-8 BOM
-python3 plugins/computer-usage-summary-skill/skills/computer-usage-summary/scripts/activitywatch_summary.py --start 2026-07-20 --end 2026-07-26 --format csv --table apps --csv-bom --output weekly-apps.csv
+python3 skills/computer-usage-summary/scripts/activitywatch_summary.py --start 2026-07-20 --end 2026-07-26 --format csv --table apps --csv-bom --output weekly-apps.csv
 
 # Create a client-ready timesheet from local app/title mapping rules
-python3 plugins/computer-usage-summary-skill/skills/computer-usage-summary/scripts/activitywatch_summary.py --date today --period week --rules examples/rules.json --format csv --report client-timesheet --csv-bom --output client-timesheet.csv
+python3 skills/computer-usage-summary/scripts/activitywatch_summary.py --date today --period week --rules examples/rules.json --format csv --report client-timesheet --csv-bom --output client-timesheet.csv
 ```
 
 Tables are available as `summary`, `apps`, `projects`, `categories`, `trend`,
