@@ -748,6 +748,18 @@ Group issues by:
 
    Non-blocking. Cross-reference: `scripts/lib/instruction-budget-guard.mjs` (sibling directive-COUNT probe over `.claude/rules/*.md` — this probe measures raw-file PROPERTIES of CLAUDE.md/AGENTS.md itself, a distinct dimension) and issue #878 (FA2b).
 
+   Additionally, invoke the project-hygiene probe family (`scripts/lib/project-hygiene.mjs`) via `checkProjectHygiene({ repoRoot })` (synchronous — no await). **This is the only probe in Phase 4 besides `ci-status` that inspects the PROJECT rather than the orchestrator's own substrate** — every other probe above measures vault, peer-cards, loop readiness, instruction budget, or this tool's own ledger. It is deliberately NOT config-gated: a hygiene check nobody enables finds nothing, which is how the equivalent coverage was lost before (see `skills/session-end/discovery-scan.md` — the discovery scan defaults OFF for exactly the `housekeeping` session type that most needs it).
+
+   The helper returns `null` (silent no-op) when `repoRoot` is missing/non-string, when the path is not a git repository, or when every check passes. When a non-null result is returned (`{ severity: 'warn', message, findings, mechanical }`), render `result.message` alongside the other banners:
+   - **Findings present**: render the message verbatim. It already leads with the count and the mechanically-fixable subset, then names the top 3 and summarises the remainder — this shape was chosen because a flat list stops being read past roughly 25 findings.
+   - **Healthy repo**: silent (no banner).
+
+   Use `result.mechanical` when proposing session scope: findings with `fixable: true` (aged artifacts, ignored ballast, a missing CI audit step) are safe batch work, while the rest (release cadence, absent CI, undocumented configuration) need an operator decision and belong in the Q&A, not in an auto-fix batch.
+
+   The checks are: release-tag/CHANGELOG distance from HEAD, ignored working-tree ballast plus files that are neither tracked nor ignored, aged `.orchestrator/` artifacts, CI pipeline presence and dependency-audit coverage, and `.env.example` presence. Two high-yield checks are intentionally NOT here: **docs-drift** is already covered by `claude-md-drift-check` (it only runs at session-END, so the gap is scheduling, not implementation), and **env completeness** is omitted because diffing `process.env` reads against `.env.example` produced a 100% false-positive rate against code that reads configuration through a central schema module.
+
+   Non-blocking. Cross-reference: `scripts/lib/ci-status-banner.mjs` (the sibling project-facing probe) and `.claude/rules/test-value.md` § TV-005 (why structural gates beat unit-test volume).
+
    All banners are non-blocking — display in the Session Overview, do not halt the session. If `bootstrap-lock-freshness.mjs` is absent (pre-#186 plugin install) or `peer-cards/staleness-banner.mjs` is absent (pre-#503 plugin install) or `loop-readiness-banner.mjs` is absent (pre-#633 plugin install) or `instruction-budget-guard.mjs` is absent (pre-#687 plugin install) or `reconcile-nudge-banner.mjs` is absent (pre-#723 plugin install) or `sessions-staleness-banner.mjs` is absent (pre-#724 plugin install) or `owner-config-banner.mjs` is absent (pre-#820 plugin install) or `moc-staleness-banner.mjs` / `context-coverage-banner.mjs` are absent (pre-#831 plugin install) or `claude-md-budget-lint.mjs` is absent (pre-#878 plugin install), skip silently.
 
 ## Phase 4.5: Resource Health (v3.1.0)
@@ -1050,6 +1062,15 @@ Cross-reference: GitLab #845 (Epic #841); `docs/prd/2026-07-20-anonymous-usage-t
 - Focus on git cleanup, documentation currency, CI health
 - Skip deep research — prioritize operational tasks
 - Run token efficiency check: `bash "${CLAUDE_PLUGIN_ROOT:-${CODEX_PLUGIN_ROOT:-$PLUGIN_ROOT}}/scripts/token-audit.sh"` and include findings in Session Overview. Flag any HIGH/WARN items as recommended housekeeping tasks.
+- **Run the drift check as a work-list, not as a gate:**
+  ```bash
+  node "${CLAUDE_PLUGIN_ROOT:-${CODEX_PLUGIN_ROOT:-$PLUGIN_ROOT}}/skills/claude-md-drift-check/checker.mjs" --mode warn
+  ```
+  `--mode warn` always exits 0 and returns findings as JSON — it must never block session-start. Summarise `errors[]` and `warnings[]` by check name in the Session Overview and offer them as candidate scope in the Phase 8 Q&A.
+
+  **Why here and not only at close.** The same checker already runs at session-end (`skills/session-end/SKILL.md` Phase 2), where it verifies the work just done. That is the wrong moment to *discover* drift: doc-vs-reality drift was the single most frequently confirmed finding in the six-repo diagnostic run (6 of 6 repos), and a housekeeping session that only learns about it at close cannot act on it. Running it at the start turns it into the session's work-list. It is deliberately scoped to `housekeeping` — for `feature`/`deep` sessions this list is a distraction from the agreed scope, and the close-time run still covers them.
+
+  **Read the output critically.** In a consumer repo the checker reported 69 errors of which zero concerned that repo — all were dangling `## See Also` citations inside vendored, never-curated baseline rule copies. Before proposing any of it as scope, check whether a finding points at repo-owned content or at vendored files; report the split rather than the raw count.
 
 ## Phase 7.1: Issue Premise Verification (#730/H3)
 

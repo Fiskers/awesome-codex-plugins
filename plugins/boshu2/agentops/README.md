@@ -1,14 +1,14 @@
 # AgentOps
 
 AgentOps is the operating loop a coding agent follows: one intent, one bounded
-build, one fresh judge, one durable verdict. It also ships skills to orchestrate
+build, one fresh judge, then report and stop. It also ships skills to orchestrate
 multi-agent systems. For contested calls, opt into
 [`council`](skills/council/SKILL.md) (independent judges) or
 [`idea-genie`](skills/idea-genie/SKILL.md) duel mode (sealed perspectives
 before Plan).
 
 ```text
-RPI -> Plan -> Implement -> fresh Validate -> durable verdict -> report and stop
+RPI -> Plan -> Implement -> fresh Validate -> report and stop
 ```
 
 ## Quickstart
@@ -92,19 +92,23 @@ loop end to end: workers implement in isolated worktrees, a fresh agent
 validates, a refiner merges to your repo's main branch. The installer fetches
 official checksummed Gas City and Beads binaries; you build nothing.
 
-You drive it by talking to one agent, the Mayor: attach to its session in your
-terminal, or let another agent steer it.
+Gas City 1.4 runs the flow through a scope-local control dispatcher and exposes
+each formula as a dashboard/API run. The Mayor remains an optional on-demand
+human/agent door for inspection or one manual dispatch.
 
 ```bash
 deploy/gc/invoke.sh --city <city> create "task title"       # define work
 deploy/gc/invoke.sh --city <city> feed <bead-id>            # hand it to the city
+deploy/gc/invoke.sh --city <city> dashboard                 # print the run UI
 deploy/gc/invoke.sh --city <city> mayor tell "dispatch <bead-id>"
 ```
 
 The [`using-gc`](skills/using-gc/SKILL.md) skill is the operating manual,
 including the four observability layers and what to do when they disagree.
-**Preview:** pinned to official Gas City v1.3.5, which carries three upstream
-defects we found and filed; the label comes off at the next official pin bump.
+**Preview:** pinned to official Gas City v1.4.0 and the registry-pinned
+`gascity` 0.1.6 workflow used by the public Maintainer City. Deterministic native
+qualification is required here; the preview label comes off after one clean
+mixed-provider canary over the final candidate.
 Setup and details: [`deploy/gc/README.md`](deploy/gc/README.md) and the
 [v3.3.0 release notes](https://github.com/boshu2/agentops/releases/tag/v3.3.0).
 
@@ -144,8 +148,8 @@ run in a fresh context and may use a different model. It issues `PASS`,
 
 A single context can share blind spots with the author. Opt into
 [`idea-genie`](skills/idea-genie/SKILL.md) or [`council`](skills/council/SKILL.md)
-for sealed or multi-judge review. They return a report;
-[`validate`](skills/validate/SKILL.md) writes `verdict.v2`.
+for sealed or multi-judge review. They return a report; an author-distinct
+[`validate`](skills/validate/SKILL.md) context issues the binding result.
 
 ### 3. Acceptance drifted mid-flight
 
@@ -155,9 +159,11 @@ phases bind to that digest.
 
 ### 4. Nobody can replay what was judged
 
-Chat scrolls away. `validate` writes a content-addressed `verdict.v2` under
-`.agents/ao/verdicts/sha256/` with checked scope, omissions, and evidence
-refs. Plain JSON. No hosted service required.
+Chat scrolls away. When replay or automation needs durable evidence, `validate`
+writes a content-addressed `verdict.v2` under
+`.agents/ao/verdicts/sha256/` with checked scope, omissions, and evidence refs.
+Plain JSON. No hosted service required. Interactive validation does not create
+one unless requested.
 
 ## Core skills
 
@@ -166,7 +172,7 @@ refs. Plain JSON. No hosted service required.
 | [`rpi`](skills/rpi/SKILL.md) | run Plan, Implement, and fresh Validate at most once |
 | [`plan`](skills/plan/SKILL.md) | create the bead (BDD + DDD ubiquitous language) |
 | [`implement`](skills/implement/SKILL.md) | TDD against the bead: RED → GREEN → refactor |
-| [`validate`](skills/validate/SKILL.md) | fresh context (optionally different model); persist `verdict.v2` |
+| [`validate`](skills/validate/SKILL.md) | fresh context (optionally different model); optionally persist `verdict.v2` |
 
 Optional later: [`learn`](skills/learn/SKILL.md). Strategies:
 [`council`](skills/council/SKILL.md), [`idea-genie`](skills/idea-genie/SKILL.md),
