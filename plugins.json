@@ -3,7 +3,7 @@
   "name": "awesome-codex-plugins",
   "version": "1.0.0",
   "last_updated": "2026-07-29",
-  "total": 182,
+  "total": 183,
   "categories": [
     "Development & Workflow",
     "Tools & Integrations"
@@ -1698,6 +1698,16 @@
       "category": "Tools & Integrations",
       "source": "awesome-codex-plugins",
       "install_url": "https://raw.githubusercontent.com/Synta-ai/n8n-mcp-codex-plugin-synta/HEAD/.codex-plugin/plugin.json"
+    },
+    {
+      "name": "SysKnife",
+      "url": "https://github.com/lacs-project/sysknife",
+      "owner": "lacs-project",
+      "repo": "sysknife",
+      "description": "Linux sysadmin co-pilot as an MCP server for Codex: plain-language requests become typed, risk-classified actions that a privileged daemon runs only after out-of-band terminal approval, with an Ed25519-signed audit chain and automatic rollback.",
+      "category": "Tools & Integrations",
+      "source": "awesome-codex-plugins",
+      "install_url": "https://raw.githubusercontent.com/lacs-project/sysknife/HEAD/.codex-plugin/plugin.json"
     },
     {
       "name": "Taisly Agent Kit",

@@ -2495,6 +2495,21 @@
       "icon": "./plugins/Synta-ai/n8n-mcp-codex-plugin-synta/assets/icon.png"
     },
     {
+      "name": "sysknife",
+      "displayName": "SysKnife",
+      "source": {
+        "source": "local",
+        "path": "./plugins/lacs-project/sysknife"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Tools & Integrations",
+      "description": "Linux sysadmin co-pilot as an MCP server for Codex: plain-language requests become typed, risk-classified actions that a privileged daemon runs only after out-of-band terminal approval, with an Ed25519-signed audit chain and automatic rollback.",
+      "icon": "./plugins/lacs-project/sysknife/assets/raster/sysknife-256.png"
+    },
+    {
       "name": "taisly-agent-kit",
       "displayName": "Taisly Agent Kit",
       "source": {
