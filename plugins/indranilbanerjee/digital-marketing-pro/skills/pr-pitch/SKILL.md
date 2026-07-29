@@ -1,6 +1,6 @@
 ---
 name: pr-pitch
-description: "Create media pitch packages. Use when: building pitch templates, media lists, outreach strategy, or HARO responses."
+description: "Create media pitch packages. Use when: building pitch templates, media lists, outreach strategy, or journalist-request-platform responses (Qwoted, Featured, Source of Sources)."
 argument-hint: "[topic or news-hook]"
 ---
 
@@ -42,7 +42,7 @@ A complete PR pitch package containing:
 - Outreach timeline with follow-up cadence
 - Press release or media advisory draft
 - Fact sheet and quote bank
-- HARO response template (if applicable)
+- Journalist-request-platform response template (Qwoted, Featured, Source of Sources — if applicable)
 - Measurement framework: coverage tracking, share of voice, backlink value
 
 ## Agents Used

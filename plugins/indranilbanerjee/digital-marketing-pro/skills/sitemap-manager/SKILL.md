@@ -99,7 +99,7 @@ Generate a sitemap plan or actual XML:
 ### Protocol Limits
 - 50,000 URLs per sitemap file
 - 50MB uncompressed per sitemap file
-- Unlimited sitemap files in a sitemap index
+- Up to 50,000 sitemaps per sitemap index file (nest indexes if more are needed)
 - Must use absolute URLs
 - UTF-8 encoding required
 - Entity escaping for special characters (&amp; &apos; &quot; &gt; &lt;)

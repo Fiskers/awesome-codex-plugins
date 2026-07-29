@@ -20,7 +20,7 @@ The user must provide (or will be prompted for):
 - **Threshold value** (for set-threshold): The minimum acceptable score (0-100) for the specified dimension. Content scoring below this threshold on any dimension is flagged as a failure on that dimension
 - **Weights** (for set-weights): A JSON object mapping dimension names to their weights — e.g., `{"content_quality": 0.25, "brand_voice": 0.20, "hallucination_risk": 0.20, "claim_verification": 0.15, "output_structure": 0.10, "readability": 0.10}`. Weights must sum to approximately 1.0 (tolerance of +/- 0.02 for rounding)
 - **Auto-reject score** (for set-auto-reject): The composite score below which content automatically fails regardless of individual dimension scores — typically 40-60 depending on brand standards
-- **Content type** (for set-content-type): The content type to configure overrides for, plus the overrides themselves — custom thresholds or weights that apply only to that content type
+- **Content type** (optional, for set-threshold / set-weights via `--content-type`): The content type to configure overrides for, plus the overrides themselves — custom thresholds or weights that apply only to that content type
 
 ## Process
 

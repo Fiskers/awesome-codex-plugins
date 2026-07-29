@@ -213,7 +213,7 @@ Print the launch summary in the conversation:
 - [`validate-profile`](../validate-profile/SKILL.md) — prerequisite BLOCKER check
 - [`campaign-audit`](../campaign-audit/SKILL.md) — produces the current-state baseline this launch differentiates from
 - [`campaign-plan`](../campaign-plan/SKILL.md) — produces the plan this skill consumes
-- [`launch-ad-campaign`](../launch-ad-campaign/SKILL.md) — the paid-ads-only subset that this skill delegates to for Step 5
+- [`launch-ad-campaign`](../launch-ad-campaign/SKILL.md) — the paid-ads-only subset this skill delegates to during Step 3 (paid-ads activation)
 - [`performance-check`](../performance-check/SKILL.md) — day-1 check-in skill mentioned in the success message
 - `performance-monitor.py` (`${CLAUDE_PLUGIN_ROOT}/scripts/performance-monitor.py`) — arms the day-1 watchdog
 - [`crm-sync`](../crm-sync/SKILL.md) — creates the CRM Campaign object

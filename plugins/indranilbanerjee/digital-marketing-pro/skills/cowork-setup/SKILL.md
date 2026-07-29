@@ -155,7 +155,7 @@ If `--brand <name>` was passed, automatically launch `/digital-marketing-pro:bra
 
 ## How the Cowork-aware skills use this config
 
-When the routing is configured, brand-setup writes locally to `~/.claude-marketing/{brand}/profile.json` AND records a pending Drive upload via `drive-sync-state.py --action add-pending-upload`. The agent then reads the pending list and uses its Drive MCP to push the file to `<root>/_brands/{brand}/profile.json`. On a future Cowork session, the agent reverses this: it reads `_cowork-config.json`, sees the team's Drive root, downloads `<root>/_brands/{brand}/profile.json` to the local sandbox, and marks it `profile-mark-downloaded` so the local hash matches the Drive copy.
+When the routing is configured, brand-setup writes locally to `~/.claude-marketing/brands/{brand-slug}/profile.json` AND records a pending Drive upload via `drive-sync-state.py --action add-pending-upload`. The agent then reads the pending list and uses its Drive MCP to push the file to `<root>/_brands/{brand}/profile.json`. On a future Cowork session, the agent reverses this: it reads `_cowork-config.json`, sees the team's Drive root, downloads `<root>/_brands/{brand}/profile.json` to the local sandbox, and marks it `profile-mark-downloaded` so the local hash matches the Drive copy.
 
 Concretely: after every state-mutating DMP operation, the agent runs:
 

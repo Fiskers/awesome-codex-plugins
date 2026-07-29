@@ -2,8 +2,8 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "awesome-codex-plugins",
   "version": "1.0.0",
-  "last_updated": "2026-07-28",
-  "total": 181,
+  "last_updated": "2026-07-29",
+  "total": 182,
   "categories": [
     "Development & Workflow",
     "Tools & Integrations"
@@ -388,6 +388,16 @@
       "category": "Development & Workflow",
       "source": "awesome-codex-plugins",
       "install_url": "https://raw.githubusercontent.com/bnc4vk/codex-tui-proof/HEAD/.codex-plugin/plugin.json"
+    },
+    {
+      "name": "Codex Usage and Resets",
+      "url": "https://github.com/joelfarthing/codex-usage-and-resets",
+      "owner": "joelfarthing",
+      "repo": "codex-usage-and-resets",
+      "description": "Turns Codex usage into planning facts with linear pace, projected exhaustion, banked-reset expirations, and conservative unexpected-reset detection.",
+      "category": "Development & Workflow",
+      "source": "awesome-codex-plugins",
+      "install_url": "https://raw.githubusercontent.com/joelfarthing/codex-usage-and-resets/HEAD/.codex-plugin/plugin.json"
     },
     {
       "name": "debt-ops",

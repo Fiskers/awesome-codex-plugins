@@ -21,10 +21,10 @@ The resulting asset can be inspected by any C2PA-aware viewer (Adobe Photoshop, 
 ### C2PA spec versions to be aware of (June 2026)
 
 - **Content Credentials 2.3** (released 9 February 2026 — [launch post](https://c2pa.org/the-c2pa-launches-content-credentials-2-3-and-celebrates-5-years-of-impact-across-the-digital-ecosystem/)) added format support for: **live video** (broadcast/streaming), **plain text documents**, **OGG Vorbis audio**, **large AVI video files**, and **EXIF Original Preservation Images**. If a brand is signing live-stream video or text-based assets for the first time, 2.3 is the floor version to target.
-- **C2PA Spec 2.4** (April 2026 — [spec.c2pa.org/specifications/specifications/2.4](https://spec.c2pa.org/specifications/specifications/2.4/specs/C2PA_Specification.html)) introduces the **AI Disclosure Assertion (`c2pa.ai-disclosure`)** for machine-readable AI transparency info — this is the assertion the EU AI Act Article 50 deployer pathway will rely on. The Code of Practice WG1 (providers) and WG2 (deployers) draft guidance both reference C2PA-style assertions as the canonical machine-readable marking mechanism. See `skills/context-engine/eu-code-of-practice.md` for the full Article 50 context.
+- **C2PA Spec 2.4** (April 2026 — [spec.c2pa.org/specifications/specifications/2.4](https://spec.c2pa.org/specifications/specifications/2.4/specs/C2PA_Specification.html)) introduces the **AI Disclosure Assertion (`c2pa.ai-disclosure`)** for machine-readable AI transparency info — this is the assertion the EU AI Act Article 50 deployer pathway will rely on. The final Code of Practice on Transparency of AI-Generated Content (published 10 June 2026) references C2PA-style assertions as the canonical machine-readable marking mechanism for both providers and deployers. See `skills/context-engine/eu-code-of-practice.md` for the full Article 50 context.
 - The **C2PA Trust List** is now handled via the public C2PA Conformance Program (any CA meeting the Certificate Policy can join). Production signing certificates should come from a Conformance-Program-listed CA, not an ad-hoc cert.
 
-**For DMP outputs**: `embed-c2pa.py` now supports `--ai-disclosure`. Pass it to embed the C2PA 2.4 `c2pa.ai-disclosure` assertion alongside the existing IPTC digital-source-type claim. The combination gives you both human-readable (IPTC) and machine-readable (`c2pa.ai-disclosure`) EU AI Act **Article 50** signaling — this is the deployer-side machine-readable pathway the Code of Practice draft points to as the canonical marking mechanism. See `skills/context-engine/eu-code-of-practice.md` for the full Article 50 context.
+**For DMP outputs**: `embed-c2pa.py` now supports `--ai-disclosure`. Pass it to embed the C2PA 2.4 `c2pa.ai-disclosure` assertion alongside the existing IPTC digital-source-type claim. The combination gives you both human-readable (IPTC) and machine-readable (`c2pa.ai-disclosure`) EU AI Act **Article 50** signaling — this is the deployer-side machine-readable pathway the final Code of Practice (10 June 2026) points to as the canonical marking mechanism. See `skills/context-engine/eu-code-of-practice.md` for the full Article 50 context.
 
 ## When to invoke
 
@@ -146,6 +146,6 @@ The `/digital-marketing-pro:check` pre-publish gate should also verify that all 
 
 - `/digital-marketing-pro:check` — pre-publish quality gate (now verifies C2PA manifest on AI assets for EU campaigns)
 - `skills/context-engine/compliance-rules.md` — EU AI Act Article 50 rule pack
-- `skills/influencer-creator/ftc-compliance.md` — FTC May 2026 endorsement guidance
+- `skills/influencer-creator/ftc-compliance.md` — FTC endorsement disclosure requirements
 - [C2PA Specification 2.4 (April 2026)](https://spec.c2pa.org/specifications/specifications/2.4/specs/C2PA_Specification.html) — defines the `c2pa.ai-disclosure` assertion (Article 50 machine-readable pathway); [Content Credentials 2.3 launch (Feb 2026)](https://c2pa.org/the-c2pa-launches-content-credentials-2-3-and-celebrates-5-years-of-impact-across-the-digital-ecosystem/)
 - [Content Authenticity Initiative](https://contentauthenticity.org/)

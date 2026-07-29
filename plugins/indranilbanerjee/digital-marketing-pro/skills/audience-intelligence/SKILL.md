@@ -134,6 +134,7 @@ If the user has minimal data, build hypothesis-driven personas based on business
 - `jtbd-framework.md` — Jobs-to-Be-Done analysis methodology, job mapping canvas, outcome-driven innovation scoring, and competing solutions analysis
 - `segmentation.md` — RFM scoring model, behavioral segmentation framework, lifecycle segmentation definitions, and segment-to-action mapping
 - `psychographic-profiling.md` — Values and attitudes framework, lifestyle analysis, motivation mapping, and psychographic data collection methods
+- `customer-research-methods.md` — Quantitative and qualitative research methods: survey design, interview techniques, voice-of-customer programs, and synthesis methods with budget guidance
 
 ## Output Formats
 

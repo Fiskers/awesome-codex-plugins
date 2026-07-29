@@ -10,12 +10,12 @@
 |------|----------|-------------|---------------|-------------|
 | **Brandwatch** | Enterprise, deep analytics | $800-3,000+/mo | AI-powered sentiment, historical data, image recognition | Complex setup, premium pricing |
 | **Mention** | SMBs, real-time alerts | $49-199/mo | Easy setup, real-time monitoring, influencer identification | Limited historical data |
-| **Talkwalker** | Enterprise, visual analytics | $800-2,500+/mo | Image/video recognition, 150M sources, crisis detection | Steep learning curve |
+| **Talkwalker** (Hootsuite-owned) | Enterprise, visual analytics | $800-2,500+/mo | Image/video recognition, 150M sources, crisis detection | Steep learning curve |
 | **Google Alerts** | Basic monitoring, free tier | Free | Zero cost, email delivery, Google index coverage | No sentiment scoring, limited sources, delays |
 | **Sprout Social** | Social-first brands | $249-499/mo | Social listening + management in one, good UX | Primarily social channels |
 | **Meltwater** | PR teams, media monitoring | $500-2,000+/mo | Broadcast/print/online media, PR analytics | Media-focused, less social depth |
 | **Brand24** | Mid-market, value option | $79-399/mo | Good sentiment AI, discussion volume charts, alerts | Smaller source database |
-| **Hootsuite Insights** | Existing Hootsuite users | Add-on pricing | Integrated with Hootsuite workflow | Dependent on Hootsuite subscription |
+| **Hootsuite Listening (Talkwalker)** | Existing Hootsuite users | Add-on pricing | Integrated with Hootsuite workflow | Dependent on Hootsuite subscription |
 
 ### Selection Framework
 
@@ -25,7 +25,7 @@
 | Social media-centric brand | Sprout Social or Mention |
 | Enterprise-grade analytics and AI | Brandwatch or Talkwalker |
 | PR and media relations focus | Meltwater |
-| All-in-one social management + listening | Sprout Social or Hootsuite Insights |
+| All-in-one social management + listening | Sprout Social or Hootsuite Listening (Talkwalker) |
 
 ---
 

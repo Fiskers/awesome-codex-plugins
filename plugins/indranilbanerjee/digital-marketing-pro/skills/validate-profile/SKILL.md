@@ -40,8 +40,8 @@ The skill is **read-only** — it inspects state, never modifies it. It also **n
 | **Compliance jurisdictions** | Each declared jurisdiction has a matching rules entry in `skills/context-engine/compliance-rules.md` | BLOCKER |
 | **Connector config present** | Every connector named in `tracking.backend`, `integrations.*`, `analytics.*` has its env vars / `.mcp.json` entry present (local check; live reachability comes from the MCP/curl probe below) | BLOCKER per unconfigured connector |
 | **MCP server health** | Every entry in `.mcp.json` (if present) responds to a tools/list ping | WARNING |
-| **Credential storage** | `~/.claude-marketing/{brand}/credentials.json` (or env vars) present for every backend referenced | BLOCKER |
-| **Output paths writeable** | `~/.claude-marketing/{brand}/` is writeable; the user-visible publish dir (`$DIGITAL_MARKETING_PRO_PUBLISH_DIR` or `~/Documents/DigitalMarketingPro/`) is writeable | BLOCKER |
+| **Credential storage** | `~/.claude-marketing/brands/{brand}/credentials.json` (or env vars) present for every backend referenced | BLOCKER |
+| **Output paths writeable** | `~/.claude-marketing/brands/{brand}/` is writeable; the user-visible publish dir (`$DIGITAL_MARKETING_PRO_PUBLISH_DIR` or `~/Documents/DigitalMarketingPro/`) is writeable | BLOCKER |
 | **Model curator currency** | `scripts/resolve_model.py --registry-age` returns < 90 days | WARNING |
 
 A **BLOCKER** means "do not let the user run engagement / campaign-plan / launch-campaign until this is fixed." A **WARNING** is surfaced but does not gate.
@@ -50,15 +50,15 @@ A **BLOCKER** means "do not let the user run engagement / campaign-plan / launch
 
 ### Step 0 — Resolve the brand to validate
 
-If `--brand <slug>` was passed, use it. Otherwise read the active brand from `~/.claude-marketing/active-brand` (set by `/digital-marketing-pro:switch-brand`). If neither is available, error: `"--brand <slug> required, or run /digital-marketing-pro:switch-brand first."` Do NOT validate "everything" — validation is per-brand by design.
+If `--brand <slug>` was passed, use it. Otherwise read the active brand from `~/.claude-marketing/brands/_active-brand.json` (set by `/digital-marketing-pro:switch-brand`). If neither is available, error: `"--brand <slug> required, or run /digital-marketing-pro:switch-brand first."` Do NOT validate "everything" — validation is per-brand by design.
 
 ### Step 1 — Load the brand profile
 
 ```bash
-BRAND_DIR="$HOME/.claude-marketing/{brand}"
+BRAND_DIR="$HOME/.claude-marketing/brands/{brand}"
 test -d "$BRAND_DIR" || { echo "Brand directory not found at $BRAND_DIR — run /digital-marketing-pro:brand-setup first."; exit 1; }
-PROFILE="$BRAND_DIR/brand-profile.json"
-test -f "$PROFILE" || { echo "brand-profile.json missing under $BRAND_DIR — run /digital-marketing-pro:brand-setup."; exit 1; }
+PROFILE="$BRAND_DIR/profile.json"
+test -f "$PROFILE" || { echo "profile.json missing under $BRAND_DIR — run /digital-marketing-pro:brand-setup."; exit 1; }
 ```
 
 Parse the profile JSON and capture: `brand_name`, `industry`, `target_jurisdictions`, `voice.*`, `target_audience.*`, `guardrails.*`, `tracking.backend`, `integrations.*`, `analytics.*`.
@@ -101,7 +101,7 @@ HTTP `200`, `204`, `401` (auth required for GET — POST will work), and `405` (
 ### Step 5 — Output-path writeability
 
 ```bash
-test -w "$HOME/.claude-marketing/{brand}/" || echo "BLOCK: brand directory is not writeable"
+test -w "$HOME/.claude-marketing/brands/{brand}/" || echo "BLOCK: brand directory is not writeable"
 # User-visible publish dir (dual-copy pattern)
 if [ -n "$DIGITAL_MARKETING_PRO_PUBLISH_DIR" ]; then
     test -w "$DIGITAL_MARKETING_PRO_PUBLISH_DIR" || echo "WARN: DIGITAL_MARKETING_PRO_PUBLISH_DIR ($DIGITAL_MARKETING_PRO_PUBLISH_DIR) is not writeable"
@@ -135,7 +135,7 @@ Print a structured report. ALWAYS show every check (don't only print failures �
 ✅ Connector — HubSpot     OK (workspace acme-corp, 1247 contacts)
 ✅ Connector — Stripe      OK
 ✅ MCP — gmailmcp.googleapis.com  HTTP 405 (alive)
-✅ Output paths            ~/.claude-marketing/{brand}/ writeable; ~/Documents/DigitalMarketingPro/ writeable
+✅ Output paths            ~/.claude-marketing/brands/{brand}/ writeable; ~/Documents/DigitalMarketingPro/ writeable
 ⚠️  Model curator           registry is 102 days old — consider scripts/refresh_models.py
 
 Decision: 🛑 BLOCKED — Slack connector not configured. Fix before running:

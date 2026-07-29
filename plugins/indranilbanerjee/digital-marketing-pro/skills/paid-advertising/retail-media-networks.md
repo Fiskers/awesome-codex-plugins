@@ -3,7 +3,7 @@
 ## Retail Media Landscape Overview
 
 ### What Are Retail Media Networks (RMNs)?
-Retail media networks are advertising platforms built on top of retailer ecosystems. They leverage first-party shopper data (purchase history, search behavior, browsing patterns) to deliver ads at or near the point of purchase. This is the fastest-growing segment of digital advertising, projected to exceed $150B globally by 2026.
+Retail media networks are advertising platforms built on top of retailer ecosystems. They leverage first-party shopper data (purchase history, search behavior, browsing patterns) to deliver ads at or near the point of purchase. This is the fastest-growing segment of digital advertising, now exceeding ~$150B globally.
 
 ### Why Retail Media Matters
 - **First-party data**: Based on actual purchase behavior, not inferred interests

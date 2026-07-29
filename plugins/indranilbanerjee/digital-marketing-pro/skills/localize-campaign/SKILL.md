@@ -54,7 +54,7 @@ The user must provide (or will be prompted for):
       - **Humor and tone**: Adjust or remove humor that does not translate culturally; adapt tone to match market expectations for formality
    e. **Localize compliance**: For each market, add or modify:
       - Market-specific disclaimers and legal notices
-      - Data consent and privacy language per regional regulation (GDPR for EU, DPDPA for India, PIPA for Japan, LGPD for Brazil, etc.)
+      - Data consent and privacy language per regional regulation (GDPR for EU, DPDPA for India, APPI for Japan, PIPA for South Korea, LGPD for Brazil, etc.)
       - Industry-specific regulatory statements
       - Required disclosures (pricing, advertising standards, influencer disclosure)
       - User-provided market-specific compliance requirements

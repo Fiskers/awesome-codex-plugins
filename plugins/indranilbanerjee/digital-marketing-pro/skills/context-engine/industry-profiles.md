@@ -1277,7 +1277,7 @@
 
 **Seasonal Peaks:**
 - Holiday season (November-December): Major title releases and gifting
-- Summer: E3 / Summer Game Fest announcements
+- Summer: Summer Game Fest / Gamescom announcement season
 - Back-to-school (August-September)
 - Spring break
 - Aligned with major release calendars and platform sale events

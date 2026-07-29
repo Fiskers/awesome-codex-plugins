@@ -37,7 +37,7 @@ Account
 ├── Retention / Upsell (ABO)
 │   ├── Existing customers — cross-sell
 │   └── Lapsed customers — win-back
-└── Advantage+ Shopping Campaign (if e-commerce)
+└── Unified Advantage+ sales campaign (if e-commerce; standalone ASC is legacy — see banner)
     └── Existing customer budget cap set at 20–30%
 ```
 

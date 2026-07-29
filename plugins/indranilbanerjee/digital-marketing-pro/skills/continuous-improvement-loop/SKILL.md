@@ -275,10 +275,10 @@ Skill response:
 5. Distribute per approval chain
 ```
 
-## Related skills
+## Related skills & agents
 
 - `engagement-workflow` — engagement orchestration
-- Existing skills: `competitor-monitor`, `performance-monitor-agent`, `intelligence-curator`, `quality-assurance`
+- Existing skills & agents: `competitor-monitor`, `performance-monitor-agent`, `intelligence-curator`, `quality-assurance`
 
 ## Related references
 

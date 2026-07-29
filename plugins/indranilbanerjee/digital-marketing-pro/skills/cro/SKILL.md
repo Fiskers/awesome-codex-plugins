@@ -74,7 +74,7 @@ Before executing, gather the following from the user (ask if not provided):
 - **Sequential testing**: When to use fixed-horizon vs sequential/Bayesian methods for faster decisions
 
 ### Form Optimization
-- **Field reduction**: Remove or defer non-essential fields. Each additional field reduces conversion by approximately 4-7%
+- **Field reduction**: Remove or defer non-essential fields. Each additional field reduces conversion by approximately 2-7%
 - **Progressive profiling**: Collect information across multiple interactions rather than all at once
 - **Inline validation**: Real-time feedback as users complete fields reduces form abandonment
 - **Smart defaults**: Pre-fill known data, use sensible defaults, and provide auto-complete
@@ -120,7 +120,7 @@ Before executing, gather the following from the user (ask if not provided):
 1. **Identify the problem** -- Use data (analytics, heatmaps, session recordings, user feedback) to pinpoint the conversion bottleneck.
 2. **Form hypothesis** -- Write a structured hypothesis: "If we [change X], then [metric Y] will [increase/decrease] by [estimated amount] because [rationale based on evidence]."
 3. **Score with ICE** -- Rate Impact, Confidence, and Ease on a 1-10 scale. Prioritize tests with highest composite scores.
-4. **Calculate requirements** -- Determine sample size with `python "${CLAUDE_PLUGIN_ROOT}/scripts/sample-size-calculator.py" --baseline-rate {rate} --mde {mde} --mde-type absolute --significance 0.95 --power 0.80` (pass `--mde-type relative` if the MDE is a relative lift — the two differ by ~40× at a 5% baseline). Estimate test duration based on daily traffic.
+4. **Calculate requirements** -- Determine sample size with `python "${CLAUDE_PLUGIN_ROOT}/scripts/sample-size-calculator.py" --baseline-rate {rate} --mde {mde} --mde-type absolute --significance 0.95 --power 0.80` (pass `--mde-type relative` if the MDE is a relative lift — the two differ by roughly two orders of magnitude, ~200×, at a 5% baseline). Estimate test duration based on daily traffic.
 5. **Design variation** -- Create the test variation. Change only one variable per test (unless running a multivariate test with sufficient traffic).
 6. **QA the test** -- Verify tracking, check both variations across devices and browsers, confirm that the test does not break downstream flows.
 7. **Run and monitor** -- Launch the test. Do not peek at results before reaching calculated sample size. Monitor for technical issues only.
@@ -133,6 +133,7 @@ Before executing, gather the following from the user (ask if not provided):
 - `form-optimization.md` -- Field-by-field optimization guide, progressive profiling implementation, and form UX patterns
 - `pricing-psychology.md` -- Pricing page templates, psychological principles with examples, and tier structure frameworks
 - `checkout-optimization.md` -- Cart abandonment diagnosis, checkout flow templates, and payment optimization strategies
+- `personalization-testing.md` -- Segment-based personalization test design, minimum segment sizes, and personalization measurement pitfalls
 
 ## Output Formats
 

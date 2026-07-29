@@ -309,4 +309,4 @@ USAGE RIGHTS:
 - **Thought leadership format:** B2B micro-influencers share professional insights, not lifestyle content; format is text-first with optional image
 - **Employee advocacy:** Your own employees with 1K-10K connections are effectively nano-influencers; equip them with shareable content
 - **Newsletter integration:** LinkedIn creators with Newsletters have opted-in audiences; sponsored newsletter mentions drive qualified B2B leads
-- **Engagement pods:** LinkedIn's algorithm heavily rewards early engagement; coordinate posting times with your team to engage in the first 30 minutes
+- **Team early engagement:** LinkedIn's algorithm heavily rewards early engagement; coordinate posting times with your own internal team to engage in the first 30 minutes

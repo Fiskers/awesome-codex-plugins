@@ -24,7 +24,7 @@ The user must provide (or will be prompted for):
 - **Brand** (optional, for assign): Which brand the task is for — defaults to active brand. Relevant for agencies managing multiple brands where team members may be assigned across accounts
 - **Specific team member** (optional, for assign): If the user has a preferred assignee — the system will verify capacity before confirming, or suggest alternatives if the member is overloaded
 - **Dependencies** (optional, for assign): Other task IDs that must be completed before this task can begin — used to sequence work and prevent premature assignment to available members
-- **Filter criteria** (for list-assignments): Filter by team member name, status (active, completed, overdue, blocked), channel, priority, brand, or date range
+- **Filter criteria** (for get-assignments): Filter by team member name, status (active, completed, overdue, blocked), channel, priority, brand, or date range
 - **Time range** (for check-workload): Period to evaluate — this week, next two weeks, this month, or custom date range
 - **Notes** (optional, for assign): Additional context for the assignee — links to briefs, reference materials, client preferences, or special instructions that should accompany the task notification
 

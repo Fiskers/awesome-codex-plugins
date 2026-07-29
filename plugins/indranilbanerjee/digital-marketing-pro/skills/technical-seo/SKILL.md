@@ -7,10 +7,6 @@ description: "Deep technical SEO analysis. Use when: optimizing crawlability, Co
 
 ## When to Use This Skill
 
-## Context efficiency
-
-Heavy skill. **Grep before Read** any referenced file, then `Read` only matched ranges with `offset` + `limit`. List `${CLAUDE_PLUGIN_DATA}/<brand>/` before opening files. On re-invocation mid-session, skip files already in context.
-
 Activate this module when the user's request involves any of the following:
 
 - **Core Web Vitals**: Optimizing LCP, INP, or CLS scores; diagnosing page speed issues; interpreting CrUX data or PageSpeed Insights reports
@@ -29,6 +25,10 @@ Activate this module when the user's request involves any of the following:
 - **Site Migrations**: Domain changes, platform migrations, HTTPS transitions, URL restructuring, or merger/acquisition site consolidation
 
 **Trigger phrases**: "technical seo," "core web vitals," "page speed," "crawl budget," "robots.txt," "sitemap," "redirect," "canonical," "indexation," "noindex," "hreflang," "javascript seo," "mobile-first indexing," "log file analysis," "site architecture," "internal linking," "crawl errors," "HTTP status," "schema markup," "structured data," "site migration," "TTFB," "LCP," "INP," "CLS," "render blocking," "crawlability," "index bloat," "redirect chain," "mixed content," "HTTPS"
+
+## Context efficiency
+
+Heavy skill. **Grep before Read** any referenced file, then `Read` only matched ranges with `offset` + `limit`. List `${CLAUDE_PLUGIN_DATA}/<brand>/` before opening files. On re-invocation mid-session, skip files already in context.
 
 ## Brand Context (Auto-Applied)
 

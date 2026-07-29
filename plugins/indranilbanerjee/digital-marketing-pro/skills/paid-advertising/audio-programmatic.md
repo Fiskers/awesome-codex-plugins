@@ -21,7 +21,7 @@
 | **Megaphone** (Spotify-owned) | 60K+ shows, largest podcast ad server | Dynamic ad insertion (DAI) | Programmatic marketplace, enterprise podcast hosting |
 | **iHeart Podcast Network** | 400M+ monthly downloads | Host-read + DAI | Massive show catalog, celebrity/influencer hosts |
 | **Acast** | 100K+ shows, global | Marketplace + programmatic | Global reach, conversational targeting, self-serve |
-| **SiriusXM Podcast Network** | Stitcher + AdsWizz stack | Programmatic + host-read | Premium inventory, advanced measurement |
+| **SiriusXM Podcast Network** | SXM Media + AdsWizz stack | Programmatic + host-read | Premium inventory, advanced measurement |
 | **Podscribe** | Attribution platform | Measurement + marketplace | Pixel attribution, cross-show measurement |
 | **Podcorn** | Micro-influencer podcasts | Marketplace (host-read) | Direct relationships with niche shows |
 
@@ -193,7 +193,7 @@ Dynamic audio personalizes the ad in real time based on listener data:
 |---|---|---|---|
 | **Vanity URL** | brand.com/podcastname | Medium (some type direct) | Easy |
 | **Promo Code** | Unique code per show/campaign | High (direct match) | Easy |
-| **Pixel Attribution** | Podsights, Chartable, Podscribe pixel on site | High (impression-to-conversion) | Medium |
+| **Pixel Attribution** | Spotify Ad Analytics (formerly Podsights), Podscribe pixel on site | High (impression-to-conversion) | Medium |
 | **Post-Listen Survey** | "How did you hear about us?" | Low (recall bias) | Easy |
 | **Branded Search Lift** | Monitor branded search volume during campaign | Medium (correlation) | Medium |
 | **Household Graph** | Match podcast device to conversion device | High | Hard (requires partner) |

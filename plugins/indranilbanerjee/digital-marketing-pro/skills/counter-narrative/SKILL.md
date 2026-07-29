@@ -43,6 +43,6 @@ A complete counter-narrative playbook containing:
 
 ## Agents Used
 
-- **competitor-intelligence** — Competitor move analysis including positioning shift assessment, claim extraction, weakness identification, and historical positioning comparison, impact evaluation against the brand's market position and shared customer base, and competitive response prediction for anticipating counter-moves
+- **competitive-intel** — Competitor move analysis including positioning shift assessment, claim extraction, weakness identification, and historical positioning comparison, impact evaluation against the brand's market position and shared customer base, and competitive response prediction for anticipating counter-moves
 - **content-creator** — Multi-channel content response plan with specific content pieces, headlines, angles, and messaging per channel, ad concept development with targeting and creative direction, social messaging calibrated to brand voice and counter-narrative tone, and PR angle development with media pitch framing
 - **marketing-strategist** — Counter-narrative approach selection with strategic rationale, positioning defense strategy, timeline and phasing calibrated to urgency level, metrics framework for measuring counter-narrative effectiveness, and risk assessment with contingency planning for escalation scenarios

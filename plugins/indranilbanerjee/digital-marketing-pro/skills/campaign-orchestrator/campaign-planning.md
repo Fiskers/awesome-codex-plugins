@@ -98,9 +98,9 @@
 ```
 
 Examples:
-- `2025-Q2-launch-midmarket-product-v2`
-- `2025-Q3-seasonal-all-back-to-school`
-- `2025-Q1-abm-enterprise-target-accounts`
+- `2026-Q2-launch-midmarket-product-v2`
+- `2026-Q3-seasonal-all-back-to-school`
+- `2026-Q1-abm-enterprise-target-accounts`
 
 ---
 

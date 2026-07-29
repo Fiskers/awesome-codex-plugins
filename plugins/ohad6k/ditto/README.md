@@ -137,6 +137,21 @@ Nobody wrote those rules down. They came out of one person's own history, with r
 
 > This is an example. Yours is mined from your logs and will read nothing like it.
 
+## The usage report
+
+Mining answers "who is this person." The usage report answers a different question: where are you losing time with the model.
+
+```bash
+python emulo.py --coach                   # every source it can find
+python emulo.py --coach --source claude   # Claude Code only
+```
+
+It runs before any mining, makes no model call, and finishes in seconds. It counts what your own messages already show: asks you sent three times in a row without changing them, context you re-explained after the agent lost it, runs where you rephrased the same request instead of adding the missing constraint, and how often you open a turn by correcting the last answer.
+
+Every finding prints the dated messages behind it. Checks that come in under their bar are printed with their counts as well, so a clean result reads as a result rather than as silence.
+
+It reads only the messages you typed, which is all Emulo keeps. It cannot see cost, tokens, tool calls, or whether the agent was right, and it never scores those.
+
 ## The card
 
 After mining, `python emulo.py --card` renders your profile as a shareable card: archetype, top laws ranked by distinct supporting session receipts, coverage stats, and one sharp truth.

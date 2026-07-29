@@ -1,6 +1,6 @@
 ---
 name: send-email-campaign
-description: "Send email campaigns. Use when: deploying via SendGrid, Klaviyo, Customer.io, Brevo, or Mailgun with A/B testing."
+description: "Send email campaigns. Use when: deploying via SendGrid, Klaviyo, Customer.io, Brevo, or Mailchimp with A/B testing."
 disable-model-invocation: false
 argument-hint: "[campaign-name]"
 ---
@@ -24,7 +24,7 @@ The user must provide (or will be prompted for):
 
 - **Email content**: Subject line, preview text (40-90 chars), body copy with HTML structure, and primary CTA — or a draft to refine
 - **Target list or segment**: The recipient list name, segment ID, or audience criteria for the send — with confirmation of list hygiene status (last cleaned date)
-- **Email platform**: Which email service to use — SendGrid, Klaviyo, Customer.io, Brevo, or Mailgun — must have the corresponding MCP server connected
+- **Email platform**: Which email service to use — SendGrid, Klaviyo, Customer.io, Brevo, or Mailchimp — must have the corresponding MCP server connected
 - **Personalization fields**: Dynamic fields to personalize — first name, company, product interest, last purchase, location, or custom merge tags with fallback defaults for missing data
 - **A/B variants**: Optional — 2-3 subject line or content variants for split testing with desired test percentage (10-50%), test duration, and winning metric (open rate or click rate)
 - **Send time**: Immediate send, scheduled date and time with timezone, or "optimal" to use send-time optimization based on historical engagement data per segment

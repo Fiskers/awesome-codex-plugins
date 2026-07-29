@@ -330,4 +330,5 @@ Analyze review text to identify recurring themes:
 - Reviews from employees, family, or affiliates must disclose the relationship
 - Incentivized reviews must disclose the incentive (and many platforms prohibit them entirely)
 - Businesses are liable for employee review solicitation practices even if not directly authorized
-- Penalties: Up to $50,120 per violation (adjusted annually for inflation)
+- The FTC Trade Regulation Rule on Consumer Reviews and Testimonials (16 CFR Part 465, effective October 2024) is now the primary enforcement vehicle — it bans buying/selling fake reviews, undisclosed insider reviews, review suppression, and fake social media indicators, with civil penalties per violation
+- Penalties: per-violation maximum is inflation-adjusted annually (~$53K+ as of 2026)

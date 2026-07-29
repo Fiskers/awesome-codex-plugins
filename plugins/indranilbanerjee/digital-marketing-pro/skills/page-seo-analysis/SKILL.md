@@ -43,7 +43,7 @@ Always check and flag:
 
 ## Output
 
-### Page SEO Score: XX/100
+### Page SEO Score: XX/80
 
 | Dimension | Score | Priority Issues |
 |-----------|-------|-----------------|

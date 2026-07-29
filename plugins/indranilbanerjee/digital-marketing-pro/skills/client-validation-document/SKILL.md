@@ -281,7 +281,7 @@ Skill response:
 
 - `engagement-workflow` — orchestrates the 12-Part flow
 - `four-core-documents` — produced the v1 docs being validated; will produce v2 re-runs after Part 5
-- Existing `competitor-analysis`, `audience-intelligence`, `market-intelligence` skills produced the Part 4 docs
+- Existing skills/agents `competitor-analysis`, `audience-intelligence`, `market-intelligence` produced the Part 4 docs
 
 ## Related references
 

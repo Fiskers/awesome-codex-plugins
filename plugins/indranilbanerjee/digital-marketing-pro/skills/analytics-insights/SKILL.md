@@ -190,6 +190,8 @@ For anomaly investigation, prioritize speed. Ask for the specific metric, timefr
 - `incrementality-testing.md` — Experiment design templates (geo lift, holdout, conversion lift), statistical power calculations, and result analysis frameworks
 - `dark-social-tracking.md` — Dark social measurement methods, implementation guides for tracking private shares, and estimation models
 - `privacy-first-measurement.md` — Cookieless attribution approaches, consent management architecture, server-side tracking implementation, and privacy regulation compliance guide
+- `clv-analysis.md` — Customer lifetime value models (historical, cohort-based, predictive, contractual), calculation guidance, and application to segmentation and budget decisions
+- `dashboard-design.md` — Three-tier dashboard architecture (executive, operational, campaign), metric selection per audience, and visualization best practices
 
 ## Output Formats
 

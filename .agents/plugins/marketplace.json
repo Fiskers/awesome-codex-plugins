@@ -566,6 +566,21 @@
       "icon": "./plugins/bnc4vk/codex-tui-proof/assets/icon.png"
     },
     {
+      "name": "codex-usage-and-resets",
+      "displayName": "Codex Usage and Resets",
+      "source": {
+        "source": "local",
+        "path": "./plugins/joelfarthing/codex-usage-and-resets"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Development & Workflow",
+      "description": "Turns Codex usage into planning facts with linear pace, projected exhaustion, banked-reset expirations, and conservative unexpected-reset detection.",
+      "icon": "./plugins/joelfarthing/codex-usage-and-resets/assets/icon.png"
+    },
+    {
       "name": "debt-ops",
       "displayName": "debt-ops",
       "source": {

@@ -1,6 +1,6 @@
 # shared
 
-Shared runtime and evidence references loaded only by a consuming skill. Triggers: internal shared contracts.
+Retired — its runtime-neutrality contract moved to docs/contracts/runtime-neutrality.md. Triggers: none — not routable.
 
 ## Instructions
 

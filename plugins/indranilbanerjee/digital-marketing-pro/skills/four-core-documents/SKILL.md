@@ -354,7 +354,7 @@ Skill response:
 
 - `engagement-workflow` — orchestrates the 12-Part flow that contains Part 3
 - `client-validation-document` — Part 5 deliverable that triggers v2 re-runs
-- Existing skills consumed by this one: `audience-intelligence`, `competitive-intel`, `market-intelligence`, `brand-guardian`
+- Existing skills and agents consumed by this one: `audience-intelligence`, `competitive-intel`, `market-intelligence`, `brand-guardian`
 
 ## Related references
 

@@ -146,6 +146,7 @@ For quick requests (e.g., "write a press release for our product launch"), proce
 - `thought-leadership.md` — Thought leadership content strategy, byline placement guide, speaking opportunity sourcing, podcast guesting playbook, and original research planning
 - `newsjacking.md` — News monitoring setup, relevance scoring framework, rapid-response templates, brand safety assessment, and timing guidelines
 - `eeat-authority.md` — E-E-A-T audit checklist, authority signal implementation guide, author optimization, trust signal taxonomy, and measurement framework
+- `link-building-tactics.md` — Link building methods ranked by effectiveness, outreach templates, link quality assessment, anchor text distribution, and practices to avoid
 
 ## Output Formats
 

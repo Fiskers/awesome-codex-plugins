@@ -7,6 +7,25 @@ description: "Build local SEO strategy. Use when: optimizing Google Business Pro
 
 ## When to Use This Skill
 
+Activate this module when the user's request involves any of the following:
+
+- **Google Business Profile Optimization**: Setting up, optimizing, or auditing a Google Business Profile (categories, attributes, photos, posts, Q&A, products, services)
+- **Local Citations**: Building, auditing, or cleaning up business listings across directories and data aggregators
+- **NAP Consistency**: Auditing Name, Address, Phone number consistency across the web
+- **Local Pack / Map Pack Rankings**: Strategies to appear in the Google 3-pack and Google Maps results
+- **Location Pages**: Creating or optimizing landing pages for individual business locations or service areas
+- **Multi-Location SEO**: Managing local SEO at scale for businesses with multiple physical locations or franchise operations
+- **"Near Me" Optimization**: Optimizing for proximity-based and implicit local searches
+- **Local Link Building**: Earning links from local organizations, chambers of commerce, community partners, sponsorships, and local media
+- **Local Schema Markup**: Implementing LocalBusiness, GeoCoordinates, OpeningHours, AggregateRating, and related structured data
+- **Review Management for Local**: Generating reviews, improving ratings, responding to reviews, and leveraging reviews for local ranking signals
+- **Service Area Businesses**: Optimizing for businesses without a physical storefront that serve customers at their locations
+- **Local Content Strategy**: City pages, neighborhood guides, local event content, and geo-targeted blog posts
+- **Google Maps Optimization**: Improving visibility and engagement within Google Maps specifically
+- **Local Competitive Analysis**: Benchmarking local search performance against nearby competitors
+
+**Trigger phrases**: "local seo," "google business profile," "gbp," "google maps," "local pack," "map pack," "near me," "local citations," "nap consistency," "location pages," "multi-location," "service area," "local link building," "local reviews," "local schema," "local business," "local rankings," "google 3-pack," "local directory," "local search," "store locator," "franchise seo," "city pages," "neighborhood seo"
+
 ## Context efficiency
 
 Heavy skill. **Grep before Read** any referenced file, then `Read` only matched ranges with `offset` + `limit`. List `${CLAUDE_PLUGIN_DATA}/<brand>/` before opening files. On re-invocation mid-session, skip files already in context.
@@ -27,25 +46,6 @@ If your brand is in any of these 4 verticals, agentic booking is now a high-leve
 3. **Pricing transparency in Service catalog** — agents prefer businesses that list price ranges; opaque pricing pushes the agent to the next option.
 
 Source: [blog.google/search-io-2026](https://blog.google/products-and-platforms/products/search/search-io-2026/). Combine with Google Ads API v24.2's new `AssetGroup.google_local_services_info` field (see `skills/paid-advertising/google-ads.md`) for the paid-side complement.
-
-Activate this module when the user's request involves any of the following:
-
-- **Google Business Profile Optimization**: Setting up, optimizing, or auditing a Google Business Profile (categories, attributes, photos, posts, Q&A, products, services)
-- **Local Citations**: Building, auditing, or cleaning up business listings across directories and data aggregators
-- **NAP Consistency**: Auditing Name, Address, Phone number consistency across the web
-- **Local Pack / Map Pack Rankings**: Strategies to appear in the Google 3-pack and Google Maps results
-- **Location Pages**: Creating or optimizing landing pages for individual business locations or service areas
-- **Multi-Location SEO**: Managing local SEO at scale for businesses with multiple physical locations or franchise operations
-- **"Near Me" Optimization**: Optimizing for proximity-based and implicit local searches
-- **Local Link Building**: Earning links from local organizations, chambers of commerce, community partners, sponsorships, and local media
-- **Local Schema Markup**: Implementing LocalBusiness, GeoCoordinates, OpeningHours, AggregateRating, and related structured data
-- **Review Management for Local**: Generating reviews, improving ratings, responding to reviews, and leveraging reviews for local ranking signals
-- **Service Area Businesses**: Optimizing for businesses without a physical storefront that serve customers at their locations
-- **Local Content Strategy**: City pages, neighborhood guides, local event content, and geo-targeted blog posts
-- **Google Maps Optimization**: Improving visibility and engagement within Google Maps specifically
-- **Local Competitive Analysis**: Benchmarking local search performance against nearby competitors
-
-**Trigger phrases**: "local seo," "google business profile," "gbp," "google maps," "local pack," "map pack," "near me," "local citations," "nap consistency," "location pages," "multi-location," "service area," "local link building," "local reviews," "local schema," "local business," "local rankings," "google 3-pack," "local directory," "local search," "store locator," "franchise seo," "city pages," "neighborhood seo"
 
 ## Brand Context (Auto-Applied)
 

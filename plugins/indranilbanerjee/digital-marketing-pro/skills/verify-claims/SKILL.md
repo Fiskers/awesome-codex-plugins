@@ -23,14 +23,14 @@ The user must provide (or will be prompted for):
 ## Process
 
 1. **Load brand context**: Read `~/.claude-marketing/brands/_active-brand.json` for the active slug, then load `~/.claude-marketing/brands/{slug}/profile.json`. Apply compliance rules for target markets (`skills/context-engine/compliance-rules.md`) — some industries and regions have stricter requirements for substantiating claims (financial services, healthcare, EU consumer protection). Also check for guidelines at `~/.claude-marketing/brands/{slug}/guidelines/_manifest.json` — if present, load messaging restrictions that may define approved claims and prohibited assertions. Check for agency SOPs at `~/.claude-marketing/sops/`. If no brand exists, ask: "Set up a brand first (/digital-marketing-pro:brand-setup)?" — or proceed with defaults.
-2. **Extract claims from content**: Execute `scripts/claim-verifier.py --action extract-claims --text "{content}"` to identify all verifiable assertions. The extractor categorizes claims by type:
+2. **Extract claims from content**: Execute `python "${CLAUDE_PLUGIN_ROOT}/scripts/claim-verifier.py" --action extract-claims --text "{content}"` to identify all verifiable assertions. The extractor categorizes claims by type:
    - **Statistical claims**: Percentages, ratios, growth numbers, market size figures ("73% increase in conversions," "4.8x ROAS")
    - **Ranking claims**: Position assertions, comparative statements ("market leader," "#1 rated," "fastest-growing")
    - **Award and certification claims**: Named awards, industry certifications, compliance badges ("ISO 27001 certified," "G2 Leader")
    - **Named citation claims**: Attributed quotes, source references, study citations ("according to Gartner," "Forrester reports")
    - **Performance claims**: Customer counts, time-bound results, SLA promises ("10,000+ customers," "results in 30 days")
    - **Temporal claims**: Date-specific assertions, recency claims ("as of 2026," "latest data shows")
-3. **Verify claims against evidence**: If an evidence file is provided, execute `scripts/claim-verifier.py --action verify --text "{content}" --evidence {evidence_file}`. For each extracted claim, the verifier:
+3. **Verify claims against evidence**: If an evidence file is provided, execute `python "${CLAUDE_PLUGIN_ROOT}/scripts/claim-verifier.py" --action verify --text "{content}" --evidence {evidence_file}`. For each extracted claim, the verifier:
    - Attempts to match the claim to an evidence entry by semantic similarity and claim type
    - Classifies the match result: **Verified** (claim matches evidence within acceptable tolerance), **Partially verified** (claim is directionally correct but specific numbers differ, or the source date is stale), **Unverified** (no matching evidence entry found), or **Contradicted** (evidence directly conflicts with the claim)
    - Assigns a confidence score (0-100) to each verification based on match quality, source recency, and specificity alignment

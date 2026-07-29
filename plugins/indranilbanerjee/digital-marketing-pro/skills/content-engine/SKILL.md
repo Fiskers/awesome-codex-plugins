@@ -145,6 +145,9 @@ For quick requests (e.g., "write me a LinkedIn post"), infer reasonable defaults
 - `multilingual.md` — Localization readiness checklist, cultural adaptation framework, translation management, and RTL considerations
 - `email-infrastructure.md` — Authentication setup (SPF/DKIM/DMARC), domain warming plan, deliverability best practices, and list hygiene
 - `email-automation.md` — Automation trigger design, workflow mapping, dynamic content rules, and behavioral email logic
+- `case-studies.md` — Challenge-Solution-Results framework, customer-hero narrative structure, and case study creation best practices
+- `personalization.md` — Personalization maturity model, segment/rule-based/behavioral strategies, and implementation guidance
+- `video-scripting.md` — Platform-specific video formats and lengths, script structures, and hook and retention techniques
 
 ## Output Formats
 

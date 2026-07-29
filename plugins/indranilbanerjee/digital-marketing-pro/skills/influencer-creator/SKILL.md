@@ -140,6 +140,7 @@ Before executing, gather the following from the user (ask if not provided):
 - `performance-tracking.md` -- EMV calculation methods, attribution models, reporting templates, and benchmark data by industry and platform
 - `contract-frameworks.md` -- Full contract templates, clause-by-clause explanations, negotiation guides, and rate benchmarking by tier and platform
 - `ugc-strategy.md` -- UGC solicitation playbooks, rights management frameworks, UGC-to-ad pipelines, and curation best practices
+- `micro-influencer-strategy.md` -- Micro/nano tier definitions, discovery and vetting, compensation models, gifting and ambassador programs, and platform-specific micro-influencer tactics
 
 ## Output Formats
 

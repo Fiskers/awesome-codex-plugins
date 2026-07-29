@@ -6,18 +6,18 @@ Run `/digital-marketing-pro:engagement` against each brand. Same 12-Part Strateg
 
 Open-source AI marketing plugin — **158 skills, 24 specialist agents, EU AI Act Article 50 ready, Cowork team-persistent**. Built for marketing agencies, in-house teams running 50–200 brands, and consultancies. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, and **OpenClaw** + 35+ Agent Skills platforms. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-[![Version](https://img.shields.io/badge/version-3.16.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.17.0-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/digital-marketing-pro?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/digital-marketing-pro/stargazers)
 [![Forks](https://img.shields.io/github/forks/indranilbanerjee/digital-marketing-pro?style=flat&logo=github&color=blue)](https://github.com/indranilbanerjee/digital-marketing-pro/network/members)
 [![Issues](https://img.shields.io/github/issues/indranilbanerjee/digital-marketing-pro?logo=github)](https://github.com/indranilbanerjee/digital-marketing-pro/issues)
 [![Last commit](https://img.shields.io/github/last-commit/indranilbanerjee/digital-marketing-pro?logo=github)](https://github.com/indranilbanerjee/digital-marketing-pro/commits/main)
-[![Tests](https://img.shields.io/badge/tests-208%2F208%20passing-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-209%2F209%20passing-brightgreen.svg)](tests/)
 [![Platforms](https://img.shields.io/badge/platforms-8%20native%20%2B%2035%20Agent%20Skills-success.svg)](#works-on-40-agent-harnesses-via-the-agent-skills-open-standard)
-[![Cowork](https://img.shields.io/badge/cowork-team%20persistent-purple.svg)](#supported-surfaces-v3160)
+[![Cowork](https://img.shields.io/badge/cowork-team%20persistent-purple.svg)](#supported-surfaces-v3170)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](skills/context-engine/compliance-rules.md)
 
-> 🆕 **Just shipped — v3.16.0 (July 12, 2026): the July Market Refresh.** Primary-source verified same-day: **final EU Transparency Code of Practice** (published June 10 — standardized EU icons, signatory window closes July 22, Article 50 applies Aug 2), **Claude 5 family + GPT-5.6 Sol/Terra/Luna in the model registry** (62→68 entries; aliases now resolve to Opus 5 / GPT-5.6 Sol; Opus 4.1 retirement flagged), **Meta API v25 truth pass** (standalone ASC/AAC creation blocked — unified Advantage+ is the path), Google Ads v25 + LinkedIn 202607 documented, GSC AI reports now cover Discover. Also today: v3.15.1 self-containment patch — every cross-plugin capability reference removed; DMP is fully standalone. [Read what's new →](#whats-new) · [Full changelog →](CHANGELOG.md)
+> 🆕 **Just shipped — v3.17.0 (July 29, 2026): the Line-by-Line Audit.** Every one of the repo's 530 files — all 158 skills, 24 agents, 18 commands, 86 scripts, and every doc — was read end-to-end by a 16-reader audit fleet and re-verified against July-2026 ground truth. ~250 fixes shipped: dead platforms and retired tools purged (Google Podcasts, Chartable, GSC legacy tools, GARM, HARO, giropay…), stale API/model claims corrected, doc↔script contract drift eliminated (every documented flag, payload, and threshold now matches the code), the storage split-brain fully closed, statistical tables regenerated from the plugin's own calculators, and the self-containment guard extended to docs/, scripts/, and root. 209/209 tests green. [Read what's new →](#whats-new) · [Full changelog →](CHANGELOG.md)
 >
 > <sub>Previously — **v3.15.0 (July 7, 2026):** The **Reliability & Truth** release — a full-repo audit fixed ~200 findings in one pass. Connectors are honestly opt-in (the shipped `.mcp.json` is empty; fictional npm packages purged), all 18 execution skills carry a uniform typed-approval gate (closes issue #6), the Tessl review workflow moved to the `tessl review` CLI (closes issue #8), agents consolidated 25 → 24, C2PA gained the Article 50 `--ai-disclosure` assertion, and a new doc-vs-argparse contract linter + state-layer tests grew the suite from 123 to 207 passing. [Read what's new →](#whats-new) · [Full changelog →](CHANGELOG.md)</sub>
 
@@ -57,7 +57,7 @@ Open-source AI marketing plugin — **158 skills, 24 specialist agents, EU AI Ac
 | Real API execution | **Yes — 8 connectors live, 25 manifest-ready** | OAuth via plugin | OAuth via Composio | Optional DataForSEO / Firecrawl |
 | 6-platform AEO/GEO audit | **Yes — incl. Google AI Mode (May 2026)** | No | No | Yes (AEO + GEO) |
 | Cross-platform install | **8 native — CC + Cowork + Codex + Cursor + Copilot CLI + Antigravity + Hermes + OpenClaw** | Cowork only | Cowork + Codex | CC + Codex |
-| Tests | **207 stdlib unittest** | unknown | unknown | 271 incl. SSRF/DNS coverage |
+| Tests | **209 stdlib unittest** | unknown | unknown | 271 incl. SSRF/DNS coverage |
 | License | **MIT — no telemetry, no seats** | Proprietary | Proprietary | MIT |
 | Maintainer responsiveness | Direct via [@askneelnow](https://linkedin.com/in/askneelnow) | Anthropic queue | Composio queue | Community |
 
@@ -93,7 +93,7 @@ Most AI marketing tools generate isolated outputs — a campaign brief here, an 
 | **Two-Views Model** (v1 unbiased + v2 client-validated) | You never lose the original market view when the client pushes back |
 | **Decision Matrix** — maps validation responses to re-runs | Stops over-running (wasted hours) and under-running (broken strategy) |
 | **Living Project Instruction File** — single source of truth per engagement | All skills read it first; corrections propagate automatically |
-| **EU AI Act Article 50 readiness** built in | C2PA provenance signing, deepfake disclosure, draft-guidelines table in compliance |
+| **EU AI Act Article 50 readiness** built in | C2PA provenance signing, deepfake disclosure, final Article 50 Guidelines + Code of Practice (10 June 2026) in compliance |
 | **6-platform AEO/GEO audit** (incl. Google AI Mode) | The first marketing plugin to treat AI Mode as a distinct surface from AI Overviews |
 
 ---
@@ -245,7 +245,7 @@ Output: real API calls fired against your stack with audit logging at `~/.claude
 
 ---
 
-## Supported surfaces (v3.16.0)
+## Supported surfaces (v3.17.0)
 
 | Platform | Install command | Manifest path | Status |
 |---|---|---|---|
@@ -357,8 +357,12 @@ If you run into a platform-specific install snag, file a [GitHub issue](https://
 
 DM Pro is updated against the **actual current marketing ecosystem state** — the July 2026 market refresh (GPT-5.6 Sol/Terra/Luna, the Claude 5 family, the **final** EU AI Act Article 50 guidelines + Transparency Code of Practice), Google I/O 2026, the Google Ads v25 / Meta v25 API shifts, and the latest AI image/video model landscape. No "trained on 2024 data" surprises in your client outputs.
 
+**v3.17.0 — The Line-by-Line Audit (July 29)**
+
+Full-repo audit: 16 parallel readers covered 100% of the repo's files line-by-line, cross-checked against primary-source July-2026 facts and against the code itself. Highlights: every doc↔script contract verified (payload shapes, flags, thresholds, storage paths); dead products removed from recommendations; EU Code/Article 50 language moved fully to final-Code, post-deadline state; scripts hardened (trustworthy exit codes, atomic writes, real quality gates, input sanitization); reference-file indexes completed so all 169 reference docs are discoverable; self-containment guard now covers the entire repo. Suite: 209 tests.
+
 **v3.16.0 — July Market Refresh (July 12)**
-Everything verified against primary sources on ship day. The **final EU Code of Practice on Transparency of AI-Generated Content** (10 June 2026) replaces all second-draft guidance in the compliance docs — standardized EU disclosure icons are live, the initial-signatory window closes **22 July**, and the final Article 50 Guidelines are in (`compliance-rules.md`). The model registry adds the **Claude 5 family** (`claude-fable-5` with refusal/fallback semantics, `claude-opus-5` — the new `latest-text-anthropic`, `claude-sonnet-5`) and **GPT-5.6 Sol/Terra/Luna** (`latest-text-openai` → Sol), flags Opus 4.1's Aug 5 retirement, and is mirrored to the shared suite registry. Paid docs get the **Meta v25 truth pass** (standalone Advantage+ Shopping/App creation blocked via API — unified Advantage+ documented as the go-forward path; Page Viewer metric replaces legacy reach) plus Google Ads v25 breaking changes and LinkedIn 202607. `gsc-ai-performance` adds the Discover generative surfaces. README claims rotated to the current model lineup.
+Everything verified against primary sources on ship day. The **final EU Code of Practice on Transparency of AI-Generated Content** (10 June 2026) replaces all second-draft guidance in the compliance docs — standardized EU disclosure icons are live, the initial-signatory window closed **22 July 2026** (late signing remains possible), and the final Article 50 Guidelines are in (`compliance-rules.md`). The model registry adds the **Claude 5 family** (`claude-fable-5` with refusal/fallback semantics, `claude-opus-5` — the new `latest-text-anthropic`, `claude-sonnet-5`) and **GPT-5.6 Sol/Terra/Luna** (`latest-text-openai` → Sol), flags Opus 4.1's Aug 5 retirement, and is mirrored to the shared suite registry. Paid docs get the **Meta v25 truth pass** (standalone Advantage+ Shopping/App creation blocked via API — unified Advantage+ documented as the go-forward path; Page Viewer metric replaces legacy reach) plus Google Ads v25 breaking changes and LinkedIn 202607. `gsc-ai-performance` adds the Discover generative surfaces. README claims rotated to the current model lineup.
 
 **v3.15.1 — Self-containment patch (July 12)**
 Removed every cross-plugin capability reference from the skill surface: `ad-creative` and the engagement's Part 11 hand visual production to your own tooling (design team, AI generators, or connected design platforms) instead of naming a sibling plugin; `launch-campaign` C2PA signing and checkpoint-resume route through DMP's own `c2pa-metadata` and `/digital-marketing-pro:resume`; `validate-profile` checks DMP's own publish dir (`$DIGITAL_MARKETING_PRO_PUBLISH_DIR` / `~/Documents/DigitalMarketingPro/`); the EU compliance reference docs are DMP-centric. DMP is fully standalone — no other plugin is ever required for any documented capability. Cross-promo links in this README stay; capability delegation is gone.
@@ -406,7 +410,7 @@ Skill count: 158 unchanged. Test count: 49 → **70**. Native platforms: 6 → *
 **v3.12.0 — Cowork persistence, fallback models, model-freshness, tests (June 8)**
 Research-grounded hardening pass. Verified GitHub issue [#51398](https://github.com/anthropics/claude-code/issues/51398) — `${CLAUDE_PLUGIN_DATA}` is NOT persistent across Anthropic Cowork sessions, contrary to the docs. Solution shipped:
 
-- **New `/digital-marketing-pro:cowork-setup` skill + command.** Detects the Cowork sandbox, verifies a Drive MCP, creates the canonical Drive folder layout (`<root>/_brands/`, `_runs/`, `_plans/`), and persists the routing config so brand profiles survive across sessions. Mirrors the ContentForge `cf-cowork-setup` pattern that's been battle-tested with agency users. Includes multi-team isolation via per-team folder names.
+- **New `/digital-marketing-pro:cowork-setup` skill + command.** Detects the Cowork sandbox, verifies a Drive MCP, creates the canonical Drive folder layout (`<root>/_brands/`, `_runs/`, `_plans/`), and persists the routing config so brand profiles survive across sessions. Uses a Drive-routing pattern that's been battle-tested with agency users. Includes multi-team isolation via per-team folder names.
 - **`fallbackModel` ready out of the box.** `settings.json.example` ships with a 3-model resilience chain (Sonnet 4.7 → Sonnet 4.6 → Haiku 4.5) using the `fallbackModel` setting from Claude Code v2.1.152 (May 27 2026). When the primary model is overloaded or a non-retryable API error fires, Claude Code transparently swaps to the next model.
 - **`requiredMinimumVersion: 2.1.157` declared.** Users on older Claude Code builds get a clear upgrade message instead of silent feature gaps. Landed in Claude Code v2.1.163 (June 4 2026).
 - **Model-registry freshness check in `/digital-marketing-pro:doctor`.** Wires `resolve_model.registry_age_days()` into the doctor output. Severity bands: `ok` (<60 days), `warn` (60-119), `urgent` (>=120). When stale, the doctor prints the exact `refresh_models.py` invocation. Directly addresses "what if a new model drops between releases."
@@ -579,7 +583,7 @@ Two user-team complaints from the v3.7.5 cycle drove this release: "dm pro is ta
 /digital-marketing-pro:output-folder <brand> <workflow>    # drill down
 ```
 
-**Implementation:** `scripts/checkpoint-manager.py` (per-step storage + atomic writes, stdlib only) + `scripts/output-publisher.py` (dual-copy publish + `where` + `open` subcommands), mirroring the ContentForge dual-copy pattern. The engagement/checkpoint state machine ships tests in `tests/test_engagement_state.py` + `tests/test_checkpoint_roundtrip.py`; a fuller 5-scenario end-to-end simulation (clean 12-part run / interrupt-resume / parallel workflows / quality-gate fail / all-workflows-accepted) was used during development but is a dev tool, not shipped in the repo.
+**Implementation:** `scripts/checkpoint-manager.py` (per-step storage + atomic writes, stdlib only) + `scripts/output-publisher.py` (dual-copy publish + `where` + `open` subcommands: internal tracking copy + user-visible published copy). The engagement/checkpoint state machine ships tests in `tests/test_engagement_state.py` + `tests/test_checkpoint_roundtrip.py`; a fuller 5-scenario end-to-end simulation (clean 12-part run / interrupt-resume / parallel workflows / quality-gate fail / all-workflows-accepted) was used during development but is a dev tool, not shipped in the repo.
 
 ---
 
@@ -642,7 +646,7 @@ Every script that calls a provider model now accepts `--model` (or `--openai-mod
 
 ```bash
 python scripts/resolve_model.py --alias latest-balanced-anthropic    # -> claude-sonnet-4-6
-python scripts/resolve_model.py --check gemini-2.0-flash              # -> deprecated (use gemini-3.5-flash)
+python scripts/resolve_model.py --check gemini-2.0-flash              # -> retired (auto-routes to gemini-3.5-flash)
 python scripts/resolve_model.py --list --vendor anthropic --status current
 python scripts/refresh_models.py                                      # drift report (needs API keys)
 ```
@@ -658,7 +662,7 @@ DM Pro carries jurisdiction-specific compliance rules that auto-apply when a bra
 **EU AI Act Article 50 readiness (applicable 2 August 2026):**
 - C2PA content-provenance signing via `/digital-marketing-pro:c2pa-metadata` (end-to-end tested against c2pa-python 0.32 — 75-byte test PNG → 42,818-byte signed PNG with `manifest_embedded_and_verified=true`)
 - Pre-publish gate (`/digital-marketing-pro:check`) treats missing C2PA on AI-flagged assets in EU campaigns as CRITICAL → BLOCKED
-- Draft implementing guidelines (8 May 2026) added as `compliance-rules.md` §1.1b.i with six-row clarification table + five-point action list
+- Final Article 50 Guidelines + final Code of Practice on Transparency of AI-Generated Content (10 June 2026) in `compliance-rules.md` §1.1b.i with six-row clarification table + five-point action list
 - Production cert guide at `docs/c2pa-production-cert-guide.md` covers the four CAI-recognised authorities (Adobe Content Credentials, Truepic, Numbers Protocol, Microsoft Azure Confidential Ledger)
 
 **Other May 2026 regulatory updates baked in:**
@@ -679,7 +683,7 @@ The search landscape pivoted hard in 2025–2026:
 
 DM Pro's AEO/GEO skills (`/digital-marketing-pro:aeo-audit`, `:geo-monitor`, `:entity-audit`) reflect this:
 - **6-platform audit standard** — ChatGPT, Perplexity, Google AI Mode, Google AI Overviews, Gemini, Microsoft Copilot (was 5 — AI Mode added May 2026)
-- Schema strategy refresh — Google's March 2026 core update demoted FAQ/Review/HowTo schema on non-primary pages. Skills emphasise entity-rich JSON-LD (Article + Organization + Person + Product) and produce an **LLMs.txt** companion file
+- Schema strategy refresh — Google's March 2026 core update demoted FAQ/Review/HowTo schema on non-primary pages. Skills emphasise entity-rich JSON-LD (Article + Organization + Person + Product) and offer an optional **LLMs.txt** companion (Google states it is not required for AI-features eligibility)
 - Citation tracking across all 6 surfaces, with Profound / Otterly / Conductor AgentStack integration paths in the connectors layer
 - **Share of AI Voice** as a first-class metric in `/digital-marketing-pro:performance-report`
 
@@ -742,7 +746,7 @@ Yes. Each brand has its own `~/.claude-marketing/<brand-slug>/` directory and Py
 Skip to `/digital-marketing-pro:campaign-plan`. Every individual surface (campaign / SEO / content / competitor / email / report) is independently runnable. The full engagement is the canonical path, not the only path.
 
 **Q: Will this work on Codex / Cursor / Copilot CLI / Antigravity?**
-Yes — verified-real native manifests ship for all 8 surfaces (CC, Cowork, Codex, Cursor, Copilot CLI, Antigravity, Hermes Agent, OpenClaw). See [Supported surfaces](#supported-surfaces-v3160) above for per-platform install commands.
+Yes — verified-real native manifests ship for all 8 surfaces (CC, Cowork, Codex, Cursor, Copilot CLI, Antigravity, Hermes Agent, OpenClaw). See [Supported surfaces](#supported-surfaces-v3170) above for per-platform install commands.
 
 **Q: I run my team on Anthropic Cowork. Does brand state persist between sessions?**
 Yes — but you need to run `/digital-marketing-pro:cowork-setup` once per team first (v3.12.0). Cowork's per-session filesystem is ephemeral, and `${CLAUDE_PLUGIN_DATA}` is too ([open issue #51398](https://github.com/anthropics/claude-code/issues/51398)). The setup wizard routes brand profiles + plans + reports through a Google Drive MCP so everything survives across sessions and is shared across the team. Multi-team isolation via per-team folder names.
@@ -806,7 +810,7 @@ OpenClaw auto-detects our `.claude-plugin/plugin.json` as a Claude-compatible bu
 ### General (any platform)
 
 **"Tests in `tests/` fail when I `git clone` locally"**
-Run `python tests/run_all.py` from the repo root. All 207 tests are stdlib-only — no `pip install` needed. If they fail, the most likely cause is a Python version mismatch (DMP supports Python 3.8+) or a clone that omitted some `skills/` subdirectories. Try `git clone --depth=1` again.
+Run `python tests/run_all.py` from the repo root. All 209 tests are stdlib-only — no `pip install` needed. If they fail, the most likely cause is a Python version mismatch (DMP supports Python 3.8+) or a clone that omitted some `skills/` subdirectories. Try `git clone --depth=1` again.
 
 **"`/digital-marketing-pro:doctor` shows my action as stub_unconfigured"**
 That action needs an MCP connector configured. Run `python scripts/connector-status.py --action setup-guide --name <connector-name>` for the exact setup snippet. Add it to your `.mcp.json` under `mcpServers`, restart your agent, and the action becomes `manifest_ready`. See [Connector-aware action resolver](#connector-aware-action-resolver-v3710) for the full readiness model.

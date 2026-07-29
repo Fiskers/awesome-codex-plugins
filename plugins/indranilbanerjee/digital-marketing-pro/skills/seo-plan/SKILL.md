@@ -277,7 +277,7 @@ This skill is both a consumer (of specialists) and a producer (of the master pla
 
 ## Context efficiency
 
-This skill's reference docs (`skills/<this-skill>/*.md`) sum to ~30-50KB. Don't load them eagerly — pick targeted sections:
+This skill's primary inputs are the specialist `PLAN.md` outputs under `${CLAUDE_PLUGIN_DATA}/{brand}/seo/` (see the input table above) — these can sum to ~30-50KB. Don't load them eagerly — pick targeted sections:
 
 - **Grep before Read.** Find the keyword or section heading first, then Read with `offset` + `limit` to pull just that range.
 - **Walk `${CLAUDE_SKILL_DIR}` once.** Use a single directory listing to see what's there, then Read only the files that match your current step.

@@ -133,6 +133,7 @@ Before executing, gather the following from the user (ask if not provided):
 - `launch-strategy.md` -- Tier 1/2/3 launch playbooks, Product Hunt guide, waitlist mechanics, beta program design
 - `retention-loops.md` -- Engagement frameworks, churn prediction models, winback sequences, cohort analysis methods
 - `affiliate-marketing.md` -- Program setup guides, network comparisons, commission optimization, fraud detection systems
+- `experimentation-frameworks.md` -- Experiment prioritization (ICE/RICE), hypothesis formats, statistical foundations, AARRR experiment categories, and experimentation velocity benchmarks
 
 ## Output Formats
 

@@ -10,12 +10,12 @@ The era of unrestricted cross-site tracking is over. Safari and Firefox have blo
 |--------|----------------------|----------|
 | Safari ITP (Intelligent Tracking Prevention) | First-party cookies capped at 7 days (24 hours for some); cross-site tracking blocked | Active since 2020 |
 | Firefox Enhanced Tracking Protection | Third-party cookies blocked by default | Active since 2019 |
-| Chrome Privacy Sandbox / Topics API | Third-party cookies restricted; replaced by privacy-preserving APIs | Rolling out 2024-2026 |
+| Chrome Privacy Sandbox / Topics API | Deprecation CANCELLED (2024–2025) — Chrome retains third-party cookies; Privacy Sandbox APIs continue in reduced form | Reversal confirmed April 2025 |
 | iOS App Tracking Transparency (ATT) | Users must opt-in to cross-app tracking; ~25% opt-in rate | Active since iOS 14.5 (2021) |
 | GDPR (EU) | Requires explicit consent for non-essential cookies; fines up to 4% of global revenue | Active since 2018 |
 | CCPA/CPRA (California) | Right to opt-out of sale/sharing of personal data | Active since 2020/2023 |
 | State privacy laws (US) | Virginia, Colorado, Connecticut, Texas, Oregon, and more with similar requirements | 2023-2026 rolling |
-| ePrivacy Regulation (EU — pending) | Will further restrict cookie usage and electronic communications tracking | Expected 2025-2026 |
+| ePrivacy Regulation (EU — WITHDRAWN Feb 2025) | Proposal withdrawn from the Commission work programme; the 2002 ePrivacy Directive cookie rules remain in force | Watch the Digital Fairness Act workstream |
 
 ---
 

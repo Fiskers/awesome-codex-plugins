@@ -35,6 +35,12 @@ Typical documents are `PRODUCT.md`, `GOALS.md`, `AGENTS.md`, and a README sectio
 that explains the one-pass loop. Repositories remain free to use their own Git,
 CI, tracker, release, and deployment policies.
 
+**Naming.** Three surfaces share the word "bootstrap"; they are distinct. This
+skill authors missing entry documents. `ao init` is the CLI command that creates
+the local evidence and verdict directories (`.agents/ao/**`). `ao session
+bootstrap` is a read-only session command that reports which local orientation
+files are present. This skill invokes neither.
+
 ## Non-goals
 
 - installing or invoking `ao`, `br`, `bd`, NTM, Agent Mail, or another runtime;
@@ -50,7 +56,7 @@ failed writes, and validation observations. Do not include a next action.
 
 ## References
 
-- [Goals](../goals/SKILL.md)
+- [Fitness](../fitness/SKILL.md)
 - [Product](../product/SKILL.md)
 - [Documentation](../doc/SKILL.md)
 - [Examples](references/examples.md)

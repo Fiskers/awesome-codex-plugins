@@ -290,4 +290,4 @@ Skill:
 - `scripts/eval-runner.py` — the master orchestrator this skill wraps
 - `skills/context-engine/eval-framework-guide.md` — full eval framework documentation
 - `skills/context-engine/eval-rubrics.md` — per-dimension scoring rubrics
-- `docs/architecture.md` Section 11 — eval framework architecture
+- `docs/architecture.md` Section 16 (Evaluation Layer) — eval framework architecture

@@ -231,4 +231,4 @@ Extend the calendar for the full campaign duration. Add rows for each channel/au
 - Private Marketplace deals (PMPs) offer premium inventory with price floors; negotiate for guaranteed rates
 - Open exchange provides scale but lower quality; use brand safety tools and inclusion/exclusion lists
 - Minimum viable budget varies by DSP but plan $5,000-10,000/month for meaningful data
-- Contextual targeting is gaining importance as cookie deprecation continues
+- Contextual targeting is gaining importance as Safari/Firefox cookie blocking, ATT, and consent regimes reduce addressability

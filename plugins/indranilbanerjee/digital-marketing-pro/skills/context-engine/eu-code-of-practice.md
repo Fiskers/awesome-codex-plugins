@@ -1,6 +1,6 @@
 # EU Code of Practice on AI-Generated Content — context for marketing teams
 
-**Status as of 12 July 2026:** the European AI Office published the **FINAL Code of Practice on Transparency of AI-Generated Content on 10 June 2026** — ahead of the **2 August 2026** applicability date for **AI Act Article 50 transparency obligations**. The Commission has confirmed the Code as an **"adequate voluntary tool"** for demonstrating Article 50 compliance, and has also adopted its **final Guidelines on Article 50**. The final Code is now the operative reference (superseding the 5 March 2026 second draft). Organisations wishing to appear among the **initial signatories must submit signature forms by 22 July 2026**; signing remains open afterwards. (Re-verify this status line at each release.)
+**Status as of 29 July 2026:** the European AI Office published the **FINAL Code of Practice on Transparency of AI-Generated Content on 10 June 2026** — ahead of the **2 August 2026** applicability date for **AI Act Article 50 transparency obligations**. The Commission has confirmed the Code as an **"adequate voluntary tool"** for demonstrating Article 50 compliance, and has also adopted its **final Guidelines on Article 50**. The final Code is now the operative reference (superseding the 5 March 2026 second draft). The **initial-signatory window closed 22 July 2026**; late signing remains possible. (Re-verify this status line at each release.)
 
 Sources: [Code of Practice on Transparency of AI-Generated Content — official page](https://digital-strategy.ec.europa.eu/en/policies/code-practice-ai-generated-content) · [final Code PDF](https://ec.europa.eu/newsroom/dae/redirection/document/129555) (10 June 2026).
 
@@ -8,7 +8,7 @@ This document is the canonical reference for any DMP skill that produces, valida
 
 ### July 2026 verification notes (re-check before each release)
 
-- **Final EU Code of Practice** — ✅ PUBLISHED 10 June 2026. Citations in this doc now point at the final text. Two time-sensitive actions remain: (1) the **initial-signatory window closes 22 July 2026**; (2) Article 50 obligations **apply from 2 August 2026**.
+- **Final EU Code of Practice** — ✅ PUBLISHED 10 June 2026. Citations in this doc now point at the final text. The **initial-signatory window closed 22 July 2026** (late signing remains possible); one time-sensitive obligation remains: Article 50 obligations **apply from 2 August 2026**.
 - **Standardized EU disclosure icons** — ✅ published with the final Code. Use the official EU icons for visible AI-generation labels on EU-targeted assets; source them from the final Code annex rather than recreating them.
 - **FTC endorsement guidance (May 2026)** — the US FTC's updated endorsement/testimonial guidance covers AI-generated testimonials and synthetic-creator content. Verify the current text against ftc.gov and fold specifics into `skills/influencer-creator/ftc-compliance.md` and `skills/c2pa-metadata/SKILL.md`.
 - **New York synthetic-performer disclosure law (effective June 2026)** — applies to synthetic influencers and AI-generated endorsements ($1K–$5K per violation, $10K repeat). Verify scope/effective date against a primary source before relying on the figures.
@@ -70,14 +70,14 @@ DMP is a **deployer**, not a provider — and the same logic applies to any othe
 ### Mandatory disclosure paths used by the plugin
 
 1. **Machine-readable mark** — embed a C2PA manifest with the `c2pa.ai-disclosure` assertion (spec 2.4, April 2026) via `/digital-marketing-pro:c2pa-metadata`. **This satisfies the Section 1 secured-metadata requirement automatically.** Note: the Code Section 1 also requires a watermarking layer — this is a *provider* obligation, but if you're stitching together outputs from multiple providers (e.g., AI-generated images composited in a separate design tool), verify the marks survive your post-processing pipeline.
-2. **Visible deepfake disclosure** — for any AI-generated image/video/audio that resembles a real person, place, or object: visible icon/label/disclaimer on the asset OR in the adjacent caption / alt text / publication metadata. DMP's content pipeline auto-adds this when `c2pa_auto_sign: true` is on for the brand and the generator emitted `ai-claim: ai-generated-content`. **Anticipate the standardized EU icon** — when the final Code publishes (expected mid-2026; as of July 2026 not yet confirmed), DMP will adopt the standardized EU disclosure icon from the annex.
+2. **Visible deepfake disclosure** — for any AI-generated image/video/audio that resembles a real person, place, or object: visible icon/label/disclaimer on the asset OR in the adjacent caption / alt text / publication metadata. DMP's content pipeline auto-adds this when `c2pa_auto_sign: true` is on for the brand and the generator emitted `ai-claim: ai-generated-content`. **Anticipate the standardized EU icon** — the standardized EU disclosure icons shipped in the final Code annex (10 June 2026), DMP will adopt the standardized EU disclosure icon from the annex.
 3. **Editorial-review proof for AI-generated text** — if you're publishing long-form AI-written articles to inform the public on matters of public interest, the editorial-review exception applies only if a human editor signed off with editorial responsibility. Your documented review records (the quality-assurance agent's logged evals, reviewer scorecards, sign-off notes) serve as evidence; **archive them for at least 3 years** (typical regulatory retention).
 
 ## The final Code is published — signatory decision and adoption
 
 The final Code landed 10 June 2026. What that changes operationally:
 
-- **Signatory decision is now live.** The Commission confirmed the Code as an adequate voluntary tool: signatories gain legal predictability across EU Member States, while non-signatories must demonstrate that their alternative measures meet the standard through individual market-surveillance assessment. **Initial-signatory forms are due 22 July 2026** (signing remains possible later). Document the decision in `brand.profile.json → compliance.eu_code_of_practice_signatory: true|false`.
+- **Signatory decision is now live.** The Commission confirmed the Code as an adequate voluntary tool: signatories gain legal predictability across EU Member States, while non-signatories must demonstrate that their alternative measures meet the standard through individual market-surveillance assessment. The **initial-signatory window closed 22 July 2026** (late signing remains possible). Document the decision in `brand.profile.json → compliance.eu_code_of_practice_signatory: true|false`.
 - **Cite the final Code URL** (done throughout this doc) and **use the standardized EU disclosure icons** from the final Code annex for visible labels.
 - Adopt the final disclosure-language templates as the AI Office publishes annex updates, and fold vertical-specific samples into `industry-profiles.md` as they appear.
 
@@ -93,7 +93,7 @@ Run this checklist before 2 August 2026 for any brand with EU target markets:
 - [ ] Visible deepfake disclosure language drafted in EU languages relevant to target markets (DE / FR / IT / ES / NL / PL at minimum for major-EU brands)
 - [ ] Editorial-review logs archived for any AI-generated long-form content in `archives/` directory (3+ year retention)
 - [ ] Marketing platforms (CMS, social schedulers, email tools) confirmed to preserve C2PA metadata on re-upload (some platforms strip it — verify with `/digital-marketing-pro:c2pa-metadata --verify-roundtrip`)
-- [ ] Decide whether brand/parent will sign the Code as a signatory and document in `brand.profile.json` — **initial-signatory forms due 22 July 2026**
+- [ ] Decide whether brand/parent will sign the Code as a signatory and document in `brand.profile.json` — **initial-signatory window closed 22 July 2026; late signing remains possible**
 - [ ] Replace any placeholder AI-disclosure labels with the standardized EU icons from the final Code annex
 
 ## Related skills

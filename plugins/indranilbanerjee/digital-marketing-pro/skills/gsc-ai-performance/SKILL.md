@@ -115,7 +115,7 @@ A structured GSC AI performance brief containing:
 
 1. **No click data.** Google explicitly chose not to include click metrics. AI-to-website attribution must come from GA4 (the new `AI Assistant` channel group, added 13 May 2026, captures `Medium=ai-assistant` referrals from ChatGPT/Gemini/Claude). Note: GA4's channel may or may not specifically attribute Google's own AI Mode traffic the same way — verify in your property.
 2. **UI only at launch.** No public API. Wait for Google to publish the AI report under the Search Console Search Analytics API (`searchanalytics.query`) before automating against it. Current automation must rely on CSV export + manual upload.
-3. **UK first.** If your brand's primary market is outside the UK, the report may not show data yet. Mark the date you first see data so subsequent month-over-month comparisons start from a real baseline.
+3. **Rollout completed broadly July 2026.** The report started UK-first but access expanded broadly in July 2026, so most properties should now see it. Mark the date you first see data so subsequent month-over-month comparisons start from a real baseline.
 4. **Tab placement may move during rollout.** Google often refines the UI in the first 30–60 days. If the exact tab path differs from step 2 above, look anywhere in the Performance > Search results area for "AI", "Generative", "AI Mode", or "AI Overviews" labels.
 5. **Don't compare AI Overviews impressions to classic SERP impressions one-for-one.** AI Overviews surface differently — an "impression" there means your page was used as a grounding source, which is a stricter bar than appearing in a 10-blue-link result.
 

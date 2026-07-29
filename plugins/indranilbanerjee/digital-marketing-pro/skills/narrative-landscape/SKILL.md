@@ -41,5 +41,5 @@ A comprehensive narrative landscape analysis containing:
 
 ## Agents Used
 
-- **competitor-intelligence** — Competitive messaging extraction and analysis across websites, advertising, social media, and press coverage, positioning signal scoring on each narrative dimension, cluster and gap identification through landscape pattern analysis, and competitive response prediction for recommended positioning moves
+- **competitive-intel** — Competitive messaging extraction and analysis across websites, advertising, social media, and press coverage, positioning signal scoring on each narrative dimension, cluster and gap identification through landscape pattern analysis, and competitive response prediction for recommended positioning moves
 - **marketing-strategist** — Positioning strategy development from gap analysis to actionable territory selection, customer desirability and brand credibility scoring for each gap, messaging framework creation with key messages, proof points, and content themes, and territory-claiming content plan with 30/60/90-day milestones across channels

@@ -33,7 +33,8 @@ The user must provide (or will be prompted for):
    python "${CLAUDE_PLUGIN_ROOT}/scripts/competitor-tracker.py" \
        --brand {slug} --action share-of-voice \
        --data '{"dimensions":{...},"competitors":[...],"measured_at":"YYYY-MM-DD"}'
-   ``` This creates a time-series data point in the brand's competitive visibility history. Each saved measurement enables trend analysis on subsequent runs — powering period-over-period comparison, momentum detection, seasonal pattern recognition, and long-term competitive trajectory charting across all dimensions.
+   ```
+   This creates a time-series data point in the brand's competitive visibility history. Each saved measurement enables trend analysis on subsequent runs — powering period-over-period comparison, momentum detection, seasonal pattern recognition, and long-term competitive trajectory charting across all dimensions.
 
 ## Output
 
@@ -49,5 +50,5 @@ A structured share of voice analysis containing:
 
 ## Agents Used
 
-- **competitor-intelligence** — Competitive data collection across all SOV dimensions including organic ranking research, ad library analysis, social listening queries, and AI citation auditing. Competitor baseline and historical data retrieval for trend comparison. Competitive positioning interpretation with strategic context on what SOV shifts mean for market dynamics, revenue implications, and recommended competitive response priorities
+- **competitive-intel** — Competitive data collection across all SOV dimensions including organic ranking research, ad library analysis, social listening queries, and AI citation auditing. Competitor baseline and historical data retrieval for trend comparison. Competitive positioning interpretation with strategic context on what SOV shifts mean for market dynamics, revenue implications, and recommended competitive response priorities
 - **analytics-analyst** — Multi-dimensional data aggregation with configurable weighting for overall SOV score calculation, click-through-rate visibility modeling for organic keyword SOV, sentiment-weighted social SOV computation, trend analysis with period-over-period delta calculation and momentum detection, opportunity sizing with effort-impact estimation for SOV gap closure, and visualization-ready data structuring for dashboard tables and historical trend chart outputs
