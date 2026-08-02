@@ -713,6 +713,21 @@
       "description": "Full token-saving stack in one plugin - output compression, global rules, RTK hook, Caveman ultra, GitNexus config. Detects existing setup, installs only what's missing. Works on Claude Code and Codex."
     },
     {
+      "name": "falsegreen-skill",
+      "displayName": "falsegreen-skill",
+      "source": {
+        "source": "local",
+        "path": "./plugins/vinicq/falsegreen-skill"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Development & Workflow",
+      "description": "Finds tests that stay green when the code they cover is broken, applying six ordered judgments over Python, TypeScript, JavaScript, and Robot Framework suites in Codex CLI and Claude Code.",
+      "icon": "./plugins/vinicq/falsegreen-skill/assets/icon.svg"
+    },
+    {
       "name": "frappe-agent",
       "displayName": "Frappe Agent",
       "source": {

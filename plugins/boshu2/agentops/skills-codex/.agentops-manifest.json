@@ -2,7 +2,7 @@
   "generator": "manual-maintained",
   "source_root": "skills",
   "layout": "modular",
-  "codex_override_catalog_hash": "d093b00a7e7880043ae4e0a0375d4f1e774f80347d5986f0eef6052cd7e37331",
+  "codex_override_catalog_hash": "a9840cf9e06c17b0a00615f50f6796bb45ecd84b6943fa82fa98aab455efc9db",
   "codex_override_catalog": {
     "version": 1,
     "description": "Machine-readable Codex treatment map for the full skill catalog.",
@@ -332,6 +332,12 @@
         "treatment": "parity_only",
         "wave": "catalog-parity",
         "reason": "Auto-generated parity twin (codex-sync): skills/fitness is the source of truth; no durable Codex-specific divergence yet."
+      },
+      {
+        "name": "using-flywheel",
+        "treatment": "parity_only",
+        "wave": "catalog-parity",
+        "reason": "Auto-generated parity twin (codex-sync): skills/using-flywheel is the source of truth; no durable Codex-specific divergence yet."
       }
     ]
   },
@@ -495,8 +501,8 @@
     {
       "name": "plan",
       "source_skill": "skills/plan",
-      "source_hash": "a6adecafcd6855f518889904c6a61a4ea1ccf69bc3cbbc79a0f7c6f13e2d02ea",
-      "generated_hash": "42f3a346eae257e2e7b9a1a3962607cd3d8e6794a79000803a1ab615fe331748"
+      "source_hash": "cac2270ad512a4a98545188d4d0226cb20b7ee171869a26087aa54b4214b6e94",
+      "generated_hash": "13442700ba62845ded07bc8dbb4753ad76f03d839a24ac60bb1d269f9de3edf8"
     },
     {
       "name": "postmortem",
@@ -549,8 +555,8 @@
     {
       "name": "rpi",
       "source_skill": "skills/rpi",
-      "source_hash": "b061835709f18d89368212bf58456909144356f49f6b4c7d95a288a9f0381580",
-      "generated_hash": "223b2f7a659f8991421d11d54f790914206b356bce7e4e1f037cbd55cae5e7bc"
+      "source_hash": "d15e26926e5f9e91a222ed53f8fba5cd01d13b47fdf7664fb2ea1a33dd2cebe3",
+      "generated_hash": "fbe0cfd52384650ebb4fc2de73bb09afb1feef3570ba53fae1043714b09280ac"
     },
     {
       "name": "sbh",
@@ -619,16 +625,22 @@
       "generated_hash": "11d4272652686c2da5ff11e15e510f5e56f30e5fc3f9dd2414dced0a00055f12"
     },
     {
+      "name": "using-flywheel",
+      "source_skill": "skills/using-flywheel",
+      "source_hash": "3a3952c0040141e358f41e4e576c4322a4469bc3102b0f27899058ee6d594aaf",
+      "generated_hash": "deab3c2e6555c0ec62391100178cc33ecfe501b20cb774f39ab7338012d18dbb"
+    },
+    {
       "name": "using-gc",
       "source_skill": "skills/using-gc",
-      "source_hash": "61c5030f76e3afb27525c0213ebc1bf326e76f08c3ae00989e49ab6307ce5970",
-      "generated_hash": "186390451ef61b71495a5340fe9c358679ce8b0912a23429d7f8c9610ccf17c5"
+      "source_hash": "fa961808745dbb3304622af95164ff621d65f79c59acfbd4c411fdf21f5bba07",
+      "generated_hash": "122cfc099b6851ada7020e2d85730cf7c1137402a0a42dd54bbab63ec39b287d"
     },
     {
       "name": "validate",
       "source_skill": "skills/validate",
-      "source_hash": "3f8fd13efb33dabd114dbb66deb0eea5d3762de888b081c753a27c1fba557e03",
-      "generated_hash": "93b79b850fe0c6581305e1357ad2e83923d3a83cd3d3c23be342e70c9e0902ca"
+      "source_hash": "4cad5b18f30ecba7944b1502624e38bb75fc329666464c614fc9051d4d3bd10c",
+      "generated_hash": "1938a59144b5aaf9de48e0c3e03e00750107b60904d517742dfcedf63d011304"
     },
     {
       "name": "workflow-builder",
@@ -637,5 +649,5 @@
       "generated_hash": "30f72769961a244749883e03cb04e329cd0feb03dd5b641d2a73a2e5dc8e9d42"
     }
   ],
-  "package_count": 50
+  "package_count": 51
 }
