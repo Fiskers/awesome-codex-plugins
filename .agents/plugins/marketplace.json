@@ -2203,20 +2203,6 @@
       "icon": "./plugins/sergebulaev/linkedin-skills/assets/icon.svg"
     },
     {
-      "name": "x-skills",
-      "displayName": "X (Twitter) Skills",
-      "source": {
-        "source": "local",
-        "path": "./plugins/sergebulaev/x-skills"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
-      "category": "Tools & Integrations",
-      "description": "Codex-ready X (Twitter) marketing bundle with a native .codex-plugin manifest: tweet and thread writing with corpus-validated hook formulas (validated against ~450 top tweets), AI-tell humanizer, hook extraction, reply drafting, content planning, and audience insights; also works in Claude Code."
-    },
-    {
       "name": "costguard",
       "displayName": "Maestro: Costguard",
       "source": {
@@ -2727,6 +2713,20 @@
       },
       "category": "Tools & Integrations",
       "description": "Push events from GitHub, Gmail, Slack, and any signed webhook (Linear, Sentry, ClickUp) straight into your Codex threads as new turns — event-driven triggers instead of polling, with HMAC verification, deduplication, and a durable delivery queue."
+    },
+    {
+      "name": "x-skills",
+      "displayName": "X (Twitter) Skills",
+      "source": {
+        "source": "local",
+        "path": "./plugins/sergebulaev/x-skills"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Tools & Integrations",
+      "description": "Codex-ready X (Twitter) marketing bundle with a native .codex-plugin manifest: tweet and thread writing with corpus-validated hook formulas (validated against ~450 top tweets), AI-tell humanizer, hook extraction, reply drafting, content planning, and audience insights; also works in Claude Code."
     },
     {
       "name": "x-twitter-scraper",

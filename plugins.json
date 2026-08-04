@@ -1500,16 +1500,6 @@
       "install_url": "https://raw.githubusercontent.com/sergebulaev/linkedin-skills/HEAD/.codex-marketplace/linkedin-skills/.codex-plugin/plugin.json"
     },
     {
-      "name": "X (Twitter) Skills",
-      "url": "https://github.com/sergebulaev/x-skills",
-      "owner": "sergebulaev",
-      "repo": "x-skills",
-      "description": "Codex-ready X (Twitter) marketing bundle with a native .codex-plugin manifest: tweet and thread writing with corpus-validated hook formulas (validated against ~450 top tweets), AI-tell humanizer, hook extraction, reply drafting, content planning, and audience insights; also works in Claude Code.",
-      "category": "Tools & Integrations",
-      "source": "awesome-codex-plugins",
-      "install_url": "https://raw.githubusercontent.com/sergebulaev/x-skills/HEAD/.codex-marketplace/x-skills/.codex-plugin/plugin.json"
-    },
-    {
       "name": "Maestro: Costguard",
       "url": "https://github.com/mbanderas/costguard",
       "owner": "mbanderas",
@@ -1858,6 +1848,16 @@
       "category": "Tools & Integrations",
       "source": "awesome-codex-plugins",
       "install_url": "https://raw.githubusercontent.com/glenncalleja/wakewire/HEAD/plugin/.codex-plugin/plugin.json"
+    },
+    {
+      "name": "X (Twitter) Skills",
+      "url": "https://github.com/sergebulaev/x-skills",
+      "owner": "sergebulaev",
+      "repo": "x-skills",
+      "description": "Codex-ready X (Twitter) marketing bundle with a native .codex-plugin manifest: tweet and thread writing with corpus-validated hook formulas (validated against ~450 top tweets), AI-tell humanizer, hook extraction, reply drafting, content planning, and audience insights; also works in Claude Code.",
+      "category": "Tools & Integrations",
+      "source": "awesome-codex-plugins",
+      "install_url": "https://raw.githubusercontent.com/sergebulaev/x-skills/HEAD/.codex-marketplace/x-skills/.codex-plugin/plugin.json"
     },
     {
       "name": "X Twitter Scraper",
