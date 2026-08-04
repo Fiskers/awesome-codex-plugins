@@ -1509,7 +1509,7 @@
       },
       "category": "Development & Workflow",
       "description": "Skills for VillageSQL including building extensions from scratch and porting PostgreSQL extensions to VillageSQL.",
-      "icon": "./plugins/villagesql/villagesql-skills/assets/icon.svg"
+      "icon": "./plugins/villagesql/villagesql-skills/assets/icon.png"
     },
     {
       "name": "waggle",
@@ -2055,20 +2055,6 @@
       "description": "Create GitHub repositories from Codex with inferred defaults, native menus, explicit confirmation, and deterministic local cloning."
     },
     {
-      "name": "haunt-mcp",
-      "displayName": "Haunt",
-      "source": {
-        "source": "local",
-        "path": "./plugins/Darko893/haunt-mcp-server"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
-      "category": "Tools & Integrations",
-      "description": "Web extraction for AI agents: any permitted public page to structured JSON or clean Markdown from a plain-English prompt, plus Reddit posts and comments with no Reddit app or OAuth, company profiles from a URL, and GitHub repo data. Login walls and CAPTCHAs return typed errors instead of fabricated data, and failed calls are not charged."
-    },
-    {
       "name": "hermes-tweet",
       "displayName": "Hermes Tweet",
       "source": {
@@ -2522,6 +2508,21 @@
       "category": "Tools & Integrations",
       "description": "Knowledge-backed SolidWorks design and validation workflows for Codex with standards lookup, CAD evidence gates, and consent-based session learning.",
       "icon": "./plugins/Erfouni/solidworks-GPT-plugin/assets/icon.svg"
+    },
+    {
+      "name": "storyflo-codex-plugin",
+      "displayName": "Storyflo",
+      "source": {
+        "source": "local",
+        "path": "./plugins/droplinked/storyflo-codex-plugin"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Tools & Integrations",
+      "description": "Agentic newsroom over a hosted MCP server with narrated briefings, a news-versus-prediction-market Divergence Index, and a searchable declassified archive.",
+      "icon": "./plugins/droplinked/storyflo-codex-plugin/assets/icon.png"
     },
     {
       "name": "n8n-mcp-synta-codex",

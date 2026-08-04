@@ -39,6 +39,41 @@ and entitlement rules can be audited. Production credentials and customer
 records are held by Cloudflare and Polar and are never stored in Git. Public
 source code is not public access to the hosted service or its data.
 
+## Profile Build, $300
+
+Mining takes seconds. Deciding which of the mined rules are actually true about
+you, and cutting the rest, is the part that takes judgment, and it is the part
+most people never finish.
+
+I do that pass by hand for $300.
+
+You send two files: the `you.md` your agent drafted, and the `receipts.json`
+that `emulo verify you.md --json` writes on your machine. Nothing else. I never
+ask for your session logs and I never see them.
+
+Back within three business days:
+
+- the profile rewritten, with every rule whose quote appears in none of your
+  sessions removed rather than softened
+- every rule that would be true of any developer removed as well, because a
+  profile full of those makes an agent confidently bland, which is worse than an
+  agent that knows nothing
+- what survives restructured into the `work`, `design`, `write` and `video`
+  layers, so a design opinion never loads into a debugging session
+- the exact install lines for the agents you actually use
+- a note listing everything I cut, split into "no receipt" and "too generic"
+
+**If it does not contain at least three rules you agree with and would never have
+thought to write down, I refund you and tell you why.**
+
+I will not claim this makes your agent better. I restructured evidence you
+produced, and you will judge whether it helped faster if I have not oversold it.
+
+Paid by invoice or PayPal. This is a service, not a product in the store, so it
+does not go through the Emulo checkout.
+
+[ohadkrispin@gmail.com](mailto:ohadkrispin@gmail.com?subject=Emulo%20Profile%20Build)
+
 ## Not memory
 
 Memory is what you explicitly told the model.

@@ -7,26 +7,19 @@
 
 **See where your time went, without sending it anywhere.**
 
-A privacy-first [Codex skill-only plugin](https://developers.openai.com/codex/plugins/build) that
-turns local [ActivityWatch](https://activitywatch.net/) data into clear app,
-project, category, billable-time, AFK, and sanitized timeline reports. It runs
-on macOS, Windows, and Linux wherever ActivityWatch and Python are available.
+A privacy-first Codex skill-only plugin that turns local
+[ActivityWatch](https://activitywatch.net/) data into copyable daily overview,
+app usage, local-time timeline, and foreground browser-page tables. The current
+workflow targets macOS and keeps all activity data on the machine.
 
-中文简介：这是一个基于本机 ActivityWatch 的跨平台电脑使用情况汇总技能。它不会上传
-活动数据，不安装浏览器扩展，也不会展示完整网址。
+中文简介：这是一个基于本机 ActivityWatch 的 macOS 电脑使用情况汇总技能。它不会
+上传活动数据，不安装浏览器扩展，也不会展示完整网址。
 
 ## Requirements
 
-- macOS, Windows, or Linux
+- macOS
 - Python 3.9 or newer
 - ActivityWatch running locally with the window and AFK watchers enabled
-
-On Windows, install the small IANA time-zone data dependency before using an
-explicit `--timezone Area/City` value:
-
-```bash
-python -m pip install -r requirements.txt
-```
 
 Install ActivityWatch from an official source of your choice. Before enabling
 automatic startup, verify its publisher and operating-system security prompt.
@@ -38,8 +31,16 @@ repository never downloads, installs, or starts ActivityWatch automatically.
 Install the repository as a skill-only Codex plugin, or install the
 `skills/computer-usage-summary` directory directly with Codex's skill
 installer.
-For a local clone, the skill directory can also be copied into
-`~/.codex/skills/computer-usage-summary/`.
+For a local clone under active development, link the source directory so every
+source edit is used directly without reinstalling:
+
+```bash
+ln -s /absolute/path/to/computer-usage-summary-skill/skills/computer-usage-summary \
+  ~/.codex/skills/computer-usage-summary
+```
+
+Start a new Codex task after creating or replacing the link so skill metadata
+is rediscovered.
 
 After this repository is published, a GitHub-directory install looks like:
 
@@ -54,53 +55,32 @@ Ask Codex: `Summarize what I did today on my Mac.`
 Or run the bundled script directly:
 
 ```bash
-# Default JSON report for an agent or another program
+# Complete copyable Markdown report
 python3 skills/computer-usage-summary/scripts/activitywatch_summary.py --date today
 
 # Paste an application table into Excel, Numbers, or Feishu Sheets
 python3 skills/computer-usage-summary/scripts/activitywatch_summary.py --date today --format tsv --table apps
 
-# Review the Monday-Sunday week containing the anchor date
-python3 skills/computer-usage-summary/scripts/activitywatch_summary.py --date 2026-07-26 --period week --format markdown --table trend
+# Multi-day report using inclusive local dates
+python3 skills/computer-usage-summary/scripts/activitywatch_summary.py --start 2026-07-20 --end 2026-07-26
 
-# Review the month containing the anchor date
-python3 skills/computer-usage-summary/scripts/activitywatch_summary.py --date 2026-07-26 --period month --format tsv --table categories
+# Structured JSON for additional analysis
+python3 skills/computer-usage-summary/scripts/activitywatch_summary.py --date today --format json
 
-# A readable timeline in Markdown
+# Paste a chronological timeline into a spreadsheet
 python3 skills/computer-usage-summary/scripts/activitywatch_summary.py --date today --format markdown --table timeline
 
-# Keep timeline titles out of the output
-python3 skills/computer-usage-summary/scripts/activitywatch_summary.py --date today --format tsv --table timeline --hide-titles
+# Show foreground browser pages with at least two minutes of active time
+python3 skills/computer-usage-summary/scripts/activitywatch_summary.py --date today --table browser --min-tab-seconds 120
 
-# An Excel-friendly CSV file with a UTF-8 BOM
-python3 skills/computer-usage-summary/scripts/activitywatch_summary.py --start 2026-07-20 --end 2026-07-26 --format csv --table apps --csv-bom --output weekly-apps.csv
-
-# Create a client-ready timesheet from local app/title mapping rules
-python3 skills/computer-usage-summary/scripts/activitywatch_summary.py --date today --period week --rules examples/rules.json --format csv --report client-timesheet --csv-bom --output client-timesheet.csv
+# Save a UTF-8 CSV application table
+python3 skills/computer-usage-summary/scripts/activitywatch_summary.py --date today --format csv --table apps --output daily-apps.csv
 ```
 
-Tables are available as `summary`, `apps`, `projects`, `categories`, `trend`,
-and `timeline`. Report templates are `client-timesheet`, `weekly-review`, and
-`app-trend`. User-facing times are emitted in the selected local time zone; use
-`--timezone Asia/Singapore` to make a report reproducible across machines.
-`--api-url` defaults to the local ActivityWatch API and should remain on
-loopback addresses.
-
-## Local Project Rules
-
-Copy [examples/rules.json](examples/rules.json) and make it yours. Rules match
-application names, application regular expressions, or **already-sanitized**
-window-title patterns. The first matching rule wins. Rules stay on your device
-and are never uploaded.
-
-```json
-{
-  "defaults": {"category": "Admin", "billable": false},
-  "rules": [
-    {"app": "Code", "project": "Website refresh", "client": "Northwind Studio", "category": "Client work", "billable": true}
-  ]
-}
-```
+Tables are available as `summary`, `daily`, `apps`, `browser`, and `timeline`.
+The default `report` combines the daily, app, browser, and timeline tables.
+User-facing times use the Mac system timezone unless an explicit
+`--timezone Area/City` override is supplied.
 
 See the [local-first landing page](https://liuyewang.github.io/computer-usage-summary-skill/)
 for a synthetic report preview and the [design-partner guide](docs/DESIGN_PARTNERS.md)
@@ -109,9 +89,9 @@ to help shape future reports without sharing activity data.
 ## Limitations
 
 Accurate historical foreground and AFK time begins only after ActivityWatch
-starts recording. Without ActivityWatch, macOS has no reliable public history
-for foreground-app time or application launches. The skill can provide a
-clearly labeled limited-evidence report but will not invent time totals.
+starts recording. Browser rows contain only pages observed in the foreground;
+they do not represent every open tab or browser history. Without ActivityWatch,
+macOS has no reliable public history for foreground-app time or launches.
 
 See [PRIVACY.md](PRIVACY.md) for the data-handling rules and
 [CONTRIBUTING.md](CONTRIBUTING.md) for development checks, and

@@ -238,7 +238,7 @@ jobs:
 
 <!-- x-release-please-start-version -->
 
-最新リリース: [v1.71.0](https://github.com/s977043/river-review/releases/latest)
+最新リリース: [v1.72.2](https://github.com/s977043/river-review/releases/latest)
 
 <!-- x-release-please-end -->
 
@@ -537,6 +537,8 @@ CLI の `--output` と GitHub Action の `output_format` は次の形式を受�
 ### CLI Runnerインターフェイス（runners/cli）
 
 新しいCLIインターフェイスにより、コアランナー機能に直接アクセスできます:
+
+> **注意**: このセクションのコマンドは `runners/cli` の CLI です。`npm install` で PATH に入る `river`（`package.json` の `bin`）は**メイン CLI（`src/cli.mjs`）で別物**なので、下記は `node runners/cli/bin/river <subcommand>` として実行するか、`npm link runners/cli` でリンクしてから使ってください。メイン CLI の `river eval` は「レビュー fixture の評価」であり `--all` を受け付けません（#1709 以降は未知オプションとして exit 1）。メイン CLI で全スキルを評価する場合は `npm run eval:all`（`scripts/evaluate-all.mjs`）を使います。
 
 - `river review [files...]` - ファイルをレビュー（実行プラン生成とスキル選択）
 - `river eval <skill>` - スキル定義の検証と評価

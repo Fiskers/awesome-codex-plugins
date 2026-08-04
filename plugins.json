@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "awesome-codex-plugins",
   "version": "1.0.0",
-  "last_updated": "2026-08-03",
+  "last_updated": "2026-08-04",
   "total": 188,
   "categories": [
     "Development & Workflow",
@@ -1400,16 +1400,6 @@
       "install_url": "https://raw.githubusercontent.com/zfifteen/gh-project-plugin/HEAD/.codex-plugin/plugin.json"
     },
     {
-      "name": "Haunt",
-      "url": "https://github.com/Darko893/haunt-mcp-server",
-      "owner": "Darko893",
-      "repo": "haunt-mcp-server",
-      "description": "Web extraction for AI agents: any permitted public page to structured JSON or clean Markdown from a plain-English prompt, plus Reddit posts and comments with no Reddit app or OAuth, company profiles from a URL, and GitHub repo data. Login walls and CAPTCHAs return typed errors instead of fabricated data, and failed calls are not charged.",
-      "category": "Tools & Integrations",
-      "source": "awesome-codex-plugins",
-      "install_url": "https://raw.githubusercontent.com/Darko893/haunt-mcp-server/HEAD/.codex-plugin/plugin.json"
-    },
-    {
       "name": "Hermes Tweet",
       "url": "https://github.com/Xquik-dev/hermes-tweet",
       "owner": "Xquik-dev",
@@ -1718,6 +1708,16 @@
       "category": "Tools & Integrations",
       "source": "awesome-codex-plugins",
       "install_url": "https://raw.githubusercontent.com/Erfouni/solidworks-GPT-plugin/HEAD/.codex-plugin/plugin.json"
+    },
+    {
+      "name": "Storyflo",
+      "url": "https://github.com/droplinked/storyflo-codex-plugin",
+      "owner": "droplinked",
+      "repo": "storyflo-codex-plugin",
+      "description": "Agentic newsroom over a hosted MCP server with narrated briefings, a news-versus-prediction-market Divergence Index, and a searchable declassified archive.",
+      "category": "Tools & Integrations",
+      "source": "awesome-codex-plugins",
+      "install_url": "https://raw.githubusercontent.com/droplinked/storyflo-codex-plugin/HEAD/.codex-plugin/plugin.json"
     },
     {
       "name": "Synta MCP",

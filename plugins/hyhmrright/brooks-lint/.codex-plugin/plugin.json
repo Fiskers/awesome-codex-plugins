@@ -1,6 +1,6 @@
 {
   "name": "brooks-lint",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "AI code reviews grounded in twelve classic engineering books — decay risk diagnostics with book citations, severity labels, and six analysis modes (PR review, architecture audit, tech debt, test quality, health dashboard, full-sweep auto-fix)",
   "author": {
     "name": "hyhmrright",
@@ -31,6 +31,11 @@
       "Interactive"
     ],
     "websiteURL": "https://github.com/hyhmrright/brooks-lint",
+    "defaultPrompt": [
+      "Review this PR for code decay risks",
+      "Audit this codebase's architecture",
+      "Assess the tech debt in this repo"
+    ],
     "composerIcon": "./assets/logo.svg",
     "logo": "./assets/logo.svg"
   }
