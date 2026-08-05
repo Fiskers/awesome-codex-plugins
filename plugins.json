@@ -2,8 +2,8 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "awesome-codex-plugins",
   "version": "1.0.0",
-  "last_updated": "2026-08-04",
-  "total": 188,
+  "last_updated": "2026-08-05",
+  "total": 189,
   "categories": [
     "Development & Workflow",
     "Tools & Integrations"
@@ -1348,6 +1348,16 @@
       "category": "Tools & Integrations",
       "source": "awesome-codex-plugins",
       "install_url": "https://raw.githubusercontent.com/dodopayments/dodo-agent-plugin/HEAD/.codex-plugin/plugin.json"
+    },
+    {
+      "name": "Droplinked",
+      "url": "https://github.com/droplinked/droplinked-codex-plugin",
+      "owner": "droplinked",
+      "repo": "droplinked-codex-plugin",
+      "description": "Verified-inventory agentic commerce over a hosted MCP server, with merchant and product discovery, agent-initiated checkout, and onchain brand, credit-risk, and repayment attestations.",
+      "category": "Tools & Integrations",
+      "source": "awesome-codex-plugins",
+      "install_url": "https://raw.githubusercontent.com/droplinked/droplinked-codex-plugin/HEAD/.codex-plugin/plugin.json"
     },
     {
       "name": "Education Agent Skills",

@@ -29,6 +29,15 @@ The coordinator spec and workspace plan each open with the declaration block abo
 
 In a monorepo, the coordinator is the root and module docs stay with modules. In a multi-repo change, docs stay in their owning repos and each repo gets its own commit. No project registry or global status database.
 
+## Scope decides the process
+
+Multi-module adds coordination, not complexity. The skill chain follows scope alone — triage classifies exactly as it would for single-repo work. Cross-repo work adds two fixed mechanics that apply to every multi-module change regardless of size:
+
+1. **Declaration block** — the mode marker and change manifest (`coordinator`, `change-set`, `repos`).
+2. **Commit protocol** — integration acceptance, dependency-ordered commits, revision set recorded.
+
+Both are execution mechanics, not workflow stages.
+
 ## Minimal lifecycle
 
 `prepare → implement → sync docs → test modules → integrate → record revisions → archive`
@@ -45,7 +54,7 @@ No percentages or global state machine. Use only `blocked` and `partial-commit` 
 
 - Inspect each repo before editing. A missing repo, red baseline, or unrelated dirty change blocks the change. Do not clone, reset, rebase, discard, or absorb changes automatically.
 - IDE visibility does not grant write authority. Edit or commit only registered repositories.
-- Do not add repos after implementation starts; update the manifest and plans first.
+- Adding a repo after implementation starts: update the declaration block and confirm with the user. Return to `design` only if the addition changes a shared contract.
 - Put the change-set ID in branch names and linked commit subjects, e.g. `[praxis:checkout-v2]`.
 
 ## Integration and commits
@@ -65,8 +74,6 @@ Use branches for implementation. Fixed-SHA detached checkouts are valid for read
 
 ## Tool scope
 
-Harnesses launch from a single working directory. Semantic indexing (code graph, symbol search) only covers the coordinator repo — sibling modules at `../` paths are not indexed. File tools (`read`, `grep`, `glob`) still work across repos with relative paths.
+Tools run from the coordinator's cwd. Cross-repo access requires an explicit path parameter — tools without one stay coordinator-only.
 
-When dispatching a subagent to a module repo, note the repo path and that semantic tools may need an explicit project parameter. If the harness has no cross-repo tooling, fall back to file-level search.
-
-This is a harness limitation, not a Praxis defect.
+When dispatching a subagent to a module repo, note the repo path and that semantic tools may need an explicit project parameter.
