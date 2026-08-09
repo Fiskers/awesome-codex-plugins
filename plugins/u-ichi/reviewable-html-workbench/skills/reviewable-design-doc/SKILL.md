@@ -45,7 +45,7 @@ Follow the language of the latest user request for progress updates, final respo
 5. Generate requested images with `imagegen` and attach them before rendering.
 6. Run `check-model`, `render`, `validate`, and `preview`.
 7. Start `watch-comments` after preview startup.
-8. When the user adds comments, ingest them, classify them, reply in the HTML thread, and apply resolved feedback only after gates allow it.
+8. When the user adds comments, ingest them, reply in the HTML thread to every thread listed in `needs_agent_review_threads`, and apply resolved feedback only after gates allow it.
 
 ## 設計資料モデル作成の規約
 
@@ -147,6 +147,7 @@ For comparisons with three or more axes, use `<table class="cmp">` inside `table
 - **原典図の引用優先。** 原典に重要な図がある場合は出所を明示して引用し、模倣図を作らない。
 - **矢印文字・絵文字を図記号にしない。** 図が要るなら Mermaid diagram block か inline SVG を使う。
 - **直列手順をフローチャート化しない。** 単純な直列手順は番号付きリストで表現する。
+- **Mermaid の `mindmap` を使わない。** mindmap は日本語などの CJK ラベルで箱の採寸を誤り、文字が箱からはみ出し・重なって崩れる (2026-08-06 実測)。放射状の分類は `flowchart` の中心ノード + 枝で表現する。
 - **inline SVG の色は theme に追従させる。** 紙面に直接乗る文字・線 (軸ラベル・行列の見出し・凡例の説明文・座標軸・区切り線) は `fill="currentColor"` / `stroke="currentColor"` で書き、`#333` のような固定色を直書きしない。固定色は light theme でしか読めず、dark theme では紙面と同化して消える。塗りつぶした図形 (rect / path) 自体の色と、その塗りの上に重ねる文字は、両 theme で読める固定色でよい。
 
 ## 印刷と PDF
@@ -157,7 +158,7 @@ For comparisons with three or more axes, use `<table class="cmp">` inside `table
 
 When unsure about visual choices, follow four rules; explicit user direction always wins. (1) Avoid stereotypical AI-generated looks — cream (#F4F1EA) with serif display and terracotta accent, near-black with a lone acid-green pop, emoji as section markers, centering everything, uniformly large border radii, accent bars on rounded cards. (2) Structural devices must encode facts: numbered markers (01/02/03) only when the content truly is a sequence; rules, eyebrows, and labels only when they mark real divisions. (3) Documents are read, dashboards are scanned: put summaries before detail and encode state in form (rating dots, tag colors, callout stripes), not numbers alone. (4) Create spacing with `gap` in flex/grid rather than stacked per-element margins, and give wide tables/code/diagrams their own `overflow-x: auto` container (`table-scroll` for tables) so the page body never scrolls sideways.
 
-Diagram and procedure guidance: (a) Prefer citing an original figure with attribution over redrawing it. (b) Do not use arrow characters or emoji as diagram symbols — use a Mermaid diagram block or inline SVG when a figure is needed. (c) Do not turn a simple linear procedure into a flowchart; use a numbered list. (d) In inline SVG, draw text and strokes that sit directly on the page (axis labels, row/column headings, legend captions, rules) with `fill="currentColor"` / `stroke="currentColor"` instead of hard-coded colors such as `#333`, which are legible only in the light theme and disappear against the dark theme's paper; fills of shapes and the text placed on top of those fills may keep fixed colors as long as both themes can read them.
+Diagram and procedure guidance: (a) Prefer citing an original figure with attribution over redrawing it. (b) Do not use arrow characters or emoji as diagram symbols — use a Mermaid diagram block or inline SVG when a figure is needed. (c) Do not turn a simple linear procedure into a flowchart; use a numbered list. (d) Do not use Mermaid `mindmap`: it mis-measures CJK labels so text overflows and overlaps its node boxes (observed 2026-08-06); express radial groupings as a `flowchart` with a central node and branches. (e) In inline SVG, draw text and strokes that sit directly on the page (axis labels, row/column headings, legend captions, rules) with `fill="currentColor"` / `stroke="currentColor"` instead of hard-coded colors such as `#333`, which are legible only in the light theme and disappear against the dark theme's paper; fills of shapes and the text placed on top of those fills may keep fixed colors as long as both themes can read them.
 
 Print and PDF: browser print (`@media print`) hides chrome (topbar, toc, comment rail) and unwraps horizontal-scroll tables/code so content is preserved. Run `export-pdf` only when the user explicitly asks for a PDF (`python3 -m scripts.html_review_workbench.cli export-pdf --root <output-dir>`); preview URLs remain the default. Headless Chrome is required; missing Chrome returns an error JSON (no external service fallback).
 <!-- END SHARED: html-design-guidance -->
@@ -342,7 +343,7 @@ IMPORTANT: レビューコメントへの回答は、必ず `add-reply` CLI で 
 
 ## Handling Review Comments
 
-Start this workflow when the user says comments were added or asks to `ingest review comments`, `process review comments`, `reply to review comments`, or `apply resolved comments`. Always run `ingest-review` to classify comments and write review-cycle state only, inspect each comment's `comment` and `selected_text`, write substantive answers with `add-reply` when a thread needs a response, and apply actionable feedback only when the review gates allow it. Do not answer only in chat; the durable answer belongs in the HTML comment thread.
+Start this workflow when the user says comments were added or asks to `ingest review comments`, `process review comments`, `reply to review comments`, or `apply resolved comments`. Always run `ingest-review` to write review-cycle state only, inspect each comment's `comment`, `selected_text` and full `replies`, write substantive answers with `add-reply` for every thread in `needs_agent_review_threads`, and apply resolved feedback only when the review gates allow it. Do not answer only in chat; the durable answer belongs in the HTML comment thread.
 
 ## コメント自動回答と解決待ちゲート
 
@@ -363,16 +364,19 @@ agent は Monitor ツールでこのプロセスの stdout を監視する。各
 
 `watch-comments` から `comment_updated` イベントを受信したら:
 
-1. `ingest-review --root <dir>` でコメントを分類し、状態だけを保存する。`ingest-review` の実行だけで返信が追加されることはない。
-2. `comment` と `selected_text` を読み、設計資料の文脈を踏まえて実質的な回答を作成する。
-3. 回答・受領・確認依頼が必要なコメントにだけ `add-reply --root <dir> --thread-id <id> --body "<reply>"` で HTML コメントスレッドに書き戻す。
-4. 回答本文をコンソール（会話）にも出力する。ユーザーはブラウザとコンソールの両方で回答を確認できる。
-5. `actionable` コメントにはまだ設計変更を適用しない。回答で受領を伝え、スレッド解決後に反映する旨を書く。
-6. 自動回答が完了したら、設計変更には進まず停止する。`ingest-review` と `watch-comments` の出力に含まれる `gate` フィールドが `blocked` の場合、`document-model.json` を含むいかなる設計ファイルも変更してはならない。ゲートが `open` になるまで待機する。
+1. イベント行の `gate.needs_agent_review_threads` を見る。ここに並ぶ thread id が、ユーザーが返信を待っているスレッドである。空でなければ必ず本フローを実行する。`gate` が `open` でも、それは「設計反映してよい」という意味だけで、「自分宛ての用件が無い」という意味ではない。
+2. `ingest-review --root <dir>` で状態を保存する。`ingest-review` の実行だけで返信が追加されることはない。
+3. 対象スレッドの `comment` と `selected_text`、および `replies` の全文（ユーザーが agent の返信の後に書いた再指摘を含む）を読み、設計資料の文脈を踏まえて実質的な回答を作成する。
+4. `add-reply --root <dir> --thread-id <id> --body "<reply>"` で HTML コメントスレッドに書き戻す。これによりそのスレッドの status は `needs_user_reply` になり、gate から外れる。
+5. 回答本文をコンソール（会話）にも出力する。ユーザーはブラウザとコンソールの両方で回答を確認できる。
+6. 未解決のコメントにはまだ設計変更を適用しない。回答で受領を伝え、スレッド解決後に反映する旨を書く。
+7. 自動回答が完了したら、設計変更には進まず停止する。
 
 ### 解決待ちゲート
 
-IMPORTANT: 未解決の `needs_clarification` スレッドがある間は、設計反映（ドキュメント修正）に進まない。
+IMPORTANT: ユーザーの返信待ち（`status: needs_agent_review`）のスレッドが 1 件でもある間は、設計反映（ドキュメント修正）に進まない。
+
+ゲートの判定はコメント本文の解釈ではなく `comments.json` の `status` だけで行う。ユーザーが返信すると status は必ず `needs_agent_review` に戻り、agent が `add-reply` すると `needs_user_reply` になる。
 
 修正判断の前に以下でゲートを確認する:
 
@@ -381,15 +385,21 @@ python3 -m scripts.html_review_workbench.cli check-gates \
   --root <output-dir>
 ```
 
-- `{"gate": "blocked", ...}` → 設計修正を行わない。コメントへの回答に専念する。
-- `{"gate": "open", "resolved_actionable": [...]}` → 解決済みの actionable スレッド内容を document model に反映してよい。
+出力は常に全 key を含む:
+
+```json
+{"gate": "blocked", "needs_agent_review_threads": ["cmt_x"], "resolved_threads": [], "status_counts": {"needs_agent_review": 1, "needs_user_reply": 0, "resolved": 0}}
+```
+
+- `"gate": "blocked"` → 設計修正を行わない。`needs_agent_review_threads` の各スレッドへの回答に専念する。
+- `"gate": "open"` → `resolved_threads` の各スレッドを反映候補として検討してよい。反映すべき内容かどうかはスレッド全体を読んで agent が判断する。
 
 ### スレッド解決時の反映フロー
 
 ユーザーがスレッドを「解決」した `comment_updated` イベントを受信したら:
 
 1. `check-gates` でゲートが `open` であることを確認する。
-2. `resolved_actionable` の各スレッドについて、スレッド全体の議論を読み、修正が必要か判断する。
+2. `resolved_threads` の各スレッドについて、スレッド全体の議論を読み、修正が必要か判断する。
 3. 必要な修正を document model に適用する。
 4. `render` CLI で再生成する。
 5. `notify-update --root <dir> --message "コメント反映済み"` でブラウザに更新通知を送る。
@@ -406,7 +416,7 @@ python3 -m scripts.html_review_workbench.cli notify-update \
 
 ## Automatic Comment Reply and Resolution Gate
 
-After preview startup, monitor browser comment events with `watch-comments`. On each `comment_updated` event, run `ingest-review`, identify clarification threads, write same-thread replies with `add-reply`, and avoid design edits while unresolved clarification threads remain. Before applying any document changes, run `check-gates`. Apply resolved actionable feedback to the document model, re-render, and use `notify-update` so the browser shows an update notice without forcing an automatic reload.
+After preview startup, monitor browser comment events with `watch-comments`. Each event line carries a `gate` object; `gate.needs_agent_review_threads` lists the threads that are waiting for your reply. On each `comment_updated` event, read those threads in full (including user replies posted after your own), run `ingest-review`, and write same-thread replies with `add-reply`. The gate is `blocked` while any thread has status `needs_agent_review`; `gate: open` only means design edits are allowed, never that there is nothing addressed to you. Before applying any document changes, run `check-gates`, then apply `resolved_threads` feedback to the document model, re-render, and use `notify-update` so the browser shows an update notice without forcing an automatic reload.
 
 ## CodexでのCLI呼び出し
 
@@ -558,6 +568,7 @@ IMPORTANT: Never edit `comments.json` directly with the Edit tool or any file-wr
 2. `check-gates` が `blocked` を返している状態で `document-model.json` を変更すること。
 3. `ingest-review` の出力に `"gate": {"gate": "blocked", ...}` が含まれている状態で設計変更に着手すること。
 4. `render` の stderr 警告を無視して次のステップに進むこと。
+5. `gate` が `open` であることを根拠に、コメントの中身を読まずに「自分宛ての用件は無い」と判断すること。返信要否は `needs_agent_review_threads` で判断する。
 
 The following actions are explicitly prohibited. Violations cause data corruption or review process breakdown.
 
@@ -565,3 +576,4 @@ The following actions are explicitly prohibited. Violations cause data corruptio
 2. Modifying `document-model.json` while `check-gates` returns `blocked`.
 3. Starting design changes when `ingest-review` output contains `"gate": {"gate": "blocked", ...}`.
 4. Ignoring `render` stderr warnings and proceeding to the next step.
+5. Concluding "nothing is addressed to me" from `gate: open` without reading the comments. Reply obligations are decided by `needs_agent_review_threads`.

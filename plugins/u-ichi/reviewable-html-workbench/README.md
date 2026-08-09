@@ -16,7 +16,7 @@ Reviewable HTML Workbench solves this by putting the review conversation **insid
 
 1. **Generate** — The agent produces an HTML bundle with structured sections, diagrams, and images.
 2. **Review** — You open the preview, select any text or image, and leave a comment right where the issue is.
-3. **Ingest** — The agent reads your comments, classifies each one, and writes replies explaining what it will change.
+3. **Ingest** — The agent reads every thread that is waiting on it and writes replies explaining what it will change.
 4. **Improve** — The agent updates the document, re-renders, and you see the changes in context.
 5. **Repeat** — Keep commenting and refining until the document is ready.
 
@@ -30,7 +30,7 @@ The plugin includes three skills. `visual-html-renderer` creates reviewable visu
 - **Automatic Agent Replies**: when you add a comment in the browser, the agent can read the selected text and surrounding document context, then write its reply back into the same thread.
 - **Resolution-Gated Updates**: clarification threads stay in the document until you resolve them. Once the thread is resolved, the agent can apply the agreed document changes and notify the browser.
 - **Plan Preview URLs**: when a plan needs visual review, the agent can include a temporary Reviewable HTML Workbench preview URL directly in the plan text.
-- **Review Ingestion**: comments are classified as actionable, clarification, already addressed, and related states so the review conversation stays structured across iterations.
+- **Review Ingestion**: every thread carries a status (`needs_agent_review` / `needs_user_reply` / `resolved`) that says whose turn it is, so a reply you post after the agent's answer always brings the thread back to the agent.
 - **Publish & Download**: switch to a clean reading view with no review UI, then download a single self-contained HTML file with all CSS and images embedded. The exported file auto-detects OS light/dark theme.
 - **Document Model**: schema-driven document input for predictable HTML generation.
 - **HTML Rendering**: produces `index.html`, copied assets, and `renderer-manifest.json`.
@@ -134,7 +134,7 @@ Open the preview URL. Select text or images, add comments where the issue appear
 
 ### 3. Let the agent answer comments
 
-When comments are added, the agent can read them, classify what needs action or clarification, and then write substantive replies into the same browser threads with `add-reply`. You can read the agent reply beside the original selected text.
+When comments are added, the agent can read every thread that is waiting on it and write substantive replies into the same browser threads with `add-reply`. You can read the agent reply beside the original selected text.
 
 ### 4. Resolve threads to trigger updates
 
@@ -181,7 +181,7 @@ python3 -m scripts.html_review_workbench.cli <command>
 | `preview` | Start or describe a session-scoped preview runtime. |
 | `plan-preview` | Create an ephemeral HTML preview for a proposed plan. |
 | `plan-preview-stop` | Stop and clean up an ephemeral plan preview. |
-| `ingest-review` | Read review comments, classify them, and save review-cycle state. |
+| `ingest-review` | Read review comments and save review-cycle state (status counts and thread ids). |
 | `validate` | Validate a generated HTML bundle. |
 | `add-reply` | Add an agent reply to a comment thread in `comments.json`. |
 | `check-gates` | Check whether unresolved clarification threads block document updates. |

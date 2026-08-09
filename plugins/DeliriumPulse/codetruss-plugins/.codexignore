@@ -1,5 +1,6 @@
 .git/
 .github/
+PLUGIN-SUBMISSION.md
 .claude-plugin/
 dist/
 node_modules/

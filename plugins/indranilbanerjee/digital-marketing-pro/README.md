@@ -12,10 +12,11 @@ Open-source AI marketing plugin — **158 skills, 24 specialist agents, EU AI Ac
 [![Forks](https://img.shields.io/github/forks/indranilbanerjee/digital-marketing-pro?style=flat&logo=github&color=blue)](https://github.com/indranilbanerjee/digital-marketing-pro/network/members)
 [![Issues](https://img.shields.io/github/issues/indranilbanerjee/digital-marketing-pro?logo=github)](https://github.com/indranilbanerjee/digital-marketing-pro/issues)
 [![Last commit](https://img.shields.io/github/last-commit/indranilbanerjee/digital-marketing-pro?logo=github)](https://github.com/indranilbanerjee/digital-marketing-pro/commits/main)
-[![Tests](https://img.shields.io/badge/tests-210%2F210%20passing-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-212%2F212%20passing-brightgreen.svg)](tests/)
 [![Platforms](https://img.shields.io/badge/platforms-8%20native%20%2B%2035%20Agent%20Skills-success.svg)](#works-on-40-agent-harnesses-via-the-agent-skills-open-standard)
 [![Cowork](https://img.shields.io/badge/cowork-team%20persistent-purple.svg)](#supported-surfaces-v3171)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](skills/context-engine/compliance-rules.md)
+[![Sponsor](https://img.shields.io/badge/sponsor-%E2%9D%A4-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/indranilbanerjee)
 
 > 🆕 **Just shipped — v3.17.1 (July 30, 2026): registry reconciliation + the anonymity guard.** The canonical model registry caught up with the July-9 GPT-5.6 GA and the Claude 5 family on its balanced/fast aliases (`latest-balanced-anthropic` → claude-sonnet-5, `latest-balanced-openai` → gpt-5.6-terra, `latest-fast-openai` → gpt-5.6-luna; GPT-5.5/5.4 marked superseded with replacement routing) — caught by this repo's own cross-registry drift tests. Plus a new machine-enforced source-anonymity guard that scans every file on every test run. Previously — **v3.17.0 (July 29): the Line-by-Line Audit.** Every one of the repo's 530 files — all 158 skills, 24 agents, 18 commands, 86 scripts, and every doc — was read end-to-end by a 16-reader audit fleet and re-verified against July-2026 ground truth. ~250 fixes shipped: dead platforms and retired tools purged (Google Podcasts, Chartable, GSC legacy tools, GARM, HARO, giropay…), stale API/model claims corrected, doc↔script contract drift eliminated (every documented flag, payload, and threshold now matches the code), the storage split-brain fully closed, statistical tables regenerated from the plugin's own calculators, and the self-containment guard extended to docs/, scripts/, and root. 210/210 tests green. [Read what's new →](#whats-new) · [Full changelog →](CHANGELOG.md)
 >
@@ -85,7 +86,7 @@ That's it. You never touched a command line. Your team Drive will hold the outpu
 
 Most AI marketing tools generate isolated outputs — a campaign brief here, an email there. No canonical sequence, no shared state, no enforced structure. Result: inconsistent depth, missed dependencies, outputs that don't compound.
 
-**DM Pro runs every brand through the same 12 parts, producing the same files in the same order, with explicit dependency rules between them.** That's the whole product. Everything else — the 158 skills, 24 agents, May–June 2026 compliance updates, Cowork persistence — exists to make that 12-Part Flow ship cleanly for real agencies on real client work.
+**DM Pro runs every brand through the same 12 parts, producing the same files in the same order, with explicit dependency rules between them.** That's the whole product. Everything else — the 158 skills, 24 agents, May–June 2026 compliance updates, Cowork persistence — exists to make that 12-Part Flow ship cleanly across real marketing operations.
 
 | What this gives you that ad-hoc prompts don't | Why it matters |
 |---|---|
@@ -884,7 +885,7 @@ If DM Pro saves your team time, [⭐ star the repo](https://github.com/indranilb
 
 ## About the maintainer
 
-DM Pro is built and maintained by **[Indranil Banerjee](https://indranil.in)** — a digital marketing practitioner shipping engagement methodology as code. The 12-Part Strategy Flow comes from real client engagements across consumer DTC, B2B SaaS, regulated industries (health, finance), and agency multi-brand portfolios.
+DM Pro is built and maintained by **[Indranil “Neel” Banerjee](https://indranil.in)** — a builder and systems thinker with roots in information security and a second act across growth marketing, enterprise digital operations, and AI transformation. This repository is one public implementation of a broader focus on trustworthy AI execution: preserve context, make evidence inspectable, and keep people at consequential decision points.
 
 - 🌐 **Website:** [indranil.in](https://indranil.in)
 - 💼 **LinkedIn:** [linkedin.com/in/askneelnow](https://www.linkedin.com/in/askneelnow)
@@ -896,13 +897,27 @@ DM Pro is built and maintained by **[Indranil Banerjee](https://indranil.in)** �
 
 **Why this plugin exists:** Most AI marketing tools generate isolated outputs that don't compose. The 12-Part Strategy Flow encodes the canonical sequence a real engagement actually needs — Stone-vs-Opinion intake, Four Core Documents, Client Validation, Two-Views Model, Decision Matrix, Growth Plan + Yearly Planner, channel fan-out, execution artefacts, creative briefs, continuous improvement loop. Once it's a plugin, every engagement looks the same, handoffs work, and quality is auditable. That's the whole product.
 
-If DM Pro saves your team time, [⭐ star the repo](https://github.com/indranilbanerjee/digital-marketing-pro/stargazers) — it's the single most useful thing you can do to help other marketing teams discover it. Sharing on **LinkedIn** ([linkedin.com/in/askneelnow](https://www.linkedin.com/in/askneelnow)) or **X** ([@askneelnow](https://x.com/askneelnow)) helps too — tag me, I'll re-share.
+If DM Pro saves your team time, [⭐ star the repo](https://github.com/indranilbanerjee/digital-marketing-pro/stargazers) — it's the single most useful thing you can do to help other marketing teams discover it. Sharing it on **LinkedIn** or **X** helps people discover the work too.
 
 ---
 
 ## Contributing
 
 PRs welcome — especially on compliance rules (privacy and AI law change fast), industry profiles, and channel-specific updates. See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution workflow, [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) for the PR checklist, and [TESTING-GUIDE.md](TESTING-GUIDE.md) for per-phase test checklists. All contributors are expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md). Security issues: please use [Private Security Advisories](https://github.com/indranilbanerjee/digital-marketing-pro/security/advisories/new) per [SECURITY.md](SECURITY.md) — do not file public issues for vulnerabilities.
+
+---
+
+## Sponsor this project
+
+This plugin is MIT-licensed, free to use commercially, and collects no telemetry. What
+sponsorship pays for is the unglamorous half of keeping it accurate: platform-API updates
+when a vendor ships a breaking version, model-registry refreshes when a model is retired,
+compliance passes when regulatory guidance moves, and issue triage.
+
+If it saves your team time, you can [sponsor the work](https://github.com/sponsors/indranilbanerjee).
+Sponsors from $25/mo are listed in [SPONSORS.md](SPONSORS.md).
+
+[![Sponsor](https://img.shields.io/badge/sponsor%20on%20GitHub-%E2%9D%A4-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/indranilbanerjee)
 
 ---
 

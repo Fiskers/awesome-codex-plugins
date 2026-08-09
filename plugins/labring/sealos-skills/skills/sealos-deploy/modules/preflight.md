@@ -2,6 +2,23 @@
 
 Detect the user's environment, record what's available, guide them to fix what's missing.
 
+## Managed-mode gate
+
+Run this gate before the normal local preflight when `SEALAI_DEPLOY_MODE=managed`:
+
+```bash
+node "<SKILL_DIR>/scripts/managed-adapter.mjs" context
+```
+
+The command must succeed with the exact Brain contract. In particular, `SEALAI_INPUTS_PATH` must be `/run/sealai/deployment/inputs.json`; do not substitute a workspace path or create a second input artifact. The active kubeconfig and namespace are supplied by Brain, so managed mode skips OAuth, region/workspace selection, confirmation prompts, and system-tool installation. Use `SEALAI_NAMESPACE` as the target namespace and keep `SEALAI_TURN_DEADLINE_AT` as the hard deadline.
+
+The Codex runtime must expose both task-scoped MCP tools before the first managed action:
+
+- `template_ready({ sha256 })`
+- `deployment_completed({ workloads: [{ apiVersion, kind, name, namespace }] })`
+
+Tool availability is a hard prerequisite, not a best-effort feature. If either exact tool is missing, unavailable, unauthorized, or returns an unusable protocol response, stop managed mode with a fatal error. Do not emulate the call with `control.json`, a report file, an HTTP request, or a Brain-side Kubernetes mutation. Local mode does not run this gate and keeps the existing preflight behavior below.
+
 **Hard rule:** Every run must start with a preflight capability scan before touching the project.
 That means:
 - Detect tool availability first
@@ -10,6 +27,15 @@ That means:
 
 Preflight is responsible for early detection, but only some failures are immediate stop conditions.
 Do not treat Docker, `gh`, or `buildx` as universal entry requirements — they become mandatory only if the run actually needs local image build/push.
+
+### Safety Contract: Immediate and Conditional Capabilities
+
+The preflight result is a typed capability report with `ready`, `immediate_blockers`,
+`conditional_warnings`, `blocked_phases`, and `confirmation_required` fields. Auth,
+workspace, scoped kubeconfig, GitHub clone access, and `curl` are immediate gates for
+the paths that use them. Docker, Docker daemon/buildx, `gh`, registry login, `kubectl`,
+Python/PyYAML, `kompose`, and `crane` remain conditional until the selected workload and
+phase require them. Each warning names its blocked phase and safe next action.
 
 ## Tool Install Policy
 
@@ -22,6 +48,9 @@ Missing <tool>. Install it now? (y/n)
 
 If the user answers `y`, install the tool for the current platform, then re-run the corresponding check.
 If the install command needs elevated privileges, package-manager setup, or manual UI interaction, explain that before running it.
+Record the confirmation and post-install version in the capability report. A missing
+conditional tool keeps the relevant later path `stopped` and leaves provider resources
+untouched.
 
 ## Step 1: Environment Detection
 
@@ -532,6 +561,19 @@ Only reach this section after:
 - Step 2 capability classification completed
 - Step 4 auth/workspace checks passed
 - And only then Step 3 project context was collected
+
+Before handing control to `modules/pipeline.md`, preserve this order:
+
+1. authenticate and select the workspace;
+2. scope the kubeconfig to that workspace;
+3. collect project context and run the eligibility gate;
+4. resolve the selected build/template/deploy path;
+5. ask for confirmation immediately before each system-tool install, public exposure,
+   credential change, resource deletion, cleanup, or rollback.
+
+Preflight itself performs no provider mutation. Every later mutation reports the exact
+operation, target, impact, confirmation, and post-action evidence with sensitive values
+redacted.
 
 Report to user with a short readiness summary. This is a user-facing status snapshot, not a full artifact dump.
 Keep it focused on the key capabilities and blockers only.

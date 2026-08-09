@@ -1,7 +1,7 @@
 {
   "name": "codetruss",
-  "version": "0.1.5",
-  "description": "Verify the acceptance contract for coding-agent changes locally.",
+  "version": "0.1.6",
+  "description": "The deterministic first-pass verification gate for AI-written code.",
   "author": {
     "name": "CodeTruss",
     "email": "zack@codetruss.com",
@@ -21,7 +21,7 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "CodeTruss",
-    "shortDescription": "Local acceptance gate for coding-agent changes",
+    "shortDescription": "First-pass verification gate for AI-written code",
     "longDescription": "Declare approved scope and repository checks, evaluate the captured Git state locally, and produce a verifiable receipt before commit. Requires the separately installed free CodeTruss CLI; no CodeTruss account or upload is required.",
     "developerName": "CodeTruss",
     "category": "Developer Tools",

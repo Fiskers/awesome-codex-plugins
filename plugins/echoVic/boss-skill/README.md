@@ -6,7 +6,7 @@
 
 [中文文档](./README.zh-CN.md)
 
-![boss-skill promo](boss-skill-promo.png)
+![boss-skill promo](https://raw.githubusercontent.com/echoVic/boss-skill/main/boss-skill-promo.png)
 
 **Boss is an auditable agent-team workflow for coding agents.** It turns one coding agent into a structured engineering team: PM, Architect, UI Designer, Tech Lead, Scrum Master, Frontend, Backend, QA, and DevOps. Unlike prompt-only agent teams, Boss adds runtime state, append-only events, quality gates, deterministic evals, hooks, and replayable artifacts.
 

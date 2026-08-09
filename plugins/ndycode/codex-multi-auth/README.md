@@ -258,6 +258,7 @@ For remote or headless shells, prefer `codex-multi-auth login --device-auth`.
 | Budget guards | `~/.codex/multi-auth/budget-guards.json` |
 | Local client tokens | `~/.codex/multi-auth/local-client-tokens.json` |
 | Runtime app helper status | `~/.codex/multi-auth/runtime-rotation-app-helper.json` |
+| Runtime app helper owner metadata | `~/.codex/multi-auth/runtime-rotation-app-helper-owner.<pid>.json` |
 | Persistent app bind state/logs | `~/.codex/multi-auth/app-bind/` |
 | Logs | `~/.codex/multi-auth/logs/codex-plugin/` |
 | Per-project accounts | `~/.codex/multi-auth/projects/<project-key>/openai-codex-accounts.json` |
@@ -391,7 +392,8 @@ codex-multi-auth doctor --json
 
 ## Release Notes
 
-- Current stable: [docs/releases/v2.8.1.md](docs/releases/v2.8.1.md) — install via `npm i -g codex-multi-auth`
+- Current stable: [docs/releases/v2.8.3.md](docs/releases/v2.8.3.md) — install via `npm i -g codex-multi-auth`
+- Previous stable: [docs/releases/v2.8.2.md](docs/releases/v2.8.2.md)
 - Previous stable: [docs/releases/v2.7.1.md](docs/releases/v2.7.1.md)
 - Previous stable: [docs/releases/v2.7.0.md](docs/releases/v2.7.0.md)
 - Previous stable: [docs/releases/v2.6.0.md](docs/releases/v2.6.0.md)

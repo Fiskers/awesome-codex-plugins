@@ -13,7 +13,7 @@ agent.
 
 - Work inside the developer's Git repository and inspect existing policy before
   proposing changes.
-- Run `codetruss --version` first. This skill targets v0.2.24 or newer. If the
+- Run `codetruss --version` first. This skill targets v0.2.35 or newer. If the
   CLI is missing or older, explain the prerequisite, then
   obtain explicit consent before downloading or installing software, including an upgrade.
 - Offer only the official install paths from `https://codetruss.com/cli`. Let
@@ -29,6 +29,19 @@ agent.
   as `REVIEW_REQUIRED`, exit `2` as `FAILED`, and exit `3` as a usage or
   environment failure. Exits 1 and 2 still produce receipts; other commands
   may use nonzero exits differently, so read their output.
+- A receipt also names what did not run, and that boundary moved in v0.2.35. A
+  local run now executes the shared SAST engine over the JavaScript, TypeScript
+  and TSX in the repository, covering SQL injection, mass assignment,
+  un-awaited database writes, swallowed errors, coercion-prone `==`, and N+1
+  queries in loops. The rest of the rule pack (command injection, code
+  injection, path traversal, SSRF, open redirect, XSS, insecure
+  deserialization), every non-JavaScript language, and the hosted symbol graph
+  stay hosted-only. Read the receipt's own "What did not run" section instead
+  of asserting either way from memory.
+  Report a `PASS` as the deterministic passes finding nothing new, never as
+  evidence that the change is secure.
+- Local security findings are `REVIEW_REQUIRED` at most. They never fail a
+  verdict on their own, so do not report one as a blocking failure.
 - Describe a valid signature as post-generation integrity evidence. Do not call
   it trusted execution, proof of authorship, or automatic compliance evidence.
 
@@ -89,6 +102,15 @@ plugin-bundled hook logic.
 5. Report the verdict, scope exceptions, sensitive surfaces, analyzer findings,
    verification results, evidence limitations, and receipt path. Distinguish a
    policy dispute from a product or shell failure.
+
+Since v0.2.32, a run with no allow policy infers the scope of the turn and marks
+those files `allowed (inferred)` on the receipt: treat an inferred allow as
+weaker evidence than a declared boundary and still propose a real `.codetruss.yml`.
+
+Since v0.2.34, a finding may carry a **Suggested fixes** entry with a diff and a
+required safety note: present it, never apply it automatically, and keep the
+note's rotation-first ordering for a credential, whose diff is deliberately
+masked and cannot apply cleanly.
 
 For a wrapped agent run, preserve the exact task and policy:
 

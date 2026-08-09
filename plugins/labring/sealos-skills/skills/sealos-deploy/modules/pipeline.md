@@ -57,8 +57,10 @@ All pipeline outputs are written under `.sealos/` in `WORK_DIR`:
 <WORK_DIR>/.sealos/
 ├── config.json                   ← user configuration overrides (manual, committed to git)
 ├── template-match.json           ← Phase 0.5 template fast-path decision
+├── deploy-handoff.json           ← typed phase handoff envelope (when emitted)
 ├── state.json                    ← deployment state (auto-maintained after Phase 6)
 ├── analysis.json                 ← project analysis snapshot (regenerated each deploy)
+├── runtime-truth.json            ← sanitized live evidence (written before state)
 ├── build/                        ← created only if Phase 4 actually runs
 │   └── build-result.json         ← Phase 4 result (`success` or `failed`)
 └── template/
@@ -69,6 +71,8 @@ All pipeline outputs are written under `.sealos/` in `WORK_DIR`:
 - `config.json` — optional user overrides (port, base_image, build_command, etc.). Created manually by user, committed to git. All fields optional.
 - `analysis.json` — project analysis snapshot written after Phase 1 (language, framework, score, etc.). Regenerated each deploy.
 - `state.json` — deployment state written after Phase 6 success. Contains `last_deploy` and `history`. Enables UPDATE mode on subsequent runs.
+- `runtime-truth.json` — sanitized Runtime Truth evidence written before verified state; it never contains credentials or raw Secret/ConfigMap values.
+- `deploy-handoff.json` — optional typed envelope for a phase boundary; it records source, owner, preconditions, evidence, redaction, terminal state, and the next action.
 
 **Note:** When reading dockerfile-skill modules (analyze.md, generate.md, build-fix.md), they reference `docker-build/` as their default output path. In this pipeline, always write to `.sealos/build/` instead. Similarly, template output goes to `.sealos/template/` instead of `template/`.
 
@@ -78,6 +82,7 @@ JSON artifacts under `.sealos/` are governed by explicit schemas in `<SKILL_DIR>
 - `analysis.schema.json`
 - `build-result.schema.json`
 - `state.schema.json`
+- `deploy-handoff.schema.json`
 
 Validate them with:
 
@@ -86,6 +91,25 @@ node "<SKILL_DIR>/scripts/validate-artifacts.mjs" --dir "$WORK_DIR"
 ```
 
 Writers should validate on write; readers should validate before trusting resume/update state.
+
+## Typed Dependency Boundaries
+
+Every receiving phase validates the upstream handoff before reading the next input. The
+validated summary contains `source`, `owner`, `preconditions`, `inputArtifact`,
+`allowedAction`, `failureReturn`, `responseOwner`, `evidence`, and `redaction`.
+
+| Boundary | Accepted evidence | Stopped return | Error return |
+| --- | --- | --- | --- |
+| Eligibility → assess | eligible decision with repository-relative evidence | unsupported or ambiguous workload, before `.sealos/` work | classifier execution failure |
+| Readiness → Dockerfile | validated analysis plus readiness owner and evidence | missing or stale analysis, with the readiness owner | schema or redaction violation |
+| Dockerfile/build → template | validated Dockerfile/build result and explicit image tag | build pending or image reuse not verified | build/template handoff failure |
+| Template → deploy | quality-gated template and delivery evidence | missing config or unconfirmed mutation | API/template error with sanitized detail |
+| Deploy → Runtime Truth/Canvas | live identity, runtime report, and sanitized artifact paths | runtime pending or unreadable handoff | failed smoke, logs, rollout, or footprint |
+
+The receiving phase consumes each report once and passes its verified summary forward.
+It keeps the existing fast path, image reuse, and lazy `.sealos/build/` creation. A
+failed handoff returns to its named owner with one recovery action; it does not trigger
+a second repository-wide source scan or silently substitute a guessed artifact.
 
 At the very start of the pipeline (before Phase 1), create the base artifact directory:
 
@@ -118,7 +142,10 @@ After preflight, determine whether this is a **first deploy** or an **update** o
 
 ### Step 1: Check for previous deployment state
 
-Read `.sealos/state.json` in `WORK_DIR`. If it exists and contains a `last_deploy` key with `app_name`, proceed to Step 2.
+Read `.sealos/state.json` in `WORK_DIR` and validate it with the artifact validator before
+using any field. If it exists and contains a `last_deploy` key with `app_name`, proceed to
+Step 2. A malformed state, incomplete provenance, unredacted handoff, or invalid Runtime
+Truth block returns `stopped` with the exact artifact path and reconciliation action.
 
 If no `last_deploy` key or file doesn't exist → proceed to **Step 1.5** (attempt discovery from cluster).
 
@@ -167,8 +194,9 @@ Found an existing deployment that appears to match this project:
 ### Step 2: Verify deployment is still running (requires kubectl)
 
 If `ENV.kubectl` is false:
-- Inform user: `"Found previous deployment record for {app_name}, but kubectl is not available. Will create a new instance instead."`
-- → **DEPLOY mode**
+- Return `stopped`: `state_live_identity_unavailable` with the safe action to restore the
+  selected Sealos kubeconfig or explicitly choose a new instance. Keep the state file for
+  reconciliation and perform no mutation.
 
 If `ENV.kubectl` is true, query the cluster:
 ```bash
@@ -177,8 +205,12 @@ KUBECONFIG=~/.sealos/kubeconfig kubectl --insecure-skip-tls-verify \
   -o jsonpath='{.spec.template.spec.containers[0].image}' 2>/dev/null
 ```
 
-- Command fails (deployment deleted or kubeconfig expired) → **DEPLOY mode** (remove `.sealos/state.json` or clear `last_deploy`)
-- Command returns current image → proceed to Step 3
+- Command fails (deployment deleted or kubeconfig expired) → `stopped` with
+  `state_live_identity_unavailable`; keep the state artifact and ask for reconciliation.
+- Command returns current image → compare app name, namespace, image, URL host, and
+  readiness with the validated `last_deploy` record before proceeding to Step 3.
+- Any mismatch → `stopped` with `state_live_identity_mismatch`; show only field names and
+  the safe reconciliation action. UPDATE never mutates a guessed target.
 
 ### Step 3: Ask user
 
@@ -213,11 +245,15 @@ Default: Update
 | `.sealos/build/build-result.json` exists and `outcome: "success"` | Phase 4 completed | Ask user: skip rebuild? |
 | `.sealos/template/index.yaml` exists | Phase 5 completed | Ask user: skip template generation? |
 
-If any artifacts exist, report to user:
+If any artifacts exist, validate each artifact before offering resume. Report to user:
 `"Found artifacts from a previous deploy attempt. [list found artifacts]."`
 Ask: `"Resume from where it left off? Or restart from Phase 1?"`
 
 If restart → remove `.sealos/analysis.json`, `.sealos/build/`, `.sealos/template/index.yaml` and start fresh.
+
+Keep `.sealos/build/` absent when the image-reuse handoff is `validated` and Phase 4 does
+not run. A directory created only by a failed or skipped build is a stale artifact and
+returns `stopped` until the user chooses a fresh build or the artifact is reconciled.
 
 ---
 
@@ -397,6 +433,30 @@ Output rules:
 
 ## Phase 2: Detect Existing Image
 
+### 2.S Source-Ready Static Site Image Path
+
+Before registry discovery, check the in-memory eligibility decision. When its reason
+codes contain `SOURCE_READY_STATIC_SITE`, the requested project has a root
+`index.html`, a public asset tree that can be served without transformation, and no
+higher-priority build, server-runtime, container, or sensitive-file signal.
+
+Set `STATIC_NGINX_IMAGE_BUILD=true` and update `.sealos/analysis.json` with
+`language: "html"`, `framework: "static_html"`, `package_manager: null`, port
+`8080`, and `image_ref: null`. Skip existing-image discovery for this source-only
+tree and continue to Phase 3. Phase 3 must generate the pinned static Nginx
+Dockerfile, and Phase 4 must build and push it through the same registry path as
+every other locally built image.
+
+This path is intentionally evidence-based and fail-closed. File count, extension,
+and directory depth are not deployment decisions. Preserve arbitrary regular public
+assets and their relative paths, including nested directories, while excluding
+repository metadata through `.dockerignore`. Give an existing container contract
+precedence over this path. Route build/runtime manifests and server-source signals
+through ordinary analysis. Stop for possible secrets, symbolic links, or a missing
+root `index.html`. Never silently omit a business asset from the image.
+
+The remaining Phase 2 instructions apply when `STATIC_NGINX_IMAGE_BUILD` is false.
+
 **If Node.js available:**
 ```bash
 # With GitHub URL:
@@ -473,6 +533,7 @@ If no Dockerfile exists, generate one.
 
 **Load the appropriate template from the internal dockerfile-skill:**
 ```
+<SKILL_DIR>/../dockerfile-skill/templates/static-nginx.dockerfile
 <SKILL_DIR>/../dockerfile-skill/templates/golang.dockerfile
 <SKILL_DIR>/../dockerfile-skill/templates/nodejs-express.dockerfile
 <SKILL_DIR>/../dockerfile-skill/templates/nodejs-nextjs.dockerfile
@@ -486,6 +547,15 @@ Read the template matching the detected language/framework, then adapt it:
 - Adjust build commands based on actual package manager (npm/yarn/pnpm/bun)
 - Add system dependencies if needed
 - Set correct entry point
+
+When `STATIC_NGINX_IMAGE_BUILD=true`, copy
+`<SKILL_DIR>/../dockerfile-skill/templates/static-nginx.dockerfile` as the project
+Dockerfile without adding a ConfigMap publication path or a frontend build stage.
+The pinned unprivileged Nginx image serves the recursively copied source-ready asset
+tree on port `8080`. Copy
+`<SKILL_DIR>/../dockerfile-skill/templates/static-nginx.dockerignore` to
+`$WORK_DIR/.dockerignore`; do not use the generic ignore list below, because arbitrary
+public assets such as Markdown downloads must not be silently omitted.
 
 **Pre-load Phase 1 analysis for analyze.md:**
 
@@ -509,12 +579,12 @@ If validation reports errors, fix the Dockerfile before proceeding to Phase 4.
 If Node.js is not available, manually verify the Validation Checklist in generate.md.
 
 **Key Dockerfile principles:**
-- Multi-stage build (builder + runtime)
+- Multi-stage build when compilation is required; source-ready static sites use the single-stage pinned Nginx template
 - Pin base image versions (never `:latest`)
-- Run as non-root user (USER 1001)
+- Run as a non-root user (for example USER 1001, or the static Nginx image's USER 101)
 - Proper `.dockerignore`
 
-Also generate `.dockerignore`:
+For non-static-image paths, also generate `.dockerignore`:
 ```
 .git
 node_modules
@@ -525,6 +595,8 @@ __pycache__
 .vscode
 .idea
 .sealos
+Dockerfile
+.dockerignore
 ```
 
 ---
@@ -572,7 +644,8 @@ Important:
 - When `build-push.mjs` or `ensure-image-pull-secret.mjs` runs inside a TTY, it will now ask once whether it should refresh missing GHCR scopes and, on `y`, run `gh auth refresh` in the same PTY before continuing.
 - If `gh auth refresh` exits successfully but the scopes are still missing, the script will immediately fall back to a full `gh auth login --web --scopes ...` in the same PTY and only continue after re-checking the scopes.
 - A successful GHCR push does **not** guarantee Sealos can pull the image.
-- For private GHCR packages, keep the deployment path GHCR-first and create an image pull Secret from the local `gh` CLI session before applying or updating workloads.
+- Treat every locally built and newly pushed GHCR image as private by default. Do not run a visibility or anonymous-pull probe; proceed immediately to the built-in image pull Secret path. For a fresh deploy, wait for the Template API to return the real instance name, then create the same-named Secret immediately. For an update, refresh the Secret before swapping the image because the real instance name is already known from state.
+- Do not attempt to make the package public during deployment. Do not probe or call GitHub REST endpoints, GraphQL mutations, package settings, or other visibility-changing paths; package visibility is not a deployment prerequisite.
 - Do **not** surface raw registry host/username/password/email as user-facing template inputs when local `gh auth status` is already available.
 
 If `build-push.mjs` or `ensure-image-pull-secret.mjs` returns:
@@ -619,7 +692,7 @@ Please run `docker login` in another terminal, then continue this deploy.
 
 ### 4.1 Build & Push
 
-Tag format: `<owner-or-user>/<repo-name>:YYYYMMDD-HHMMSS` (e.g., `ghcr.io/zhujingyang/kite:20260304-143022`). The timestamp ensures same-day rebuilds never collide.
+Tag format: `<lowercase-owner-or-user>/<lowercase-repo-name>:YYYYMMDD-HHMMSS` (e.g., `ghcr.io/zhujingyang/kite:20260304-143022`). Normalize the registry namespace and repository name to lowercase before constructing the image reference. The timestamp ensures same-day rebuilds never collide.
 
 Before invoking the build helper, create the build artifact directory:
 
@@ -638,7 +711,7 @@ Run the command that matches the user's chosen destination:
 
 Output: `{ "success": true, "image": "...", "registry": "ghcr" }` or `{ "success": false, "error": "..." }`
 
-For GHCR success, record whether the image is anonymously pullable. If Phase 4 built a GHCR image and it is still private, continue with the GHCR image and let Phase 6 create/update the pull Secret automatically from `gh auth token`.
+For GHCR success, `build-push.mjs` returns `requires_image_pull_secret: true`. Continue immediately with the GHCR image and let Phase 6 create/update the pull Secret automatically from `gh auth token`. Do not check or change package visibility.
 If Phase 2 reused an existing public image, do **not** trigger the GHCR pull-secret flow.
 
 **If Node.js not available (fallback — run docker directly):**
@@ -650,28 +723,18 @@ If the user chose GHCR:
 ```bash
 GH_USER=$(gh api user -q .login)
 gh auth token | docker login ghcr.io -u "$GH_USER" --password-stdin
-IMAGE="ghcr.io/$GH_USER/<repo-name>:$TAG"
+IMAGE="ghcr.io/$(printf '%s' "$GH_USER" | tr '[:upper:]' '[:lower:]')/<lowercase-repo-name>:$TAG"
 docker buildx build --platform linux/amd64 -t "$IMAGE" --push -f Dockerfile "$WORK_DIR"
 ```
 
 If the user chose Docker Hub:
 ```bash
 DOCKER_HUB_USER=$(docker info 2>/dev/null | sed -n 's/^ Username: //p')
-IMAGE="$DOCKER_HUB_USER/<repo-name>:$TAG"
+IMAGE="$(printf '%s' "$DOCKER_HUB_USER" | tr '[:upper:]' '[:lower:]')/<lowercase-repo-name>:$TAG"
 docker buildx build --platform linux/amd64 -t "$IMAGE" --push -f Dockerfile "$WORK_DIR"
 ```
 
-If `$IMAGE` is a GHCR image, immediately verify it is anonymously pullable before proceeding:
-
-```bash
-TOKEN=$(curl -fsSL "https://ghcr.io/token?scope=repository:$GH_USER/<repo-name>:pull" | sed -n 's/.*"token":"\\([^"]*\\)".*/\\1/p')
-curl -fsSLI \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Accept: application/vnd.oci.image.index.v1+json, application/vnd.docker.distribution.manifest.v2+json" \
-  "https://ghcr.io/v2/$GH_USER/<repo-name>/manifests/$TAG"
-```
-
-If that check returns 401/403 or the package visibility is still private, continue with the build but mark that Phase 6 must create/update the namespace image pull Secret before rollout.
+If `$IMAGE` is a newly built GHCR image, mark that Phase 6 must create/update the namespace image pull Secret. A fresh deploy must use the real instance name returned by the Template API; an update may refresh the known same-named Secret before rollout. Do not run visibility or anonymous-pull probes and do not attempt any package-visibility mutation.
 If the run is using an existing public image instead of a new local build, skip this secret-creation path.
 
 ### 4.2 Error Handling
@@ -819,7 +882,7 @@ After generating the base template, check if the app needs its public URL config
 - `imagePullPolicy: IfNotPresent`
 - `revisionHistoryLimit: 1`
 - `automountServiceAccountToken: false`
-- Add `template.spec.imagePullSecrets: [{ name: ${{ defaults.app_name }} }]` only for an authenticated private-image path; omit it for anonymously pullable images, including public GHCR images
+- For a locally built GHCR image, add `template.spec.imagePullSecrets: [{ name: ${{ defaults.app_name }} }]`. The Template API resolves this to the real generated instance name; the same-named Secret is created immediately after the deploy response. Omit it for anonymously pullable existing images and Docker Hub public images.
 - Every `spec.defaults.<name>.value` and every present `spec.inputs.<name>.default` must deserialize as a YAML string; quote numeric-, boolean-, and null-like values, while infrastructure fields such as replicas and ports remain numeric
 - **App CRD** (last resource): only `spec.data.url`, `spec.displayType`, `spec.icon`, `spec.name`, `spec.type` — no other fields (no `menuData`, `nameColor`, `template`, etc.)
 - **App CRD fixed enums**: `spec.displayType` must be `normal`; `spec.type` must be `link`
@@ -836,6 +899,47 @@ Any non-zero exit stops Phase 5. Fix the existing `index.yaml` and rerun the com
 
 Template is written to `.sealos/template/index.yaml`. No separate checkpoint file — the template file's existence is sufficient for resume detection.
 
+### Managed-mode handoff after Phase 5.3
+
+When `SEALAI_DEPLOY_MODE=managed`, the generated template must pass through the managed adapter before Brain sees it. This is the only managed mutation of the template artifact:
+
+```bash
+MANAGED_TEMPLATE_RESULT=$(node "<SKILL_DIR>/scripts/managed-adapter.mjs" \
+  prepare-template "$WORK_DIR/.sealos/template/index.yaml")
+TEMPLATE_SHA=$(printf '%s' "$MANAGED_TEMPLATE_RESULT" | jq -r '.sha256')
+```
+
+Run the complete quality gate against the exact file. The SHA sent to Brain must be computed from those final bytes; never hash a rendered copy. The adapter does not inject a Brain-owned Instance name, identity labels, or `extraLabels`.
+
+After the gate passes, call the task-scoped MCP tool exactly once for this template revision:
+
+```text
+template_ready({ sha256: TEMPLATE_SHA })
+```
+
+The tool response is the control decision, not a suggestion:
+
+- `decision: "continue"` — continue to deployment using the same final template.
+- `decision: "awaiting_user"` — end the current Codex turn immediately, before any Template API request, `kubectl apply`, or other deployment mutation. Brain extracts `spec.inputs` from this template, renders the existing form, and resumes the same task after the user submits it.
+- Any error, missing decision, stale task, or unavailable tool — stop managed mode as fatal. Do not write a substitute report or retry through another transport.
+
+Do not create `inputs-required.json` or another control/checkpoint file. The Template's `spec.inputs` is the sole form declaration.
+
+After apply, run the Skill's normal readiness and runtime-truth checks yourself. When those checks pass, report the actual resources created in the task namespace:
+
+```text
+deployment_completed({
+  workloads: [
+    { apiVersion, kind, name, namespace },
+    // include the current Ready Pod or Pods when available
+  ],
+  // optional: the tenant-owned public URL when the deployment exposes one
+  publicUrl: "https://<tenant-domain-app-url>"
+})
+```
+
+Brain only performs a small Ready check on these references and, when `publicUrl` is provided, probes it for a 2xx response. A `repair` response means continue diagnosing and repairing in this Codex turn; Brain does not apply, inspect logs, or debug for you.
+
 ---
 
 ## Phase 5.5: Interactive Configuration
@@ -844,6 +948,25 @@ After generating the template, guide the user through application configuration 
 This is a **critical** step — most applications need user-specific configuration to function properly.
 
 Before categorizing inputs, load `<SKILL_DIR>/../docker-to-sealos/references/bootstrap-account-modes.md` and classify the exact selected release as functional first-user signup, mandatory bootstrap credentials, or optional root reconciliation. For mandatory bootstrap, record whether credentials are deployer-supplied or runtime-generated. Record the selected mode in the deployment analysis.
+
+### Managed-mode configuration override
+
+In managed mode Brain owns the form. The Codex turn never asks the user questions and never copies submitted values into the prompt or `.sealos/template/index.yaml`:
+
+1. On the initial turn, follow the managed handoff above. If `template_ready` returns `awaiting_user`, stop the turn; do not poll or sleep waiting for the form.
+2. After Brain resumes the same task, read the fixed file named by `SEALAI_INPUTS_PATH` (it must equal `/run/sealai/deployment/inputs.json`) as a JSON object. Do not search for another input file and do not invent defaults for missing required keys.
+3. Pass that file to the Template API deploy helper without printing its contents:
+
+   ```bash
+   node "<SKILL_DIR>/scripts/deploy-template.mjs" \
+     "$WORK_DIR/.sealos/template/index.yaml" \
+     --args-file "$SEALAI_INPUTS_PATH"
+   ```
+
+   If the template has no inputs, continue with an empty argument object and do not require an input file.
+4. Re-run the final quality gate against the unchanged template immediately before deployment. User values are request arguments, not a second template artifact.
+
+The interactive/local configuration procedure below applies only when `SEALAI_DEPLOY_MODE` is not `managed`; leave it unchanged for local runs.
 
 ### 5.5.1 Extract Configuration from Template
 
@@ -972,6 +1095,10 @@ Configuration is applied directly to `.sealos/template/index.yaml`. No separate 
 ---
 
 ## Phase 6: Deploy to Sealos Cloud
+
+### Managed-mode execution
+
+In managed mode the Codex performs the deploy itself with the injected user kubeconfig and `SEALAI_NAMESPACE`. Do not call Sealos OAuth or ask Brain to apply the YAML. Use the managed-aware `deploy-template.mjs` path (or an equivalent direct `kubectl`/Template API operation) only after the `template_ready` decision permits continuation, and keep all apply, patch, log, and exec operations inside this Codex turn. Local mode continues to use the auth and kubeconfig instructions below.
 
 ### 6.1 Construct Deploy URL
 
@@ -1142,7 +1269,42 @@ On 201 success, the helper's allowlisted response contains:
 ```
 Extract the instance name and present to user.
 
-### 6.3.1 Post-Deploy Readiness Verification
+### 6.3.1 Create the Pull Secret Using the Real Instance Name
+
+For a locally built GHCR image, do **not** create the pull Secret before the Template
+API call. The requested repository/app name is not authoritative, and the API may
+generate a different Instance, App, and Deployment identity.
+
+Immediately after the `201` response:
+
+1. Read `REAL_APP_NAME` from the top-level response `name`. This is the authoritative
+   Secret name and the value resolved from `${{ defaults.app_name }}`.
+2. Read `NAMESPACE` from the active kubeconfig context.
+3. Create the Secret named exactly `$REAL_APP_NAME` before starting readiness waits:
+
+```bash
+REAL_APP_NAME="<response.name>"
+NAMESPACE=$(KUBECONFIG=~/.sealos/kubeconfig kubectl --insecure-skip-tls-verify \
+  config view --minify -o jsonpath='{.contexts[0].context.namespace}')
+
+node "<SKILL_DIR>/scripts/ensure-image-pull-secret.mjs" \
+  "$NAMESPACE" "$REAL_APP_NAME" "$IMAGE_REF"
+```
+
+The Template may create a Pod before the Secret exists, so a short initial
+`ErrImagePull` or `ImagePullBackOff` is expected. Do not delete or recreate the Pod,
+do not change package visibility, and do not replace the image. Kubelet retries image
+pulls automatically and should recover after the same-named Secret appears.
+
+Secret creation is a blocking post-deploy step: verify the Secret exists and that
+the live Deployment references `$REAL_APP_NAME` in `spec.template.spec.imagePullSecrets`
+before accepting readiness. If `response.name` is missing, empty, or does not match
+the rendered Secret reference, stop instead of guessing from the repository name.
+
+Skip this subsection when Phase 2 reused an existing public image or the selected
+registry was the Docker Hub public-image flow.
+
+### 6.3.2 Post-Deploy Readiness Verification
 
 After a 201 response, do not assume the app is usable. Verify Kubernetes readiness:
 
@@ -1180,7 +1342,7 @@ KUBECONFIG=~/.sealos/kubeconfig kubectl --insecure-skip-tls-verify \
 
 Acceptance requires the KubeBlocks `Cluster` to be Ready/Running, each expected `Component` and `InstanceSet` to converge, the account Secret to exist, and the application environment to point at the expected Service FQDN. For Redis, verify both `redis` and `redis-sentinel` components, `${APP_NAME}-redis-redis-account-default`, and `${APP_NAME}-redis-redis-redis.${NAMESPACE}.svc.cluster.local`. For MongoDB, verify `${APP_NAME}-mongo-mongodb-account-root` or the matching `mongodb` suffix variant before judging app initialization.
 
-### 6.3.2 Runtime Truth Pass for Authenticated Apps
+### 6.3.3 Runtime Truth Pass for Authenticated Apps
 
 For web apps with login or registration, verify the authenticated runtime state after the readiness checks pass:
 
@@ -1250,6 +1412,22 @@ KUBECONFIG=~/.sealos/kubeconfig kubectl --insecure-skip-tls-verify apply -f /tmp
 rm -f /tmp/sealos-deploy-rendered.yaml
 ```
 
+For a locally built GHCR image, `${{ defaults.app_name }}` from the rendered
+resources is the authoritative `REAL_APP_NAME` in this fallback path. Immediately
+after `kubectl apply`, create the same-named pull Secret before starting readiness
+waits:
+
+```bash
+REAL_APP_NAME="<rendered defaults.app_name>"
+node "<SKILL_DIR>/scripts/ensure-image-pull-secret.mjs" \
+  "$NAMESPACE" "$REAL_APP_NAME" "$IMAGE_REF"
+```
+
+The rendered Deployment must already reference `$REAL_APP_NAME` in
+`spec.template.spec.imagePullSecrets`. Do not delete or recreate a Pod that entered
+`ErrImagePull` or `ImagePullBackOff`; kubelet will retry after the Secret appears.
+Skip this step for an existing public image or the Docker Hub public-image flow.
+
 **Step 4 — Handle apply errors:**
 
 | Error | Fix |
@@ -1276,6 +1454,10 @@ App URL: `https://<app_host>.<CLOUD_DOMAIN>`
 
 Execute `<SKILL_DIR>/modules/runtime-truth.md` after every Template API or kubectl fallback deploy. Complete its Launchpad network, App URL, login, log, Event convergence, object-storage, and footprint gates before writing deployment state or reporting success.
 
+Write the allowlisted result to `.sealos/runtime-truth.json`, validate its redaction and
+identity fields, and keep the report `verified` only after the full stability window. A
+deploy response without this report is `stopped` with `runtime_pending`.
+
 ### Write state.json
 
 **This is critical for enabling future updates.** After a successful deploy, write `.sealos/state.json`:
@@ -1287,7 +1469,7 @@ Execute `<SKILL_DIR>/modules/runtime-truth.md` after every Template API or kubec
     "app_name": "<instance name, e.g. evershop-uvbp0n0n>",
     "app_host": "<ingress host prefix, e.g. evershop-4ha6b4mh>",
     "namespace": "<K8s namespace from kubeconfig>",
-    "region": "<Sealos region domain, e.g. gzg.sealos.run>",
+    "region": "<Sealos control-plane region domain, e.g. usw-1.sealos.io>",
     "image": "<IMAGE_REF used in this deploy>",
     "docker_hub_user": "<DOCKER_HUB_USER, or null if existing image was used>",
     "repo_name": "<REPO_NAME>",
@@ -1304,11 +1486,33 @@ Execute `<SKILL_DIR>/modules/runtime-truth.md` after every Template API or kubec
       "status": "success",
       "note": "Initial deployment"
     }
-  ]
+  ],
+  "runtime_truth": {
+    "status": "verified",
+    "captured_at": "<final Runtime Truth timestamp>",
+    "identity": {
+      "app_name": "<same live app name>",
+      "namespace": "<same live namespace>",
+      "image": "<same verified image>",
+      "url": "<same verified public URL>"
+    },
+    "evidence_paths": [".sealos/runtime-truth.json"],
+    "redaction_status": "complete",
+    "stability_window_seconds": 60,
+    "checks": ["network", "app-url", "auth", "logs", "events", "footprint"]
+  },
+  "provenance": {
+    "source": "sealos-deploy/runtime-truth",
+    "owner": "sealos-deploy",
+    "artifact_paths": [".sealos/analysis.json", ".sealos/template/index.yaml", ".sealos/runtime-truth.json"],
+    "redaction_status": "complete"
+  }
 }
 ```
 
-The `last_deploy` section is what **Deployment Mode Detection** reads on subsequent runs to decide between DEPLOY and UPDATE mode. Without it, every `/sealos-deploy` creates a new instance.
+Validate this complete state artifact before returning `success`. The `last_deploy` section
+is the resume hint; live App/Deployment identity remains the UPDATE authority. Canvas
+receives only the sanitized state and Runtime Truth paths after this validation passes.
 
 The `history` array is append-only — every subsequent update (via Update Path) adds an entry. See the **Update History** section at the end of this file for the full schema and rules.
 
@@ -1316,11 +1520,11 @@ Sources for each field:
 - `app_name`: from Template API response `name` or the rendered `defaults.app_name` (kubectl apply)
 - `app_host`: from the rendered `defaults.app_host` value, or parsed from the Ingress host
 - `namespace`: from kubeconfig context
-- `region`: from `~/.sealos/auth.json` `region` field (strip `https://`)
+- `region`: control-plane/API region from `~/.sealos/auth.json` `region` field (strip `https://`); this may differ from the App runtime domain
 - `image`: from `analysis.json` `image_ref`
 - `docker_hub_user`: from Phase 4 `DOCKER_HUB_USER` (null if Phase 2 found existing image)
 - `repo_name`: from `analysis.json` `project.repo_name`
-- `url`: constructed from `app_host` and `region`
+- `url`: the exact `APP_URL` verified by the Runtime Truth Pass, read from the live App resource or deployment response; never reconstruct it from `app_host` and `region`
 
 ---
 
@@ -1333,7 +1537,41 @@ rm -rf "$WORK_DIR"
 
 Do NOT clean up if `WORK_DIR` is the user's local project directory.
 
-For test deployments, delete the Sealos `Instance` and application resources before database RBAC. Keep KubeBlocks ServiceAccount, Role, and RoleBinding resources until the database `Cluster` finalizer has converged. When a `Cluster` or `Component` remains in `Deleting` after dependent pods and InstanceSets are gone, inspect the finalizers and use finalizer removal only as the last recovery step after recording the stuck resource and owner references.
+### Safety Contract: Full-Footprint Cleanup
+
+For test deployments, obtain explicit confirmation immediately before deletion and collect
+the complete footprint with `sealos-footprint.mjs`. Cleanup is complete only when the
+report has `collectionOk: true`, `cleanupComplete: true`, and an empty filtered list for
+every selected resource kind:
+
+- `instances.app.sealos.io` and `apps.app.sealos.io`
+- Deployments, StatefulSets, DaemonSets, CronJobs, Jobs, and Pods
+- Services and Ingresses
+- PVCs
+- KubeBlocks `Cluster`, `Component`, and related InstanceSets
+- managed `ObjectStorageBucket` resources and their app-scoped Secrets
+
+A kubectl listing error, permission error, timeout, or unavailable kubeconfig leaves
+cleanup unresolved even when the visible list is empty. Keep the last footprint report,
+the named owner references, and the safe recovery action. Delete the Sealos `Instance`
+and application resources before database RBAC. Keep KubeBlocks ServiceAccount, Role, and
+RoleBinding resources until the database `Cluster` finalizer has converged. A stuck
+`Cluster` or `Component` requires recorded finalizers and owner references before any
+last-resort recovery.
+
+### Safety Contract: Rollback and Branch Boundary
+
+Ask for explicit rollback confirmation before `rollout undo`, image reversal, or any
+resource mutation triggered by a failed update. Retain the previous image, previous
+validated state, failed rollout evidence, post-rollback live identity, and a fresh
+Runtime Truth report. A rollback with incomplete evidence returns `error` and keeps
+`last_deploy.image` at the previous value.
+
+The main-like branch owns OAuth deployment, UPDATE, Runtime Truth, rollback, cleanup, and
+Canvas handoff. `brain-deploy-preview` stays prepare-only with assessment, optional
+Railpack evidence, Dockerfile preparation, `build-request.json`, sandbox Kaniko or image
+reuse, template generation, and `delivery-manifest.json`. Preview work does not invoke
+OAuth deploy, UPDATE, Runtime Truth, or Canvas.
 
 ---
 
@@ -1370,6 +1608,11 @@ Mask sensitive values (API keys, passwords) — show only first 3 and last 3 cha
 
 The update path skips Assess, Detect Image, Dockerfile, and Template generation — it reuses the existing deployment and only pushes a new image.
 
+Before Phase U1, validate `.sealos/state.json` and reconcile it with a live App/Deployment
+identity. UPDATE requires matching app name, namespace, current image, URL host, and ready
+workload evidence. A missing kubectl context, malformed state, or mismatch returns
+`stopped` with `state_live_identity_mismatch` and leaves the selected resources unchanged.
+
 All kubectl commands use the Sealos kubeconfig:
 ```
 KUBECONFIG=~/.sealos/kubeconfig kubectl --insecure-skip-tls-verify
@@ -1379,7 +1622,7 @@ KUBECONFIG=~/.sealos/kubeconfig kubectl --insecure-skip-tls-verify
 
 ## Context from Mode Detection
 
-These values are already known from `.sealos/state.json` `last_deploy` section:
+These values are read once from the validated `.sealos/state.json` `last_deploy` section:
 
 ```
 APP_NAME      = last_deploy.app_name       (e.g., "evershop-uvbp0n0n")
@@ -1474,9 +1717,14 @@ KUBECONFIG=~/.sealos/kubeconfig kubectl --insecure-skip-tls-verify \
 
 ### On success:
 
-Update `.sealos/state.json`:
+After Runtime Truth succeeds, update `.sealos/state.json`:
 - Set `last_deploy.image` to `NEW_IMAGE`
 - Set `last_deploy.last_updated_at` to current ISO timestamp
+- Set `runtime_truth.identity` to the live app, namespace, image, and URL that passed the
+  final report
+- Set `runtime_truth.status` to `verified`, retain the evidence paths, and record the
+  measured stability window
+- Set `provenance` with the producing owner and repository-relative artifact paths
 - Append an entry to `history` (see Update History below)
 
 Present to user:
@@ -1509,7 +1757,9 @@ Debug:
   kubectl logs deployment/<APP_NAME> -n <NAMESPACE> --tail=50
 ```
 
-Do NOT update `last_deploy.image` on failure — it stays at the old value.
+Keep `last_deploy.image` at the previous value when rollback or final Runtime Truth fails.
+Record the rollback and failed evidence with redacted fields, and return `error` until the
+previous live identity and Runtime Truth report are verified.
 
 ---
 
@@ -1582,35 +1832,3 @@ Every update (successful or failed) appends an entry to `history` in `.sealos/st
 - **Initial deploy counts** — the first entry should be `action: "deploy"` written by Phase 6 checkpoint.
 - **Failed updates count** — record failures so the user can see what was attempted and why it didn't work.
 - **Keep it bounded** — if history exceeds 50 entries, trim the oldest entries (keep the first `deploy` entry and the most recent 49).
-### 6.1.5 Ensure Image Pull Secret (locally built private GHCR path only)
-
-Before calling the Template API or `kubectl apply`, check whether this run actually passed through Phase 4 local build and push.
-This step is only for cases where:
-- Phase 4 built a new GHCR image locally with Docker
-- That GHCR image is not anonymously pullable
-
-Do **not** run this step when:
-- Phase 2 reused an existing public image
-- The selected registry was Docker Hub public image flow
-
-The template itself should reference the app-scoped pull Secret name via:
-
-```yaml
-imagePullSecrets:
-  - name: ${{ defaults.app_name }}
-```
-
-If the run meets the locally built private-GHCR conditions above, create or update the app-scoped pull Secret in the target namespace using the local `gh` CLI session:
-
-```bash
-node "<SKILL_DIR>/scripts/ensure-image-pull-secret.mjs" "$NAMESPACE" "$APP_NAME" "$IMAGE_REF"
-```
-
-Behavior:
-- Uses `gh api user -q .login` and `gh auth token`
-- Creates/updates a `docker-registry` Secret named exactly like the app (`$APP_NAME`)
-- When a deployment name is provided, also patches `spec.template.spec.imagePullSecrets` to include that app-scoped Secret
-- Keeps registry credentials out of the generated template inputs
-- Do not call it for existing public images
-
-This step should run for both fresh deploys and in-place updates before rollout, but only on the locally built private-GHCR path.

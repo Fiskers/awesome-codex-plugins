@@ -63,9 +63,9 @@ stores run locally; embedding and reranking requests go to Voyage.
    ```
 
    Indexing initializes the `chunks` schema that `reviewer check` queries, so a fresh installation
-   must index before checking. The check currently requires `GITHUB_TOKEN`, even for a GitLab-only
-   setup; validate `GITLAB_TOKEN` with a dry-run `/rag-reviewer:review-pr` against a GitLab MR until
-   that limitation is removed. The status payload should show an indexed SHA and `drift == 0`.
+   must index before checking. The check validates every configured VCS provider; its successful
+   identity check does not prove repository-specific permissions. The status payload should show an
+   indexed SHA and `drift == 0`.
    Full indexing sends code chunks to Voyage and can be slow on its free tier. Without a base
    index, PR review has only the diff and its temporary changed-file index (overlay), and therefore
    thinner repository context.
@@ -109,9 +109,10 @@ reviewer env on every workstation instead of using the loopback Compose defaults
    reviewer init
    ```
 
-2. **Choose repository and branch scope.** Set `DEFAULT_REPO` and the ordered
-   `REVIEW_BRANCHES` allowlist in server env. Put repository-specific policy, ignored paths,
-   context limits, and non-secret board metadata in `.review.yml`.
+2. **Choose repository and branch scope.** Set `DEFAULT_REPO` as the fallback repo, and either
+   the ordered `REVIEW_BRANCHES` CSV allowlist in server env or (preferred) a per-repo home
+   layer — see [Repositories and branches](#repositories-and-branches). Put repository-specific
+   policy, ignored paths, context limits, and non-secret board metadata in `.review.yml`.
 
 3. **Build and verify every tracked branch.**
 
@@ -243,7 +244,7 @@ reviewer update
 
 `uv tool install` takes the package name and installs both of its commands, `reviewer` and
 `reviewer-mcp`. Its `--from` option only pins a different source for the same package
-(`--from rag-reviewer==0.4.2`, `--from git+…`); `--from PACKAGE COMMAND` is `uvx` syntax and
+(`--from rag-reviewer==0.4.3`, `--from git+…`); `--from PACKAGE COMMAND` is `uvx` syntax and
 `uv tool install` rejects it.
 
 Temporary/latest invocation:
@@ -300,16 +301,60 @@ Important groups:
 - Voyage: `VOYAGE_API_KEY`;
 - stores: `PG_DSN`, `NEO4J_URI`, `NEO4J_USER`, `NEO4J_PASSWORD`;
 - VCS: provider token plus optional API base;
-- repository scope: `DEFAULT_REPO`, `REVIEW_BRANCHES`;
+- repository scope: `DEFAULT_REPO`, `REVIEW_BRANCHES` (branch allowlist fallback; a per-repo home
+  layer takes precedence — see [Repositories and branches](#repositories-and-branches));
 - board credentials: provider-specific env declared in the registry.
 
 Credentials stay server-side. **Credentials are not returned** by board metadata or discovery
 tools and must not be placed in `.review.yml`.
 
+### Configuration ownership
+
+| Location | Owner | Stores | Must not store |
+|---|---|---|---|
+| global `.env` | deployment/operator | secrets, credentials, DSNs, runtime infrastructure and compatibility fallbacks | repository policy |
+| home global YAML | OS account running reviewer | shared non-secret defaults | credentials |
+| home per-repo YAML | OS account running reviewer | `repository.primary_branch`, `repository.index_branches`, operator-owned repo policy | credentials |
+| committed `.review.yml` | repository team | team-visible review policy and non-secret task-board metadata | credentials or `repository` |
+| git remote / CLI | repository/operator | canonical `owner/name` identity and explicit command overrides | persisted secrets |
+| Postgres / Neo4j | reviewer runtime | derived indexes, task/review state and code graph | source-of-truth configuration |
+
+#### Single repository
+
+Run `reviewer init` from the clone, inspect the global `.env` and home per-repo previews, then run
+`reviewer check` and `reviewer config show --repo owner/name`.
+
+#### Second repository
+
+Run `reviewer init --scope repo` from the second clone. It creates or previews only that repository's
+home per-repo YAML and does not rewrite global `.env` or the first repository's config.
+
+#### CI / server
+
+Inject secrets into global `.env` or the process from a secret manager. Use noninteractive init only
+for deterministic preview/write, mount home YAML for the service account, and keep team-owned policy
+in committed `.review.yml`. Pass `--repo owner/name` when no usable git remote is present.
+
+### VCS credentials
+
+| Provider | Environment | Minimum access | Reviewer reads | Reviewer writes | `reviewer check` |
+|---|---|---|---|---|---|
+| GitHub | `GITHUB_TOKEN` | fine-grained PAT: Pull requests: Read and write; Contents: Read | PR metadata, files, comments, contents, compare | review comments/summary and PR body backlink | authenticates `/user` identity |
+| GitLab | `GITLAB_URL`, `GITLAB_TOKEN` | PAT/project token with `api` scope | MR metadata, changes, notes, repository files, compare | discussions/notes and MR description backlink | authenticates `/api/v4/user` identity |
+
+The health check proves URL/token authentication, not every granular repository permission. The
+selected repository permissions are exercised by an actual review. `reviewer init` shows the same
+contract before prompting only for the selected provider's credentials.
+
 ### Repositories and branches
 
-`DEFAULT_REPO` identifies the fallback `owner/name`. `REVIEW_BRANCHES` is an ordered CSV allowlist;
-the first entry is primary. Each branch has isolated `base:<branch>` chunks and graph nodes.
+`DEFAULT_REPO` identifies the fallback `owner/name`. Tracked branches for a repository are
+resolved in layered order — the first source that defines them wins entirely (no per-branch
+merge): a per-repo home file `$XDG_CONFIG_HOME/rag-reviewer/repos/<owner>/<name>.yml` →
+the home-global `review.yml` → the env `REVIEW_BRANCHES` CSV allowlist → `["main"]`. In every
+source the first entry is primary unless `primary_branch` is set explicitly. Each branch has
+isolated `base:<branch>` chunks and graph nodes. Run `reviewer config show --repo owner/name`
+to see the effective branches and which layer produced them.
 
 ```bash
 reviewer index /path/to/repo --ref main --repo owner/name
@@ -317,7 +362,9 @@ reviewer status /path/to/repo --branch main --json
 reviewer search "token verification" --branch main
 ```
 
-Use `reviewer migrate-branches` once when upgrading a legacy unscoped base index.
+Use `reviewer config migrate --repo owner/name` to copy the env `REVIEW_BRANCHES` allowlist into
+the per-repo home layer (no-op if a home layer already sets branches), or `reviewer migrate-branches`
+once when upgrading a legacy unscoped base index.
 
 ### Per-repo `.review.yml`
 
@@ -393,11 +440,24 @@ task_board:
   done_target: Done
   options:
     <provider-option>: <discovered-value>
+  sync_filter:
+    max_age_days: 180
+    include_archived: false
 ```
 
 The repo block wins; an explicit empty `task_board:` disables board work. If the block is absent,
 the server may use a **non-secret deploy-wide fallback**. Calls use configured registry credentials
 without returning them.
+
+`sync_filter` is a generic sibling of provider `options`. By default `max_age_days` is absent (no
+age limit) and `include_archived: true`. Age uses task last-modified time with an inclusive cutoff,
+so a task exactly at the boundary remains eligible. An unknown age is not filtered by age. Only
+while `include_archived: false`, unknown archive does not itself exclude the row and an archive
+warning is emitted only then. Age filtering runs first and may still exclude the row; in that case
+archive uncertainty is not counted or warned. Archive is separate from terminal/done state.
+Repositories with the same `task_board.project` share one task corpus. Retention never deletes
+implicitly: purge is explicit. A filter change backfills newly eligible tasks on the next successful
+full sync.
 
 The server-side flow is **store-first**:
 
@@ -543,9 +603,12 @@ namespaced skills with `$rag-reviewer:...`.
 - **Invoke:** `/rag-reviewer:sync-tasks`.
 - **Needs:** use `reviewer init`, configure the selected provider as documented in
   `docs/board-providers.md`, then validate it with `reviewer check`.
-- **Reads/writes:** calls idempotent server-side `sync_board`; it reads the board and does not write
-  back.
-- **Result:** compact counts and per-board warnings; missing config remains board-less/fail-open.
+- **Reads/writes:** calls idempotent server-side `sync_board` in repo mode with canonical repo and
+  tracked branch. The server resolves effective policy; the client does not reconstruct it. It reads
+  the board and does not write back. Policy errors never retry as an unfiltered explicit call.
+- **Result:** `eligible`, `filtered_by_age`, `filtered_archived`, `age_unknown`, `archive_unknown`,
+  `filter_applied`, `filter_fingerprint`, `filter_source`, `by_board`, `purge`, and `warnings`;
+  missing config remains board-less/fail-open.
 
 ### `summarize-subsystems` — GraphRAG subsystem summaries
 
@@ -571,13 +634,15 @@ summary и same-generation fragment coverage до удаления сирот и
 backfill пишет вектор только по exact CAS `source_hash + title + summary`, поэтому конкурентная
 перезапись текста не получает устаревший вектор и не увеличивает `embedded`.
 
-### `configure-review` — update `.review.yml`
+### `configure-review` — update layered policy and branches
 
-- **When:** tune ignored paths, retrieval limits, summary clustering, or board metadata.
+- **When:** tune tracked branches, ignored paths, retrieval limits, summary clustering, or board
+  metadata.
 - **Invoke:** `/rag-reviewer:configure-review`.
 - **Needs:** a git repository; MCP and databases are not required for baseline analysis.
 - **Reads/writes:** reads tracked Python structure/history and changes approved YAML fields in either
-  `home:repos/<owner>/<name>.yml` or committed `.review.yml`.
+  `home:repos/<owner>/<name>.yml` or committed `.review.yml`; branch values always go to the home
+  per-repo YAML.
 - **Result:** preserved foreign keys/comments plus exact rebuild guidance.
 
 ## Operations, troubleshooting, and limitations
@@ -613,7 +678,7 @@ uncommitted files directly from disk.
 |---|---|---|
 | `reviewer check` reports Postgres/Neo4j unavailable | Default stores are not running or DSNs differ | Run `docker compose -f ~/.config/rag-reviewer/docker-compose.yml up -d`, then repeat `reviewer check` |
 | Voyage returns 429 | Free-tier RPM/TPM quota is exhausted | Wait for the quota window; rerun incremental indexing rather than deleting the index |
-| PR is skipped | Its target branch is outside `REVIEW_BRANCHES`, or draft policy skips it | Inspect `prepare_review` reason and update policy only if the target is intentional |
+| PR is skipped | Its target branch is not tracked for this repository (see `reviewer config show`), or draft policy skips it | Inspect `prepare_review` reason; if the target is intentional, add the branch via the per-repo home layer (or `REVIEW_BRANCHES` fallback), not just policy |
 | Task lookup is empty | Board is disabled/unconfigured or the corpus is cold | Validate [board setup](docs/board-providers.md), then run `/rag-reviewer:sync-tasks` |
 | Q&A misses new local code | Base index contains only a committed ref | Read the local file or commit/index the intended branch |
 | AI client cannot see new skills | Client session predates installation | Start a New Chat/new CLI session; use Reload Window in an IDE |
@@ -630,6 +695,29 @@ pip install -e ".[web]"
 cd web/frontend && npm install && npm run build && cd ../..
 reviewer serve
 ```
+
+The container keeps its internal listen port separate from the published loopback port. Build it
+once and choose both at runtime (replace `database` with a Postgres host reachable from the
+container):
+
+```bash
+docker build -f web/Dockerfile -t rag-reviewer-web .
+docker run --rm \
+  --env PG_DSN=postgresql://reviewer:reviewer@database:5432/reviewer \
+  --env REVIEWER_WEB_PORT=8080 \
+  --publish 127.0.0.1:18000:8080 \
+  rag-reviewer-web
+```
+
+The Compose service is opt-in, so ordinary `docker compose up` still starts infrastructure only:
+
+```bash
+docker compose --profile web up -d web
+REVIEWER_WEB_PORT=8080 REVIEWER_WEB_PUBLISH_PORT=18000 \
+  docker compose --profile web up -d web
+```
+
+Without overrides, both the internal and published ports default to `8000`.
 
 Set `WEB_ADMIN_USER` and `WEB_ADMIN_PASSWORD` before exposing it beyond localhost. Store and API
 errors are reported without preventing the process from starting where fail-soft behavior is safe.
@@ -654,8 +742,6 @@ errors are reported without preventing the process from starting where fail-soft
 - The base index is branch-scoped and blind to uncommitted working-tree changes.
 - OAuth loopback flows are not supported in headless/SSH integrations; use documented PAT/API-key
   credentials.
-- `reviewer check` currently validates `GITHUB_TOKEN` and the GitHub API even in a GitLab-only
-  deployment; validate `GITLAB_TOKEN` with a dry-run `/rag-reviewer:review-pr` against a GitLab MR.
 - Board work is optional. Missing provider configuration keeps task-aware skills board-less rather
   than blocking code retrieval.
 
@@ -666,7 +752,12 @@ Create an isolated environment and install development dependencies:
 ```bash
 python -m venv .venv
 .venv/bin/pip install -e ".[dev]"
+git config core.hooksPath .githooks
 ```
+
+The last command enables the tracked `pre-commit` hook: it runs `ruff check` on staged `.py`
+files and blocks the commit when they are not clean. Git cannot enable hooks automatically, so
+every clone opts in once. Bypass a single commit with `git commit --no-verify`.
 
 Unit tests prohibit external and localhost sockets and exclude integration tests by default:
 

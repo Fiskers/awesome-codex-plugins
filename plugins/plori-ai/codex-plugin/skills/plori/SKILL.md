@@ -23,7 +23,8 @@ MCP (recommended for a hosted client): Streamable HTTP at `https://api.plori.ai/
 
 CLI (recommended from a terminal): `npm i -g @plori/cli`, or run it without installing
 via `npx -y @plori/cli`, gives you the `plori` command for the same operations from your
-shell. Authenticate with `plori login` or by setting `PLORI_API_KEY`. Output is
+shell. `plori login` opens the browser for the same email-OTP OAuth flow; CI and other
+headless callers use `plori login --key plori_sk_...` or set `PLORI_API_KEY`. Output is
 human-readable on a terminal and a single JSON document when piped or with `--json`, so it
 composes in scripts. Commands are listed under "CLI commands" below.
 
@@ -51,11 +52,16 @@ said to stop being asked, never on your own judgment.
 Deferred work: `schedule_run` (agent_id, prompt, and delay_seconds or an RFC3339
 fire_at) invokes the agent later as an ordinary run.
 
+Connections: `list_connections` shows the account's third-party OAuth provider status,
+authorization and expiry times, and configured scopes. It never returns tokens or client secrets.
+
 Workflows: `list_workflows` (optional agent_id UUID, or "none" for unassigned),
+`get_workflow` (workflow_id; returns metadata plus the pinned step projection),
 `create_workflow` (name, optional description/trigger_kind/cron_expr),
 `run_workflow` (runs a workflow now: a real execution billed like any run,
-returning the execution, terminal or still `running`), and `get_workflow_execution` to poll
-one. A workflow's steps are built by an agent; these tools manage and run the result.
+returning the execution, terminal or still `running`), `list_workflow_executions`
+(workflow_id; recent execution history), and `get_workflow_execution` to poll one.
+A workflow's steps are built by an agent; these tools manage and run the result.
 
 ## CLI commands
 

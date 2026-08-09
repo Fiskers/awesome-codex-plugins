@@ -138,6 +138,21 @@
       "icon": "./plugins/vishal2612200/agentpack/assets/icon.png"
     },
     {
+      "name": "agency-continuity-audit",
+      "displayName": "Agency Continuity Audit",
+      "source": {
+        "source": "local",
+        "path": "./plugins/revertcreations/agency-continuity-audit"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Development & Workflow",
+      "description": "Read-only audit that distinguishes durable agent goals, state, corrections, restart evidence, authority boundaries, scheduler claims, and commercial proof from self-reported health.",
+      "icon": "./plugins/revertcreations/agency-continuity-audit/assets/icon.svg"
+    },
+    {
       "name": "agentry",
       "displayName": "Agentry Observability",
       "source": {
@@ -477,6 +492,21 @@
       "category": "Development & Workflow",
       "description": "Specialist AI agents (researcher, PM, architect, developer, QA, reviewer) orchestrated as a configurable team pipeline.",
       "icon": "./plugins/yimwoo/codex-agenteam/assets/agenteam-icon.png"
+    },
+    {
+      "name": "full-stack-development",
+      "displayName": "Codex Full-Stack Workflow",
+      "source": {
+        "source": "local",
+        "path": "./plugins/kevin592/codex-full-stack-workflow"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Development & Workflow",
+      "description": "Turns rough product requests into staged, reviewable full-stack delivery with persistent requirements, change control, visual evidence, and completion gates.",
+      "icon": "./plugins/kevin592/codex-full-stack-workflow/assets/icon.svg"
     },
     {
       "name": "codex-howto",
@@ -1523,7 +1553,8 @@
         "authentication": "ON_INSTALL"
       },
       "category": "Development & Workflow",
-      "description": "Persistent graph-backed conversational memory for Codex that recalls project decisions, constraints, preferences, and outcomes across sessions."
+      "description": "Persistent graph-backed conversational memory for Codex that recalls project decisions, constraints, preferences, and outcomes across sessions.",
+      "icon": "./plugins/Abhigyan-Shekhar/Waggle-mcp/assets/waggle-icon.png"
     },
     {
       "name": "wingman",
@@ -2420,6 +2451,21 @@
       "category": "Tools & Integrations",
       "description": "Pronounce developer jargon out loud: an MCP server (lookup/search) and skill backed by a 1,721-entry sourced dictionary with IPA, audio, and cited pronunciations for kubectl, nginx, YAML, JWT, and more.",
       "icon": "./plugins/anzy-renlab-ai/pronounce/assets/icon.svg"
+    },
+    {
+      "name": "omnimodal",
+      "displayName": "Read Image",
+      "source": {
+        "source": "local",
+        "path": "./plugins/ZXY1240/read-image"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Tools & Integrations",
+      "description": "Read local images, videos, web pages, and Windows screenshots through Doubao, GLM, or Qwen-compatible vision APIs.",
+      "icon": "./plugins/ZXY1240/read-image/assets/icon.svg"
     },
     {
       "name": "remotion",

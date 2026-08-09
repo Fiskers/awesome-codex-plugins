@@ -22,7 +22,7 @@
 
 <p align="center">
     <strong>Aegis Method Pack</strong><br/>
-    Baseline-first, evidence-driven workflow discipline for AI coding agents.
+    Make your AI coding agent trustworthy: fewer reworks, safer changes, proof before "done".
 </p>
 
 <p align="center">
@@ -35,22 +35,31 @@
     <a href="docs/current/AEGIS_FAST_TRACK_PLAYBOOK_ZH.md">速通秘籍</a>
 </p>
 
-> **Plan before you edit. Prove before you say "done". Keep simple work cheap.**
+> **Stop babysitting your agent.** Aegis makes your agent plan against your real
+> baseline before it edits, prove completion with fresh evidence, and leave simple
+> tasks alone — you get **fewer reworks, safer changes, and less blind trust in "done"**.
 
-## Why Aegis
+## What You Get
 
-Aegis is a method pack for teams using AI coding agents on real software work.
-It makes agents:
+Aegis is a method pack that makes AI coding agents work like disciplined
+engineers — so you don't have to watch them.
 
-- **plan before they edit** — baseline-first planning before risky changes
-- **prove before they claim "done"** — evidence before completion claims
-- **fix forward without leaving ghosts** — repair track plus retirement track
-  for bugs, fallbacks, and compatibility paths
-- **stay cheap on simple work** — workflow quality guardrails
-- **move between hosts** — portable method-pack skills across skill-aware hosts
+- **Fewer reworks.** Your agent aligns with your project's real baseline —
+  owners, contracts, boundaries — before touching code. It stops guessing, and
+  so do you.
+- **Safer changes.** Measured on a frozen held-out A/B benchmark: contract
+  pass rate **60% → 90%**, unsafe outcomes **11.67% → 5%**.
+- **Proof before "done".** Completion claims ship with fresh verification
+  evidence, covered scope, and residual risk. You read evidence, not vibes.
+- **No ghost code.** Retired fallbacks and old paths are tracked or removed
+  with a retirement trigger — technical debt stops accumulating silently.
+- **Simple tasks stay simple.** Trivial requests stay on the fast path;
+  ceremony only appears when the task genuinely needs it.
+- **One method pack, every host.** The same discipline works across Codex,
+  Claude Code, OpenCode, Kimi, and other skill-aware hosts.
 
-Aegis is useful when agents otherwise start coding before the goal, owner,
-architecture boundary, or verification path is clear.
+> The numbers above are bounded advisory evidence from the frozen benchmark
+> below, not a universal-quality or completion-authority claim.
 
 ## Measured Agentic Benchmark
 
@@ -152,7 +161,7 @@ Aegis keeps a multi-host, plugin-installable distribution goal.
 | `Claude Code`, `CodeBuddy`, `DeepSeek-TUI`, `Trae`, `GitHub Copilot`, `Qoder`, `Kimi Code CLI`, `ZCode`, `Grok Build` | Install guides exist; release-level fresh host smoke is still pending | [Claude Code](docs/README.claude-code.md), [CodeBuddy](docs/README.codebuddy.md), [DeepSeek-TUI](docs/README.deepseek-tui.md), [Trae](docs/README.trae.md), [GitHub Copilot](docs/README.copilot.md), [Qoder](docs/README.qoder.md), [Kimi Code CLI](docs/README.kimi-code.md), [ZCode](docs/README.zcode.md), [Grok Build](docs/README.grok-build.md) |
 | `CC GUI (JetBrains IDEA)` | Structural IDE plugin layer support for Claude Code / OpenAI-GPT provider paths; release-level fresh host smoke is still pending | [CC GUI](docs/README.cc-gui.md) |
 | `Antigravity CLI`, `Antigravity IDE`, `Antigravity App` | `Antigravity CLI` is the current active closeout target; `IDE/App` remain structural targets and release-level fresh host smoke is still pending | [Antigravity](docs/README.antigravity.md) |
-| `Pi CLI`, `OpenClaw`, `Hermes Agent` | Structural Agent Skills / `SKILL.md` skill-host adaptations; release-level fresh host smoke is still pending | [Pi CLI](docs/README.pi.md), [OpenClaw](docs/README.openclaw.md), [Hermes Agent](docs/README.hermes-agent.md) |
+| `Pi CLI`, `OMP`, `OpenClaw`, `Hermes Agent` | Structural Agent Skills / `SKILL.md` skill-host adaptations; release-level fresh host smoke is still pending | [Pi CLI](docs/README.pi.md), [OMP](docs/README.omp.md), [OpenClaw](docs/README.openclaw.md), [Hermes Agent](docs/README.hermes-agent.md) |
 | `Gemini CLI` | Transitional compatibility surface while Antigravity support matures | [Compatibility Matrix](docs/current/AEGIS_HOST_COMPATIBILITY_MATRIX_SNAPSHOT.md) |
 
 Read the current host verdict before making support claims:

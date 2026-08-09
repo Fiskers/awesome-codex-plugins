@@ -1,7 +1,16 @@
 ---
 name: writing-plans
-description: "Use when you have a spec or requirements for a multi-step task, before touching code"
+description: "Use when you have an approved spec or written requirements for a multi-step task that needs a durable plan document before touching code. Small, single-owner, or fast-path tasks do not need this skill."
 ---
+
+<EXPLICIT-MODE-GATE>
+If activation mode is explicit (`~/.config/aegis/config.toml` has
+`activation_mode = "explicit"`, or `AEGIS_ACTIVATION_MODE=explicit` is visible
+in the environment) and the current user request did not explicitly invoke
+Aegis or this skill by name, exit back to the fast path: answer concisely
+without this workflow's checklist, ceremony, or document requirements. If the
+user explicitly named Aegis or this skill, proceed normally.
+</EXPLICIT-MODE-GATE>
 
 # Execute
 

@@ -8,10 +8,72 @@ metadata:
 
 # Sealos Deploy
 
+## Identity and Discovery
+
+- **Owner:** `sealos-deploy` (`/sealos-deploy` and deploy, update, publish, or cloud-runtime requests).
+- **Class:** `composite-orchestration` across readiness, Dockerfile, template, build, deployment, and Runtime Truth.
+- **Canaries:** `DEP-KUBECONFIG-SCOPE`, `DEP-CONFIRM-MUTATION`, `DEP-REDACT`, and `DEP-RUNTIME-TRUTH`.
+- **Contract:** Read [`references/deploy-contract.md`](references/deploy-contract.md) after the canaries pass. It defines the typed phase handoffs, owned `.sealos` artifacts, terminal states, and the read-only Canvas boundary.
+
+## Scope and Boundaries
+
+Accept a local path or GitHub URL and scope all work to the selected namespace/app. Preserve the current DEPLOY/UPDATE phase order, `.sealos` artifact inventory, one log file, dependency handoffs, and cleanup footprint. All Kubernetes commands use `KUBECONFIG=~/.sealos/kubeconfig kubectl --insecure-skip-tls-verify`; unsupported workloads stop before scoring/build.
+
+## Risk and Confirmation
+
+Keep auth/workspace, kubeconfig scope, system-tool installation, public exposure, credential changes, deletion, rollback, and cleanup confirmation visible before module detail. Redact passwords, tokens, cookies, env values, kubeconfig, Secret data, and full connection strings. A quality gate and actual Runtime Truth evidence are acceptance conditions.
+
+For every gated mutation, report the exact operation, impact, confirmation, and post-action evidence. Keep sanitized logs, state, diagnostics, and footprint evidence free of secret data.
+
+## Lifecycle Workflow
+
+For each request, run preflight/auth/workspace, detect mode, enforce eligibility, assess/detect/build or reuse, generate/validate the template, deploy or update, run Runtime Truth, and record state/cleanup evidence. Emit request-scoped `success`, `stopped`, or `error`; the existing phase modules below remain authoritative for detailed behavior.
+
+## Progressive Disclosure
+
+Load `modules/` and helper scripts one phase at a time after the corresponding canaries pass. Preserve typed readiness → Dockerfile → Docker-to-Sealos handoffs, `.sealos/analysis.json`, `.sealos/build/build-result.json`, `.sealos/template/index.yaml`, `.sealos/state.json`, and delivery evidence; do not hide phase order behind a generic deploy shortcut.
+
+## Output, Stop, and Error States
+
+- `success`: actual returned App URL/live identity, route and port match, setup/login proof, recent logs/events, workload convergence, database/object evidence, full footprint, and saved deploy state.
+- `stopped`: unsupported eligibility, missing auth/tool, unresolved configuration, or unconfirmed public/destructive/cleanup boundary with the safe next action.
+- `error`: failed preflight, build/template/deploy/runtime/rollback/cleanup step and recovery action with sensitive values redacted.
+
+## Handoffs
+
+Readiness, Dockerfile, and Docker-to-Sealos inputs use typed `target`, `inputArtifact`, `allowedAction`, `failureReturn`, and `responseOwner` fields. A verified deploy can hand `target: sealos-canvas`, `inputArtifact: sanitized .sealos/state.json and Runtime Truth`, `allowedAction: read-only topology inspection`, `failureReturn: runtime/state diagnostic`, and `responseOwner: sealos-deploy`.
+
+## Verification
+
+Use the existing eligibility, artifact, quality-gate, footprint, live-smoke, rollout, Runtime Truth, and cleanup checks. Baseline cases `deploy-positive-runtime-truth` and `deploy-violating-missing-runtime-proof` must preserve actual App URL/live identity, auth/cleanup confirmation, log scans, and redaction.
+
 ## Compatibility
 
 Sealos auth/workspace are required for deploys. Docker, buildx, and gh CLI are required only when the selected path needs local build/push. git is required when cloning from a GitHub URL or when git metadata is needed. Node.js 18+ remains an optional accelerator. Phase 5 requires Python 3.8+ with PyYAML; root Compose conversion also requires kompose and may require crane when image tags are floating.
 
+## Brain Managed Mode
+
+The skill has two deliberately separate execution modes:
+
+- **Local mode** is the existing interactive workflow. It is selected when `SEALAI_DEPLOY_MODE` is absent or has any value other than `managed`; its auth, prompts, Template API flow, and output remain unchanged.
+- **Managed mode** is selected only when `SEALAI_DEPLOY_MODE=managed`. The Devbox Codex is the deployment executor: it analyzes, builds, applies, observes, diagnoses, repairs, and verifies with the injected kubeconfig. Brain is the task control plane and form owner; it is not a second Kubernetes executor.
+
+Managed mode is non-interactive. Do not start OAuth, install tools, ask for confirmation in the turn, or replace a missing callback with a file, webhook, curl request, or a Brain-side apply. Before doing any work, confirm that the Codex tool registry contains both exact MCP tools `template_ready` and `deployment_completed`. If either tool is unavailable, stop with a managed-mode fatal error; never claim a deployment result.
+
+Brain supplies these task-scoped values through the environment:
+
+```text
+SEALAI_DEPLOY_MODE=managed
+SEALAI_DEPLOY_TASK_ID=<task id>
+SEALAI_PROJECT_ID=<Brain project id>
+SEALAI_NAMESPACE=<target namespace>
+SEALAI_INPUTS_PATH=/run/sealai/deployment/inputs.json
+SEALAI_TURN_DEADLINE_AT=<absolute deadline>
+```
+
+Use the injected kubeconfig/context for every Kubernetes command. Do not perform login or switch workspace. Keep the input file and kubeconfig out of prompts, logs, Timeline text, and generated artifacts; read the input file only when the managed flow says to do so.
+
+The actual Sealos Instance name is owned by the Template/Skill path. Brain does not pre-allocate it and the managed adapter does not add Brain identity labels or `extraLabels`.
 
 Deploy compatible cloud workloads to Sealos Cloud, stopping unsupported targets
 before build or deployment.
@@ -148,6 +210,7 @@ Located in `scripts/` within this skill directory (`<SKILL_DIR>/scripts/`):
 | `ensure-image-pull-secret.mjs` | `node ensure-image-pull-secret.mjs <namespace> <secret-name> <image-ref> [deployment-name]` | Create/update app-scoped GHCR pull Secret and optionally patch an existing Deployment to reference it |
 | `gh-refresh-scopes.mjs` | `node gh-refresh-scopes.mjs write:packages` | Refresh GHCR package access in the current TTY; `write:packages` is sufficient for both push and private pull in this workflow |
 | `deploy-template.mjs` | `node deploy-template.mjs <template-path> [--dry-run] [--args-json '{"KEY":"value"}'\|--args-file <file>]` | Resolve the current region, enforce private sensitive-args files on POSIX, post a local template YAML, and emit an allowlisted result with credential values redacted |
+| `managed-adapter.mjs` | `node managed-adapter.mjs context\|prepare-template <path>\|sha256 <path>\|read-inputs` | Validate the Brain managed contract and compute the exact template SHA without injecting Instance identity or labels |
 | `sealos-launchpad-network.mjs` | `node sealos-launchpad-network.mjs --app <app> --app-url <url> [--expected-port <port>] [--region <url>] [--kubeconfig <path>]` | Read-only Launchpad public-network discovery check with App URL and Service port matching |
 | `sealos-footprint.mjs` | `node sealos-footprint.mjs --namespace <ns> --app <app>` | Read-only inventory of Instance/App/workloads/Jobs/KubeBlocks/PVCs/ObjectStorageBuckets for deploy debug and cleanup planning |
 | `sealos-live-smoke.mjs` | `node sealos-live-smoke.mjs --url <url> [--captcha-path <path>] [--login-method json-token\|cookie-json] [--login-path <path>] [--username <user>] [--password <pass>] [--token-path <path>] [--auth-path <path>] [--missing-api-path <path>] [--missing-page-path <path>]` | Read-only or credentialed HTTP smoke test for the real Sealos App entry URL, authenticated routes, and API/SPA negative probes |
@@ -191,7 +254,7 @@ Paths used in pipeline.md follow the pattern:
 | 0.4 — Eligibility | Confirm the repository root is a supported cloud workload | Any non-eligible result → stop |
 | 0.5 — Template Fast Path | Match GitHub repo to a configured Sealos template | No match, or match cannot materialize template YAML |
 | 1 — Assess | Clone repo (or use current project), analyze deployability | Score too low → stop |
-| 2 — Detect | Find existing image (Docker Hub / GHCR / README) | Found → jump to Phase 5 |
+| 2 — Detect | Route an evidence-confirmed source-ready static tree to the pinned Nginx image build; otherwise find an existing image | Existing image → jump to Phase 5 |
 | 3 — Dockerfile | Generate Dockerfile if missing | Already has one → skip |
 | 4 — Build & Push | `docker buildx` → GHCR (auto via gh CLI) or Docker Hub (fallback) | — |
 | 5 — Template | Generate Sealos application template | — |

@@ -2,8 +2,8 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "awesome-codex-plugins",
   "version": "1.0.0",
-  "last_updated": "2026-08-05",
-  "total": 189,
+  "last_updated": "2026-08-09",
+  "total": 192,
   "categories": [
     "Development & Workflow",
     "Tools & Integrations"
@@ -98,6 +98,16 @@
       "category": "Development & Workflow",
       "source": "awesome-codex-plugins",
       "install_url": "https://raw.githubusercontent.com/vishal2612200/agentpack/HEAD/.codex-plugin/plugin.json"
+    },
+    {
+      "name": "Agency Continuity Audit",
+      "url": "https://github.com/revertcreations/agency-continuity-audit",
+      "owner": "revertcreations",
+      "repo": "agency-continuity-audit",
+      "description": "Read-only audit that distinguishes durable agent goals, state, corrections, restart evidence, authority boundaries, scheduler claims, and commercial proof from self-reported health.",
+      "category": "Development & Workflow",
+      "source": "awesome-codex-plugins",
+      "install_url": "https://raw.githubusercontent.com/revertcreations/agency-continuity-audit/HEAD/.codex-plugin/plugin.json"
     },
     {
       "name": "Agentry Observability",
@@ -328,6 +338,16 @@
       "category": "Development & Workflow",
       "source": "awesome-codex-plugins",
       "install_url": "https://raw.githubusercontent.com/yimwoo/codex-agenteam/HEAD/.codex-plugin/plugin.json"
+    },
+    {
+      "name": "Codex Full-Stack Workflow",
+      "url": "https://github.com/kevin592/codex-full-stack-workflow",
+      "owner": "kevin592",
+      "repo": "codex-full-stack-workflow",
+      "description": "Turns rough product requests into staged, reviewable full-stack delivery with persistent requirements, change control, visual evidence, and completion gates.",
+      "category": "Development & Workflow",
+      "source": "awesome-codex-plugins",
+      "install_url": "https://raw.githubusercontent.com/kevin592/codex-full-stack-workflow/HEAD/.codex-plugin/plugin.json"
     },
     {
       "name": "Codex How To",
@@ -1648,6 +1668,16 @@
       "category": "Tools & Integrations",
       "source": "awesome-codex-plugins",
       "install_url": "https://raw.githubusercontent.com/anzy-renlab-ai/pronounce/HEAD/.codex-plugin/plugin.json"
+    },
+    {
+      "name": "Read Image",
+      "url": "https://github.com/ZXY1240/read-image",
+      "owner": "ZXY1240",
+      "repo": "read-image",
+      "description": "Read local images, videos, web pages, and Windows screenshots through Doubao, GLM, or Qwen-compatible vision APIs.",
+      "category": "Tools & Integrations",
+      "source": "awesome-codex-plugins",
+      "install_url": "https://raw.githubusercontent.com/ZXY1240/read-image/HEAD/.codex-plugin/plugin.json"
     },
     {
       "name": "Remotion Plugin",

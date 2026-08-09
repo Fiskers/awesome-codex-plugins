@@ -160,7 +160,8 @@ newgrp sysknife                       # or log out and back in
 npx sysknife-setup --no-binary --daemon-mode=skip
 ```
 
-Ubuntu 24.04 is validated with 65/65 stories on a live VM. Ubuntu 22.04 and
+Ubuntu 22.04 records 49/50 stories on a live VM; the run that produced that
+figure is in `tests/evidence/story-runs/`. Ubuntu 24.04 and
 26.04 have passed bootstrap and smoke tests but not the full story suite.
 Fedora Atomic is the rpm-ostree target; record a current Silverblue 44 VM run
 before treating a release as current-validated. Plain Fedora Workstation and
@@ -248,18 +249,18 @@ milestone.
 | Component | State |
 |---|---|
 | `sysknife-brain` — LLM planner, tool loop, safety fence | ✅ |
-| `sysknife-daemon` — 189 typed actions, auth, preview, transactions | ✅ |
+| `sysknife-daemon` — 190 typed actions, auth, preview, transactions | ✅ |
 | Live IPC + streaming + atomic-host rollback (rpm-ostree) | ✅ |
 | Terminal approval gate — one-time, TTL-bounded receipts | ✅ |
 | MCP server (Claude Code / Cursor / any MCP client) | ✅ |
 | Tamper-evident Ed25519-signed audit chain | ✅ |
 | RFC 5424 syslog forwarding (Splunk / Sentinel / QRadar) | ✅ |
 | Postgres backend (RDS / Cloud SQL / Neon / Supabase) | ✅ |
-| **Ubuntu 24.04 support** — 65/65 stories pass on a live VM with gpt-4.1 | ✅ |
+| **Ubuntu support** — 49/50 stories on a live 22.04 VM, recorded in `tests/evidence/story-runs/` | ✅ |
 | **Ubuntu 22.04 / 26.04 VM tooling** — smoke tests pass on all three LTSes | ✅ |
 | Telegram approval interface | 📋 roadmap |
 
-**1,561 Rust tests and 72 frontend tests** form the current deterministic
+**1,737 Rust tests and 72 frontend tests** form the current deterministic
 release baseline.
 
 ## Configure your LLM
@@ -305,7 +306,7 @@ All config files that may contain API keys are created with `chmod 0600`.
 
 See [ROADMAP.md](ROADMAP.md) for the full milestone breakdown.
 
-- ✅ **Ubuntu 24.04** — 65/65 stories validated on a live VM (gpt-4.1)
+- ✅ **Ubuntu 22.04** — 49/50 stories on a live VM (recorded in `tests/evidence/story-runs/`)
 - ✅ **Ubuntu 22.04 / 26.04** — VM tooling complete; smoke tests pass on all three LTSes
 - 📋 Telegram inline-button approvals
 - 📋 `sysknife audit export` (CEF / NDJSON for SIEM ingest)
