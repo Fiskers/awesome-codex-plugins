@@ -626,6 +626,21 @@
       "icon": "./plugins/joelfarthing/codex-usage-and-resets/assets/icon.png"
     },
     {
+      "name": "context-guard",
+      "displayName": "Context Guard",
+      "source": {
+        "source": "local",
+        "path": "./plugins/GreenLv/codex-context-guard"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Development & Workflow",
+      "description": "Preserves authoritative requirements and verification evidence across long-running Codex tasks and context compaction.",
+      "icon": "./plugins/GreenLv/codex-context-guard/assets/icon.svg"
+    },
+    {
       "name": "debt-ops",
       "displayName": "debt-ops",
       "source": {
@@ -2202,6 +2217,21 @@
       "category": "Tools & Integrations",
       "description": "Web crawling and scraping for Codex with skills for single-page scraping, site crawls, URL mapping, and headless browser fallback.",
       "icon": "./plugins/kreuzberg-dev/plugins/plugins/crawlberg/assets/icon.svg"
+    },
+    {
+      "name": "lacuna-music",
+      "displayName": "Lacuna Music",
+      "source": {
+        "source": "local",
+        "path": "./plugins/JOYLINK-LTD/lacuna-plugin"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Tools & Integrations",
+      "description": "Generate original instrumental music and vocal songs from Codex through the Lacuna MCP server.",
+      "icon": "./plugins/JOYLINK-LTD/lacuna-plugin/assets/icon.png"
     },
     {
       "name": "langfuse",
