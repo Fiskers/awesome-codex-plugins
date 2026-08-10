@@ -147,6 +147,7 @@ Third-party plugins built by the community. [PRs welcome](#contributing)!
 
 - [A Team](https://github.com/RBraga01/a-team) - Universal multi-agent infrastructure with 25 specialist agents, 16 enforced workflow skills, and a lead orchestrator for Claude Code, Codex CLI, Cursor, and OpenCode.
 - [Aegis](https://github.com/GanyuanRan/Aegis) - An agentic skills framework & software development methodology that works: planning, TDD, debugging, and collaboration workflows.
+- [Agency Continuity Audit](https://github.com/revertcreations/agency-continuity-audit) - Read-only audit that distinguishes durable agent goals, state, corrections, restart evidence, authority boundaries, scheduler claims, and commercial proof from self-reported health.
 - [Agent Deck](https://github.com/not-so-fat/agent-deck) - One MCP for context management: bind self-improving playbooks, MCP tools, and API keys to the session.
 - [Agent Guard](https://github.com/JeongJaeSoon/agent-guard) - Real-time secret-leak guardrails for AI coding agents (Claude Code, Codex), Git hooks, and CI.
 - [Agent Harness Skills](https://github.com/yfge/agent-harness-skills) - Designs agent-ready repository harnesses with entrypoints, validation surfaces, runtime evidence, delivery records, and atomic commit guidance.
@@ -154,7 +155,6 @@ Third-party plugins built by the community. [PRs welcome](#contributing)!
 - [Agentizer](https://github.com/Humiris/wwa-transform) - Turn any website into an AI-powered agentfront with split-pane
 - [AgentOps](https://github.com/boshu2/agentops) - DevOps layer for coding agents with flow, feedback, and memory that compounds between sessions.
 - [AgentPack](https://github.com/vishal2612200/agentpack) - Ranks repo context for Codex with likely files, skill recommendations, agent rules, commands, warnings, and compact task-focused packs before editing.
-- [Agency Continuity Audit](https://github.com/revertcreations/agency-continuity-audit) - Read-only audit that distinguishes durable agent goals, state, corrections, restart evidence, authority boundaries, scheduler claims, and commercial proof from self-reported health.
 - [Agentry Observability](https://github.com/fr33dr4g0n/agentry-public) - Agent-native product analytics, error logging, and deploy attribution for coding agents through one HTTP API.
 - [AgiFlow](https://github.com/AgiFlow/ai-plugin) - Project management workflows for AI coding agents with planning, grooming, task execution, review, and AgiFlow MCP integration.
 - [AIBoarding](https://github.com/gustavo-meilus/aiboarding) - Generate, maintain, compress, and audit standard AI-agent onboarding files with AGENTS.md, CLAUDE.md, drift tracking, and lifecycle hooks.
@@ -237,7 +237,7 @@ Third-party plugins built by the community. [PRs welcome](#contributing)!
 - [Simple Man](https://github.com/Maksim-Burtsev/simple-man) - High-compression communication mode for Codex agents that removes filler while preserving search, validation, and implementation effort.
 - [skill-sync-publisher](https://github.com/liuyewang/skill-sync-publisher) - Safely synchronize this Codex skill across public agent-skill registries.
 - [Spec-Driven Development](https://github.com/Habib0x0/spec-driven-plugin) - Three-phase Requirements → Design → Tasks workflow for Claude Code and Codex — EARS notation acceptance criteria, autonomous execution loop, cross-spec dependencies, and post-implementation acceptance testing.
-- [spec-superflow](https://github.com/MageByte-Zero/spec-superflow) - Spec-first workflow with nine skills, user-controlled Quick / Hotfix / Tweak / Full paths, auditable recovery commands, hardened delta-spec sync, and guarded review gates.
+- [spec-superflow](https://github.com/MageByte-Zero/spec-superflow) - Spec-first workflow with nine skills, lightweight Quick / Hotfix / Tweak / Full paths, bounded three-attempt repair loops, auditable recovery commands, hardened delta-spec sync, and guarded review gates.
 - [Spellbook Skills](https://github.com/yyykf/spellbook-skills) - Practical Claude Code and Codex skills for worktrees, PR/MR automation, review cleanup, YApi lookup, and Java DDD guidance.
 - [Staff Engineer Mode](https://github.com/sirmarkz/staff-engineer-mode) - Routes engineering design, delivery, reliability, security, operations, and maintenance prompts to focused staff-level specialist guidance for AI coding agents.
 - [Standup Generator](./plugins/mturac/standup-gen) - Daily standup notes from git activity across repos.
