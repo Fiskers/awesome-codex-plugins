@@ -877,7 +877,13 @@ DM Pro is part of a three-plugin suite by [Indranil Banerjee](https://indranil.i
 
 ## Star history
 
-[![Star History Chart](https://api.star-history.com/svg?repos=indranilbanerjee/digital-marketing-pro&type=Date)](https://star-history.com/#indranilbanerjee/digital-marketing-pro&Date)
+<a href="https://www.star-history.com/?type=date&repos=indranilbanerjee%2Fdigital-marketing-pro">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=indranilbanerjee/digital-marketing-pro&type=date&theme=dark&legend=top-left&sealed_token=AqnW48iQwpZNQCx5Ncz_reoaRoDWKEEG-sZXQohHllcyAFnSDLdSJVqEoTci2Y8ognOBGCUrCY9eU3yUIW_YG7TwVhwub90B7qGh-9qlJgGjfFQQbp__puZDwereB6S-SQzbcK8B68Z-izIHjTt1DFPa5YxfuWlFF8MhrLdIEhFdU2x-cwHzmGWYYhBl" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=indranilbanerjee/digital-marketing-pro&type=date&legend=top-left&sealed_token=AqnW48iQwpZNQCx5Ncz_reoaRoDWKEEG-sZXQohHllcyAFnSDLdSJVqEoTci2Y8ognOBGCUrCY9eU3yUIW_YG7TwVhwub90B7qGh-9qlJgGjfFQQbp__puZDwereB6S-SQzbcK8B68Z-izIHjTt1DFPa5YxfuWlFF8MhrLdIEhFdU2x-cwHzmGWYYhBl" />
+    <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=indranilbanerjee/digital-marketing-pro&type=date&legend=top-left&sealed_token=AqnW48iQwpZNQCx5Ncz_reoaRoDWKEEG-sZXQohHllcyAFnSDLdSJVqEoTci2Y8ognOBGCUrCY9eU3yUIW_YG7TwVhwub90B7qGh-9qlJgGjfFQQbp__puZDwereB6S-SQzbcK8B68Z-izIHjTt1DFPa5YxfuWlFF8MhrLdIEhFdU2x-cwHzmGWYYhBl" />
+  </picture>
+</a>
 
 If DM Pro saves your team time, [⭐ star the repo](https://github.com/indranilbanerjee/digital-marketing-pro/stargazers) — it's the single most useful thing you can do to help other marketing teams discover it.
 

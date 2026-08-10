@@ -1,6 +1,6 @@
 {
   "name": "unified-ai-system",
-  "version": "0.4.5",
+  "version": "0.4.9",
   "private": true,
   "license": "Apache-2.0",
   "repository": {
@@ -23,6 +23,7 @@
     "notify:indexnow": "node tools/submit-indexnow.mjs",
     "verify:mcp": "pnpm --filter @unified-ai-system/mcp-server test",
     "smoke:mcp": "node ./tools/mcp-smoke.mjs",
+    "eval:prompt-enhancement": "node ./tools/prompt-enhancement-eval.mjs",
     "build": "pnpm -r --if-present build",
     "check": "pnpm -r --if-present check",
     "test": "pnpm -r --if-present test",
@@ -35,7 +36,7 @@
     "growth:feedback": "node ./tools/star-growth-feedback.mjs --output .tmp/growth/star-growth-feedback.md"
   },
   "engines": {
-    "node": ">=20",
+    "node": ">=22",
     "pnpm": ">=9"
   },
   "pnpm": {
@@ -47,6 +48,7 @@
     }
   },
   "devDependencies": {
+    "openai": "7.4.0",
     "vitest": "^4.1.10"
   }
 }

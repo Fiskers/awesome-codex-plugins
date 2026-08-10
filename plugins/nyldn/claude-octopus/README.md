@@ -95,10 +95,20 @@ Claude Code **v2.1.14+** is the minimum supported runtime. Newer Claude Code rel
 <summary>Install for Codex CLI</summary>
 
 ```bash
-git clone --depth 1 https://github.com/nyldn/claude-octopus.git ~/.codex/claude-octopus && mkdir -p ~/.agents/skills && ln -sf ~/.codex/claude-octopus/skills ~/.agents/skills/claude-octopus
+codex plugin marketplace add https://github.com/nyldn/plugins.git
+codex plugin add claude-octopus@nyldn-plugins
 ```
 
 Restart Codex. Skills appear automatically — invoke with `$skill-doctor`, `$skill-debug`, etc.
+
+Codex owns the versioned cache. To refresh an existing installation without
+editing cache files or symlinks directly:
+
+```bash
+codex plugin marketplace upgrade nyldn-plugins
+codex plugin add claude-octopus@nyldn-plugins
+```
+
 </details>
 
 <details>
