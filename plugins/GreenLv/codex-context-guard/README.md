@@ -17,12 +17,36 @@ It does **not** replace Codex compaction, Plan or Goal mode, memories,
 subagents, worktrees, or the transcript. Codex owns those systems; Context
 Guard adds a bounded recovery and completion-verification layer beside them.
 
-> Release status: `0.5.1` keeps state schema 4 and updates Stop classifier
-> 1.0.1 with mixed user-handoff ownership fixes, derived open-item
-> normalization, and verified same-version archive adoption. Native Windows
-> 0.5.1 acceptance is complete, including first-adoption, archive, installed
-> lifecycle, and fresh trusted-Hook checks. The eight-Hook and
-> private-checkpoint interfaces are unchanged.
+> Release status: `0.6.3` is the latest published release. The current `main`
+> source is the unreleased 0.7.3 candidate with schema 6 and Proof protocol
+> 1.0.0. It adds deterministic evidence-to-requirement and hash-only multimodal
+> contracts while retaining an auditable `legacy_fallback` for unsupported
+> cases. It additionally requires prompt-constructible complete scopes, parses
+> private controls only when the current runtime is executed, reconciles each
+> late attachment once per prompt plus lifecycle retries, and reserves the
+> completion rule when recovery is clipped. Visual readback obligations now
+> require an affirmative mutation clause, and explicit scope counts outrank
+> attachment counts. The consumed 0.7.0, 0.7.1, and 0.7.2 caches remain
+> immutable and unreleased. `0.6.3` keeps Stop protocol 1.1.0,
+> which makes legacy `continue`
+> advisory, preserves pending work on terminal mismatch, and uses quote-aware
+> shell intent parsing. `0.6.3` also makes cache upgrades repair indexed live
+> drift before archive adoption and removes legacy repository metadata only
+> when the trusted product manifest is unchanged. The installed `0.6.2`
+> package is immutable and was never tagged or released; its version was
+> consumed before those manager lifecycle fixes. The `0.6.0` candidate
+> introduced state schema 5, Stop protocol 1.0.0, and diagnostic classifier
+> 2.0.0, but a normally trusted fresh Codex Code Mode run exposed a raw-stdout
+> staging failure, so `0.6.0` was not tagged or released. Its installed cache is
+> immutable and its version number is consumed. `0.6.1` changes only the
+> successful private-stage receipt; schema, protocol, classifier, and the exact
+> eight-Hook wire remain unchanged. The 0.6.3 release passes scoped native
+> macOS and Windows source/install/archive gates and normally trusted private and public
+> identities without a bypass, including `user_wait`, a completion checkpoint,
+> and manual schema-5 `/compact` recovery. The 0.6.3 release is published from
+> the validated main commit; its annotated tag and GitHub Release preserve that
+> exact source state. Release automation passed separately on the exact public
+> commit and tag; CI does not replace either native run.
 
 ### 30-second sanitized compact/recovery demo
 
@@ -54,6 +78,14 @@ Context Guard therefore separates four things:
 - Journals root and delegated prompts with SHA-256-bound metadata.
 - Assigns stable requirement and acceptance IDs and records explicit
   supersessions without silently rewriting history.
+- Creates deterministic verification obligations for identifiable assets,
+  subjects, UI/artifact surfaces, visual readbacks, and complete scopes. An
+  ordinary successful command cannot satisfy an incompatible obligation.
+- Records image source type, redacted reference, hash, byte count, dimensions,
+  and availability without storing the image bytes. Result readbacks must use a
+  distinct hashed asset and resolve immutable visual facts.
+- Marks unsupported contracts `legacy_fallback` instead of claiming arbitrary
+  natural-language or pixel understanding.
 - Saves a bounded recovery packet before compaction and restores it on compact
   or resume.
 - Mirrors the latest successful native `update_plan` call as a read-only
@@ -62,17 +94,23 @@ Context Guard therefore separates four things:
   transcripts or hidden reasoning.
 - Treats unstructured or ambiguous tool output as unknown and prevents it from
   satisfying completion gates.
-- Treats explicit waiting for user approval, authorization, confirmation, or a
-  decision as an incomplete state, even when the reply also reports a finished
-  local milestone.
-- Classifies remaining actions by category, owner, and current-turn
-  authorization. User handoffs, external waits, and denied/out-of-scope later
-  phases may end a turn; any authorized assistant-owned remainder still gates.
-- Emits stable decision outcomes and reason codes. Mixed external waiting plus
-  assistant-owned publication or repository work gates rather than being hidden
-  by the external status.
-- Stores at most 32 recent Stop decisions as timestamps, turn IDs, classifier
-  versions, hashes, reason codes, and action facts. It stores no raw reply text.
+- Keeps exactly one private turn-bound staged control: a completion checkpoint,
+  or `continue`, `user_wait`, `external_wait`, or `deferred`.
+- Accepts a private stage request only after the exact hash marker is paired
+  with a successful tool outcome. For raw stdout, the successful CLI emits a
+  final standalone `Script completed` receipt. A bare marker remains rejected,
+  and structured failure, nonzero status, or hard failure text takes priority.
+  Control commands never become requirement-closing evidence.
+- Yields safely with requirements still pending when no disposition is staged.
+  A verified checkpoint, a narrow whole-task completion claim, and explicit
+  user persistence retain fixed Stop priority. The legacy `continue` value is
+  accepted for compatibility but is advisory only and cannot force a new turn.
+- Uses natural-language action ownership only as a diagnostic signal. It cannot
+  turn an ordinary assistant future, user handoff, external wait, or deferred
+  phase into a hard continuation by itself.
+- Stores at most 32 recent Stop decisions as timestamps, turn IDs, protocol and
+  control sources, declared dispositions, diagnostic outcomes, hashes, and
+  reason codes. It stores no raw reply text.
 - Serializes concurrent session updates with a bounded cross-platform file
   lock, including the Windows access-denied/holder-exit race observed in CI.
 - Replaces binary/data-URL payloads with bounded type, length, and hash
@@ -256,10 +294,11 @@ python3 scripts/smoke_installed.py
   gating.
 - `context-guard off` disables recovery and completion gating while preserving
   prompt journaling.
-- `context-guard status` reports protected-state counts, classifier version,
-  and the latest decision without exposing raw prompts.
-- `context-guard diagnose` reports bounded recent decision classes, reason
-  codes, hashes, action owners, and authorization without raw prompts/replies.
+- `context-guard status` reports protected-state counts, Stop protocol and
+  classifier versions, and the latest decision without exposing raw prompts.
+- `context-guard diagnose` reports bounded protocol/control sources, declared
+  dispositions, diagnostic outcomes, reason codes, and hashes without raw
+  prompts or replies.
 - `context-guard export <path>` writes a redacted handoff inside the current
   project. The default is `.codex/context-guard/CONTEXT_HANDOFF.md`.
 - `context-guard rollover <directory>` validates an explicitly prepared
@@ -268,6 +307,20 @@ python3 scripts/smoke_installed.py
 
 Read [Successor Pack Input](skills/context-guard/references/successor-pack.md)
 before using `rollover`.
+
+## Observed token overhead
+
+Context Guard adds prompt and recovery context to protected tasks. In a small,
+anonymized sample of five completed, tool-heavy desktop tasks using 0.6.1,
+direct Hook/recovery context represented about **1.4%** of total tokens; including
+plugin-triggered status checks brought the weighted observation to about
+**1.5%**. Individual observations were roughly **0.2%–2.1%**, so **about 1%–2%**
+is a useful order-of-magnitude estimate for similar long-running work, not a
+guaranteed rate.
+
+The share varies with compaction frequency, ledger size, explicit skill loading,
+and tool-call density. Token share is also not the same as cost share because
+cached input pricing cannot be attributed precisely from local session logs.
 
 ## Private data and retention
 
@@ -325,13 +378,15 @@ The CI matrix covers Ubuntu, macOS, and Windows with Python 3.10, 3.12, and
 3.13. Platform claims remain evidence-bounded; see
 [Compatibility](docs/COMPATIBILITY.md).
 
-The current native Windows follow-up covers the automated suite, an isolated
-installed lifecycle, and the normal persistent trust flow for a fresh Hook
-task. With the Windows trust root supplied to the isolated CLI through
-`CODEX_CA_CERTIFICATE`, a real manual `/compact` completed backend compaction,
-ran `PreCompact`, injected the recovery packet through `SessionStart`, and
-recovered both exact markers in a blind post-compact prompt. See
-[Local release acceptance](docs/LOCAL_ACCEPTANCE.md) for the full evidence.
+Native Windows 0.5.1 acceptance remains historical evidence only. The 0.6.3
+release has passed the scoped native macOS and Windows source/install/archive
+gates and normally trusted, no-bypass private/public runs for `user_wait`,
+completion checkpoint, and manual schema-5 `/compact` recovery. The exact
+release commit passed PR/main CI, HOL, and tag CI; CI is not a
+native-runtime substitute.
+The unreleased, consumed 0.6.0 candidate failed its real Code Mode fresh gate
+and must not be tagged or patched in place. See
+[Local release acceptance](docs/LOCAL_ACCEPTANCE.md) for the evidence boundary.
 
 ## Explicit non-goals
 
@@ -343,9 +398,11 @@ Context Guard is not:
 - a second Plan/Goal controller, agent scheduler, mailbox, or shared workspace;
 - a replacement for human review, tests, or acceptance.
 
-Semantic evidence matching, shared multi-agent workspaces, and telemetry are
-not committed roadmap items. They require a reproducible failure or a separate,
-approved benchmark-first plan.
+Proof protocol 1.0.0 enforces only deterministic obligations displayed for an
+`enforced` item. It does not prove arbitrary semantic correctness, interpret
+arbitrary pixels, or establish official-source validity; `legacy_fallback`
+retains the compatible provenance/outcome gate. Shared multi-agent workspaces
+and telemetry remain separate research decisions.
 
 ## Contributing and security
 

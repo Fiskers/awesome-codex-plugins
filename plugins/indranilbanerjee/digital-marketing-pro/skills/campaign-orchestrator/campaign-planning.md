@@ -68,7 +68,7 @@
 |-----------|-----------|------------------|
 | **Specific** | Exactly what will be achieved | "Generate marketing qualified leads" |
 | **Measurable** | Quantified target | "500 MQLs" |
-| **Achievable** | Realistic given resources | "Based on $50 CPL benchmark" |
+| **Achievable** | Realistic given resources | "Based on $50 CPL benchmark" (from brand history or a recorded benchmark-book entry — never from memory) |
 | **Relevant** | Aligned to business goal | "Supports Q2 pipeline target" |
 | **Time-bound** | Clear deadline | "By June 30" |
 

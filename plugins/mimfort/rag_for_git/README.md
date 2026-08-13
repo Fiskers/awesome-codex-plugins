@@ -322,6 +322,50 @@ Important groups:
   layer takes precedence — see [Repositories and branches](#repositories-and-branches));
 - board credentials: provider-specific env declared in the registry.
 
+Published host ports of the Compose storage services are variables, not literals:
+`PARADEDB_PUBLISH_PORT` (default `5433`), `NEO4J_BOLT_PUBLISH_PORT` (default `7687`) and
+`NEO4J_HTTP_PUBLISH_PORT` (default `7474`). Container ports stay fixed. `reviewer init` asks for
+them in the storage group and derives the first two from `PG_DSN` and `NEO4J_URI`, so the client
+string and the published port cannot drift apart silently; a mismatch on a local host prints a
+warning without blocking.
+
+```bash
+PARADEDB_PUBLISH_PORT=6543 NEO4J_BOLT_PUBLISH_PORT=7999 \
+  docker compose -f ~/.config/rag-reviewer/docker-compose.yml up -d
+```
+
+`reviewer start` and `reviewer stop` manage that Compose file for you:
+
+```bash
+reviewer start   # up -d --wait, waits for the ParadeDB and Neo4j healthchecks
+reviewer stop    # stops the containers; named volumes and the built index survive
+```
+
+`reviewer stop` also stops the web admin when it was started with `--profile web`: without an
+explicit profile selection docker compose does not see it. It leaves the test services
+(`--profile test`) alone — those belong to the repository clone's own Compose project. Both
+storages declare `stop_grace_period: 60s`: the default 10s are not enough for the Neo4j JVM to
+shut down cleanly, which left the store to be recovered on the next start.
+
+Both run under the explicit Compose project `rag-reviewer`. A clone of this repository runs its
+own stack under the project name `rag_for_git` — the two publish the same host ports and keep
+separate volumes, so do not run them at the same time. Contributors working inside the clone
+should keep using `docker compose up -d` there.
+
+`reviewer stop` never removes volumes: it runs `docker compose stop`, which has no `-v` flag at
+all.
+
+On Docker Engine older than 25.0, the `start_interval` healthcheck key is ignored, so the first
+Neo4j probe only happens after the plain `interval` (300s) — exactly the `--wait` timeout used by
+`reviewer start`. On such engines `reviewer start` can report a timeout failure even though the
+stack came up fine; upgrading Docker Engine removes the issue.
+
+Prefer variables over editing the Compose file: a hand-edited
+`~/.config/rag-reviewer/docker-compose.yml` no longer matches its recorded hash, so `reviewer
+update` treats it as user-modified (status `preserved`) and stops delivering new Compose
+definitions to it. A `preserved` Compose file also stops receiving new healthcheck definitions, so
+`reviewer start` falls back to waiting for the `running` state instead of real readiness.
+
 Credentials stay server-side. **Credentials are not returned** by board metadata or discovery
 tools and must not be placed in `.review.yml`.
 
@@ -365,7 +409,15 @@ contract before prompting only for the selected provider's credentials.
 
 ### Repositories and branches
 
-`DEFAULT_REPO` identifies the fallback `owner/name`. Tracked branches for a repository are
+`DEFAULT_REPO` identifies the fallback `owner/name`. The repo tag is resolved as `--repo` →
+`git remote origin` → `DEFAULT_REPO`, and the resolution reports its own origin: `cli`,
+`git:origin`, or `env:DEFAULT_REPO`. Because an index written under the wrong tag surfaces only
+as odd search results, `reviewer index` **refuses** to write when the name was substituted from
+`DEFAULT_REPO` rather than derived from the clone — pass `--repo owner/name` or fix the origin
+URL. `reviewer status` stays fail-open and instead exposes the origin: a warning line in the text
+output and a `repo_source` key in `--json`.
+
+Tracked branches for a repository are
 resolved in layered order — the first source that defines them wins entirely (no per-branch
 merge): a per-repo home file `$XDG_CONFIG_HOME/rag-reviewer/repos/<owner>/<name>.yml` →
 the home-global `review.yml` → the env `REVIEW_BRANCHES` CSV allowlist → `["main"]`. In every
@@ -424,7 +476,26 @@ reviewer config show --repo group/service --branch main --json
 ```
 
 The committed layer is fetched at the selected ref, so review/config resolution never reads an
-uncommitted worktree `.review.yml`. To copy a safe committed policy into the repo-specific home
+uncommitted worktree `.review.yml`.
+
+It is read **from a local clone whenever one is usable**, and only otherwise through the hosting
+API. `config show` uses `--path <clone>` if given and the current directory otherwise; the MCP
+server uses the clone path recorded by `reviewer index` (which already runs from a clone). A
+candidate is accepted only if it is a git repository whose remote matches the target repo — a clone
+with **no** recognizable remote is accepted too, which is exactly the case where the committed layer
+was previously unreachable. If the ref does not resolve in the clone (branch not fetched), the read
+falls back to the API rather than silently reporting an empty layer. The report states which path
+was taken:
+
+```bash
+reviewer config show --repo group/service --branch main --path /srv/clones/service
+# committed: local        ← resolved without a single network call
+```
+
+In JSON the same value is the `committed_source` key (`local` / `vcs`); the clone path itself is
+never printed.
+
+To copy a safe committed policy into the repo-specific home
 layer without modifying the committed file, run:
 
 ```bash
@@ -483,7 +554,7 @@ The server-side flow is **store-first**:
 2. Skills call `get_task(key, project=...)`; linked tasks/PRs/code come from task context tools.
 3. Client models never enumerate the provider directly and never send credentials.
 
-The MCP server currently exposes **38 tools**, including the native-subtask batch operation.
+The MCP server currently exposes **39 tools**, including the native-subtask batch operation.
 
 Legacy aliases remain **legacy metadata for older clients** for one compatibility window:
 `TASK_BOARD_API_KEY → YOUGILE_API_KEY` and
@@ -503,6 +574,7 @@ defaults and tune only after observing real misses or excessive context.
 |---|---|
 | Configure and integrate | `init`, `install`, `install-skills`, `update` |
 | Validate environment | `check` |
+| Manage local infrastructure | `start`, `stop` |
 | Manage indexes | `index`, `status`, `search`, `migrate-branches`, `gc` |
 | Run observability UI | `serve` |
 | Start MCP directly | `reviewer-mcp` |
@@ -530,6 +602,22 @@ namespaced skills with `$rag-reviewer:...`.
 - **Needs:** reviewer MCP; board context is optional and the pipeline continues board-less.
 - **Reads/writes:** reads task/code context and writes one brief under `docs/superpowers/briefs/`.
 - **Result:** a compact brief handed to brainstorming; implementation happens in later skills.
+- **Startup survey:** one `AskUserQuestion` panel asks three things before anything else — the
+  brief model tier (`cheap`/`mid`/`premium`), the interaction mode, and the execution strategy.
+  No answer, or a headless run, applies the defaults `mid` / `normal` / `subagent` without
+  blocking.
+- **Interaction modes:** `normal` — brainstorming questions plus spec and plan approvals;
+  `auto` — questions asked, approvals dropped; `full-auto` — no questions, the recommended option
+  taken at every fork, approvals dropped. In every mode the spec and the plan are still written,
+  self-reviewed and committed. `full-auto` still asks before `git push`, opening a PR, or writing
+  to the board.
+- **Execution strategies:** `inline` (executing-plans), `subagent` (subagent-driven-development),
+  `lite` (`plugin/skills/_profiles/execution-lite.md` — one reviewer per group of up to 3 tasks
+  sharing files, a 3-round fix cap, a mandatory final whole-branch review), and `auto` (resolved
+  after the plan by an ordered rubric: risk signals or >8 tasks or >10 files → `subagent`;
+  ≤3 tasks and ≤3 files → `inline`; otherwise `lite`).
+- **Run state:** the chosen mode and strategy are written to `.superpowers/solve-task/<KEY>.md`,
+  which is git-ignored — never to the brief, the spec, or the plan.
 
 ### `ask` — grounded codebase Q&A
 
@@ -604,7 +692,45 @@ namespaced skills with `$rag-reviewer:...`.
 - **Needs:** task key, PR URL, registered board config, and discovered done target/options.
 - **Reads/writes:** after explicit confirmation, appends the PR idempotently, updates the task,
   prepends a task backlink to the PR body, and re-syncs.
-- **Result:** done state plus `already_closed`/`task_link_added` reporting without duplicate links.
+- **Result:** done state plus `already_closed`/`task_link_status` (`added` | `already_present` |
+  `failed`) reporting without duplicate links; `task_link_added` keeps its old meaning
+  ("written just now").
+
+### `report-bug` — report a defect of reviewer itself
+
+- **When:** a reviewer MCP tool broke its own documented contract, a skill step was impossible with
+  the available tools, a stated invariant failed, or a reviewer frame appeared in a traceback.
+  Problems of the user's project (environment, external services, permissions, their own code) are
+  deliberately out of scope: the channel is only worth having while it stays silent on them.
+- **Invoke:** `/rag-reviewer:report-bug`.
+- **Needs:** nothing beyond the MCP server; a GitHub token only for the publishing path.
+- **Reads/writes:** the server triages the symptom class, anonymizes every text field
+  deterministically in Python (source fragments, absolute paths, repo/branch/file names, task keys
+  and board URLs, self-hosted hosts, e-mails, tokens) and assembles the issue for
+  `mimfort/rag_for_git`. **What leaves your machine** is the anonymized narrative plus an
+  Environment block of *shape only*: orchestrator and subagent models, mode, CLI and OS, reviewer /
+  plugin / Python versions and install mode, registered board type, VCS type and whether it is
+  self-hosted (never the host), graph backend, index presence and drift as a number, and integer
+  counts of clusters/files/findings/tasks. The exact final text is shown before anything is sent,
+  and the Environment block can be trimmed line by line or dropped entirely without blocking the
+  report.
+- **Approval:** publication happens **only** after an explicit human yes, and never in headless,
+  cron or background runs — this is enforced server-side, not by the prompt. The issue is created
+  from the user's GitHub account, so their username becomes visible in a public repository; the
+  skill says so before asking. A matching open issue gets a comment instead of a duplicate.
+- **Result:** `published` / `commented` with URLs, or `fallback` with ready-made markdown and a
+  prefilled issue link for manual posting — a failure to report never breaks the session.
+- **Automatic trigger:** a `PostToolUse` hook watches reviewer tool results and recognizes two
+  shapes deterministically — a traceback with `reviewer/*` frames, and a `status` value outside a
+  tool's documented set — so noticing a defect is not left to the model's attention. Routine
+  failures are checked **first** and always win: unavailable stores, missing keys or tokens, board
+  rate limits, 401/403/404, network timeouts, a missing or stale index, and an untracked branch
+  never produce a nudge. Invariant violations (idempotency, dedup, counters) stay model-noticed:
+  they are invisible in a single response, and guessing from one call is how a hook turns into
+  noise. The nudge carries only the shape of the failure, fires at most once per symptom per
+  session, and costs nothing when nothing is wrong.
+- **Switch:** `bug_reports: false` in a repository's `.review.yml` disables the channel and the
+  hook for that repository, `REVIEW_BUG_REPORTS=false` for the whole deploy.
 
 ### `sync-codebase` — build or update the base index
 
@@ -636,6 +762,12 @@ namespaced skills with `$rag-reviewer:...`.
   пофайловые fragments и атомарно пишет fragments вместе со сводкой кластера.
 - **Result:** сводки и метрики `created`/`reused`/`removed`/`moved`,
   `deferred`/`raced`, `fragments_pruned` и `embedded`.
+- **Payload:** the cluster listing runs in compact, paginated mode
+  (`compact=True`, `offset`/`limit`): metadata plus `added`/`changed`/`removed`/`moved` counters,
+  no paths and no fingerprints, so its size grows with the number of clusters rather than files
+  (10 922 B compact vs 97 530 B full on this repository; the full format itself was 106 878 B
+  before PRI-229). Per-cluster file detail comes from `get_subsystem_summary_work`. In full
+  format `files` lists only unchanged files — the delta lists are not repeated there.
 
 Первый полный прогон после обновления создаёт fragments для всех текущих файлов, но не удаляет
 старые сводки: каждый кластер заменяется только после успешной атомарной записи нового bundle.
@@ -696,6 +828,7 @@ uncommitted files directly from disk.
 | `reviewer check` reports Postgres/Neo4j unavailable | Default stores are not running or DSNs differ | Run `docker compose -f ~/.config/rag-reviewer/docker-compose.yml up -d`, then repeat `reviewer check` |
 | Voyage returns 429 | Free-tier RPM/TPM quota is exhausted | Wait for the quota window; rerun incremental indexing rather than deleting the index |
 | PR is skipped | Its target branch is not tracked for this repository (see `reviewer config show`), or draft policy skips it | Inspect `prepare_review` reason; if the target is intentional, add the branch via the per-repo home layer (or `REVIEW_BRANCHES` fallback), not just policy |
+| `config show` reports a `skipped` `.review.yml` layer and exits non-zero | The committed policy layer could not be fetched (no network/token, 404) or could not be parsed | Home layers are still applied — check the reported `category`/`http_status`; fix the remote or the committed YAML. Review, indexing, and migration stay loud and fail instead. A home layer with a forbidden credential key is also reported as `skipped` and exits `1`, even though the layer is simply excluded from resolution |
 | Task lookup is empty | Board is disabled/unconfigured or the corpus is cold | Validate [board setup](docs/board-providers.md), then run `/rag-reviewer:sync-tasks` |
 | Q&A misses new local code | Base index contains only a committed ref | Read the local file or commit/index the intended branch |
 | AI client cannot see new skills | Client session predates installation | Start a New Chat/new CLI session; use Reload Window in an IDE |

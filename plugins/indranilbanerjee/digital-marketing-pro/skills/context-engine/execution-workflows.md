@@ -78,7 +78,7 @@ Use for: marketing emails, newsletters, drip sequences, promotional blasts, even
 ### Send
 
 14. **Approval gate** — Obtain explicit approval from authorized user before sending.
-15. **Schedule or send** — Set send time based on posting-time-analyzer.py output or brand's established best send time. Respect quiet hours (no sends 9 PM-8 AM recipient local time).
+15. **Schedule or send** — Set send time via the ladder: the ESP's per-recipient STO if available, else send-time-optimizer.py with `--history` (the list's own send log), else its dated population baseline. Respect quiet hours (no sends 9 PM-8 AM recipient local time).
 16. **Monitor delivery** — Track within first 2 hours:
     - Deliverability: Target >95%
     - Bounce rate: Flag if >3%
@@ -155,7 +155,7 @@ Use for: organic social media posts across all platforms.
    - Twitter/X: Concise, conversational, thread format for long content
    - TikTok: Native video, trending audio consideration, casual tone
 3. **Hashtag research** — Select 3-5 hashtags per post. Mix: 1-2 high-reach (100K+ posts), 2-3 niche/industry-specific (1K-100K posts). Platform exceptions: Twitter/X (1-2 max), LinkedIn (3-5), Instagram (5-10).
-4. **Optimal posting time** — Use `posting-time-analyzer.py` output or brand's established best posting times. Cross-reference with `platform-specs.md` general recommendations.
+4. **Optimal posting time** — Use `posting-time-analyzer.py` with `--history` (the brand's engagement export) when available, else its dated population baseline; the brand's established measured times outrank both. Cross-reference with `platform-specs.md` general recommendations.
 5. **Visual assets** — Verify all images/videos meet platform dimension and file size requirements. Check text-safe zones for Stories/Reels content.
 6. **Schedule** — Queue post in scheduling tool or platform native scheduler. Confirm scheduled time is correct (timezone awareness).
 7. **Engagement monitoring** — Check engagement at 2 hours and 24 hours after posting. Respond to comments within brand guidelines.

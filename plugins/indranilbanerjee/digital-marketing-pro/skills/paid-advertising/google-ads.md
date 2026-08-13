@@ -1,5 +1,7 @@
 # Google Ads — Campaign Reference Guide
 
+> **Benchmark provenance (as of 2026-08):** Dollar figures in this document are planning priors, not quotes — market and auction rates drift continuously. Before any figure enters a media plan, budget, or client deliverable, refresh it live (platform dashboards and current published reports beat memory) and record it with `python scripts/benchmark_book.py --action record ... --source <url>`; quote from the book thereafter (`--action quote`). Never present an unstamped figure as current market fact.
+
 ## API version notes (July 2026)
 
 If you're writing code or constructing API requests against the Google Ads API, target **v24.2** (released 24 June 2026) — DMP's deliberate stable target. v24.1 and v24.2 are non-breaking additive releases on the v24 line; **v25 (July 2026)** is the new major release and contains breaking changes — adopt it deliberately, not by default.

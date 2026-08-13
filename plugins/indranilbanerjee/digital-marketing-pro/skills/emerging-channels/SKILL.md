@@ -1,9 +1,11 @@
 ---
 name: emerging-channels
-description: "Explore emerging marketing channels. Use when: evaluating voice search, social commerce, or new platforms."
+description: "Evaluate and plan emerging marketing channels — voice and visual search, conversational and social commerce, communities, podcasts, and video — producing channel evaluation reports with 90-day pilot plans, setup checklists, and go/no-go recommendations. Advises and plans; it does not set platforms up for you. Triggers on \"/digital-marketing-pro:emerging-channels\", \"should we open a TikTok Shop\", \"is voice search worth optimizing for\", \"plan a community launch on Discord\", \"evaluate podcast advertising for us\". Reads the brand profile and industry benchmarks, and stamps any dollar figures through the benchmark book before they enter a plan."
 ---
 
 # Emerging Channels
+
+> **Benchmark provenance (as of 2026-08):** Dollar figures in this document are planning priors, not quotes — market and auction rates drift continuously. Before any figure enters a media plan, budget, or client deliverable, refresh it live (platform dashboards and current published reports beat memory) and record it with `python scripts/benchmark_book.py --action record ... --source <url>`; quote from the book thereafter (`--action quote`). Never present an unstamped figure as current market fact.
 
 ## When to Use This Skill
 

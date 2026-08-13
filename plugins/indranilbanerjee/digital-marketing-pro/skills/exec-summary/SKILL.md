@@ -1,6 +1,6 @@
 ---
 name: exec-summary
-description: "Generate C-suite executive summaries. Use when: preparing board reports, portfolio ROI, or strategic reviews."
+description: "Generate a C-suite-ready executive summary of marketing performance — ROI, CAC, LTV, top-3 wins and risks, strategic recommendations, and budget utilization — for a single brand or the whole portfolio, adapted to CEO, CMO, CFO, or board audiences. Triggers on \"/digital-marketing-pro:exec-summary\", \"prepare the board report\", \"summarize this quarter for the CEO\", \"portfolio ROI summary\", \"what do I tell leadership\". Computes KPIs via the CLV, ROI, forecaster, and budget-optimizer scripts, pulls data from connected analytics and CRM MCPs, reads the brand profile, and pairs with /digital-marketing-pro:competitor-analysis for competitive context."
 ---
 
 # /digital-marketing-pro:exec-summary

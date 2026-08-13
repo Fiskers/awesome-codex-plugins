@@ -1,5 +1,7 @@
 # Micro & Nano Influencer Strategy — Scaling Authentic Partnerships
 
+> **Benchmark provenance (as of 2026-08):** Dollar figures in this document are planning priors, not quotes — market and auction rates drift continuously. Before any figure enters a media plan, budget, or client deliverable, refresh it live (platform dashboards and current published reports beat memory) and record it with `python scripts/benchmark_book.py --action record ... --source <url>`; quote from the book thereafter (`--action quote`). Never present an unstamped figure as current market fact.
+
 A tactical guide to building and scaling micro and nano influencer programs. Covers tier benchmarks, discovery and vetting, compensation models, gifting programs, ambassador communities, brief templates, scaling operations, measurement, and platform-specific execution strategies.
 
 ---
@@ -60,8 +62,8 @@ A tactical guide to building and scaling micro and nano influencer programs. Cov
 | **Aspire (formerly AspireIQ)** | Discovery, outreach, and relationship management at scale | Custom pricing |
 | **Grin** | eCommerce-focused; Shopify integration; product seeding workflows | Custom pricing |
 | **Upfluence** | Large database with audience demographics; CRM integration | Custom pricing |
-| **Heepsy** | Affordable discovery tool with audience analytics | $49-$269/mo |
-| **Modash** | Discovery + audience quality analysis + email finder | $99-$399/mo |
+| **Heepsy** | Affordable discovery tool with audience analytics | $89-$369/mo |
+| **Modash** | Discovery + audience quality analysis + email finder | $199-$599/mo |
 | **Collabstr** | Marketplace where creators set rates; simple booking | Pay-per-booking |
 
 ---

@@ -1,6 +1,6 @@
 ---
 name: cro
-description: "Optimize conversion rates. Use when: auditing landing pages, testing forms, or improving checkout flow."
+description: "Audit landing pages, forms, pricing pages, and checkout flows for conversion killers, and design statistically sound A/B tests — ICE-prioritized recommendations, hypothesis templates, and script-computed sample sizes and significance checks. Advises and plans; it does not edit your site or run the tests. Triggers on \"/digital-marketing-pro:cro\", \"audit this landing page\", \"why is our conversion rate so low\", \"how long should this A/B test run\", \"reduce cart abandonment\". Reads the brand profile, industry benchmarks, and campaign history before making recommendations."
 ---
 
 # CRO (Conversion Rate Optimization)

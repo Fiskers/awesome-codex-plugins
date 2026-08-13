@@ -23,7 +23,7 @@
 <p align="center">
   <strong>Distros</strong>&nbsp;
   <img src="https://img.shields.io/badge/Ubuntu%2020.04%2B-supported-2f855a?style=flat-square&logo=ubuntu&logoColor=white" alt="Ubuntu 20.04 and later supported">
-  <img src="https://img.shields.io/badge/Ubuntu%2024.04-VM%20validated-2f855a?style=flat-square&logo=ubuntu&logoColor=white" alt="Ubuntu 24.04 VM validated">
+  <img src="https://img.shields.io/badge/Ubuntu%2022.04%20%7C%2024.04%20%7C%2026.04-VM%20validated-2f855a?style=flat-square&logo=ubuntu&logoColor=white" alt="Ubuntu 22.04, 24.04 and 26.04 VM validated">
   <img src="https://img.shields.io/badge/Fedora%20Atomic%2041%2B-eligible%2C%20unvalidated-b7791f?style=flat-square&logo=fedora&logoColor=white" alt="Fedora Atomic 41 and later eligible but not VM validated">
 </p>
 
@@ -160,9 +160,11 @@ newgrp sysknife                       # or log out and back in
 npx sysknife-setup --no-binary --daemon-mode=skip
 ```
 
-Ubuntu 22.04 records 49/50 stories on a live VM; the run that produced that
-figure is in `tests/evidence/story-runs/`. Ubuntu 24.04 and
-26.04 have passed bootstrap and smoke tests but not the full story suite.
+All three Ubuntu LTS releases record a live-VM run of the 79-story Ubuntu
+suite, and each run has a replay twin that reproduces it: 22.04, 24.04 and 26.04
+all at 79/79, every twin serving every call with zero misses. The runs are in
+`tests/evidence/story-runs/`. The suite grew from 50 when every Debian-only
+action got a story, `GetHostState` first.
 Fedora Atomic is the rpm-ostree target; record a current Silverblue 44 VM run
 before treating a release as current-validated. Plain Fedora Workstation and
 Server remain experimental until the `dnf` action family ships. See the
@@ -191,21 +193,29 @@ SysKnife, not an afterthought. See the [CLI guide](docs/cli.md).
   <img src="assets/demo/demo.gif" alt="sysknife CLI — plan, approve, and execute in the terminal" width="900"/>
 </p>
 
-> **Also: a desktop GUI — a distant third option.** An experimental Tauri
-> desktop app (`sysknife-shell`) wraps the same plan → approve → execute loop in
-> a window. It is the least frequently maintained surface, well behind the MCP
-> integration and the CLI, so reach for it only if you specifically want a
-> graphical approval flow.
+> **Also: a desktop GUI — development paused.** An experimental Tauri desktop
+> app (`sysknife-shell`) wraps the same plan → approve → execute loop in a
+> window. **Its development is paused for now**, and effort is going to Ubuntu
+> across its supported versions instead. The code stays in the tree and still
+> builds, but it is not being reviewed, tested, or extended, so reach for it
+> only if you specifically want a graphical approval flow and can live with
+> that. The MCP integration and the CLI are the maintained surfaces.
 
 ## How it works
 
 ```
-sysknife-brain   →   sysknife-shell   →   sysknife-daemon
-  (planner)         (approval gate)        (executor)
-   talks to LLM      shows the plan,        only privileged
-   never to OS       takes y/n              process; signs
-                                            every action
+sysknife-brain   →   approval gate    →   sysknife-daemon
+  (planner)         (you, in a         (executor)
+   talks to LLM      terminal)          only privileged
+   never to OS       shows the plan,    process; signs
+                     takes y/n          every action
 ```
+
+The approval gate is a surface, not a component. In the maintained paths it is
+`sysknife approve <transaction-id>` in your terminal — for the CLI and for MCP
+alike, which is why an AI client cannot approve its own plan. The paused Tauri
+GUI (`sysknife-shell`) is a third implementation of that same gate, not a step
+the other two route through.
 
 1. You type a natural-language request.
 2. The brain proposes a plan — each step is a **typed action** with
@@ -256,11 +266,11 @@ milestone.
 | Tamper-evident Ed25519-signed audit chain | ✅ |
 | RFC 5424 syslog forwarding (Splunk / Sentinel / QRadar) | ✅ |
 | Postgres backend (RDS / Cloud SQL / Neon / Supabase) | ✅ |
-| **Ubuntu support** — 49/50 stories on a live 22.04 VM, recorded in `tests/evidence/story-runs/` | ✅ |
-| **Ubuntu 22.04 / 26.04 VM tooling** — smoke tests pass on all three LTSes | ✅ |
+| **Ubuntu support** — 79/79 stories on a live 22.04 VM, recorded in `tests/evidence/story-runs/` | ✅ |
+| **Every Ubuntu LTS validated** — 22.04, 24.04 and 26.04 all at 79/79, each with a replay twin that reproduces it | ✅ |
 | Telegram approval interface | 📋 roadmap |
 
-**1,739 Rust tests and 72 frontend tests** form the current deterministic
+**1,758 Rust tests and 72 frontend tests** form the current deterministic
 release baseline.
 
 ## Configure your LLM
@@ -306,8 +316,8 @@ All config files that may contain API keys are created with `chmod 0600`.
 
 See [ROADMAP.md](ROADMAP.md) for the full milestone breakdown.
 
-- ✅ **Ubuntu 22.04** — 49/50 stories on a live VM (recorded in `tests/evidence/story-runs/`)
-- ✅ **Ubuntu 22.04 / 26.04** — VM tooling complete; smoke tests pass on all three LTSes
+- ✅ **Ubuntu 22.04** — 79/79 stories on a live VM (recorded in `tests/evidence/story-runs/`)
+- ✅ **Ubuntu 24.04 and 26.04** — 79/79 and 79/79 on live VMs; every LTS run has a replay twin that reproduces it
 - 📋 Telegram inline-button approvals
 - 📋 `sysknife audit export` (CEF / NDJSON for SIEM ingest)
 - 📋 Fleet plan/execute (one plan, N targets, parallel approval)

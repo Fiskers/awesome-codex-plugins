@@ -1,6 +1,6 @@
 ---
 name: content-decay-scan
-description: "Scan content library for decay signals: declining traffic, falling rankings, outdated stats, dropped AI citations. Prioritizes refresh opportunities by business impact. Use when identifying content that needs refreshing, recovering lost traffic, or auditing for stale and underperforming content."
+description: "Scan the content library for decay — declining traffic, falling keyword positions, stale content, broken links, lost AI citations — scoring each URL 0-100 via creative-fatigue-predictor.py and ranking refreshes by recoverable revenue, with actionable refresh briefs and traffic-recovery estimates for top-priority tiers. Triggers on \"/digital-marketing-pro:content-decay-scan\", \"which content is losing traffic\", \"find stale content to refresh\", \"our blog traffic keeps dropping\", \"prioritize content refreshes\". Pulls performance data from Google Analytics/Search Console MCPs or exported CSVs; cross-reference causes with /digital-marketing-pro:seo-drift. Reads the brand profile for content strategy context."
 user-invocable: true
 triggers:
   - scan for content decay

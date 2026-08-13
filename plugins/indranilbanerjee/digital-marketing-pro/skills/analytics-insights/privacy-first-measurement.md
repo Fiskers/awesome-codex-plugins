@@ -1,5 +1,7 @@
 # Privacy-First Measurement — Cookieless Attribution
 
+> **Benchmark provenance (as of 2026-08):** Dollar figures in this document are planning priors, not quotes — market and auction rates drift continuously. Before any figure enters a media plan, budget, or client deliverable, refresh it live (platform dashboards and current published reports beat memory) and record it with `python scripts/benchmark_book.py --action record ... --source <url>`; quote from the book thereafter (`--action quote`). Never present an unstamped figure as current market fact.
+
 ## The Privacy Landscape
 
 The era of unrestricted cross-site tracking is over. Safari and Firefox have blocked third-party cookies since 2020. Chrome has introduced significant restrictions through the Privacy Sandbox. Regulations like GDPR, CCPA/CPRA, and emerging state and international laws require explicit consent for tracking. Marketers who do not adapt their measurement infrastructure will lose visibility into 40-60% of their customer journey.

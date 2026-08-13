@@ -1,6 +1,7 @@
 ---
 name: xquik-social-research
 description: Research public X data with Xquik. Use for tweet search, tweet lookup, user discovery, profile timelines, threads, followers, trends, exports, monitoring plans, or MCP setup. Keep public reads bounded. Require explicit approval before private reads, writes, persistent resources, or bulk jobs. Not affiliated with X Corp.
+license: MIT
 ---
 
 # Xquik Social Research
@@ -39,6 +40,11 @@ Never request X passwords, cookies, session tokens, recovery codes, or 2FA codes
 | Read trends | `GET /api/v1/x/trends` |
 
 The API base URL is `https://xquik.com`.
+
+Fresh cursorless Tweet Search with `queryType=Latest` is newest-first across
+pages. Existing cursors retain their established ordering. Thread reads accept
+32 effective result filters, excluding `nativeRetweets`, `sinceTime`, and
+`untilTime`. Check OpenAPI for their exact names.
 
 ## Workflow
 

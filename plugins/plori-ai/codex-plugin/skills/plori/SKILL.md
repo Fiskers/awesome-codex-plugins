@@ -21,12 +21,18 @@ MCP (recommended for a hosted client): Streamable HTTP at `https://api.plori.ai/
 - API key: the account owner provisions a key at https://plori.ai and you send
   `Authorization: Bearer plori_sk_...`.
 
-CLI (recommended from a terminal): `npm i -g @plori/cli`, or run it without installing
-via `npx -y @plori/cli`, gives you the `plori` command for the same operations from your
-shell. `plori login` opens the browser for the same email-OTP OAuth flow; CI and other
-headless callers use `plori login --key plori_sk_...` or set `PLORI_API_KEY`. Output is
-human-readable on a terminal and a single JSON document when piped or with `--json`, so it
-composes in scripts. Commands are listed under "CLI commands" below.
+CLI (recommended from a terminal): install with
+`curl -fsSL https://plori.ai/install.sh | sh` (one static binary, no sudo and no Node; on
+Windows `irm https://plori.ai/install.ps1 | iex`), or `npm i -g @plori/cli`, or run it
+without installing via `npx -y @plori/cli`. That gives you the `plori` command for the
+same operations from your shell. The shell installer puts the binary in `~/.local/bin`
+and edits no shell rc file, so run `export PATH="$HOME/.local/bin:$PATH"` after it
+before you call `plori` (the Windows script sets the user PATH itself).
+`plori login` opens the browser for the same email-OTP
+OAuth flow; CI and other headless callers use `plori login --key plori_sk_...` or set
+`PLORI_API_KEY`. Output is human-readable on a terminal and a single JSON document when
+piped or with `--json`, so it composes in scripts. Commands are listed under "CLI
+commands" below.
 
 REST: the same operations at `https://api.plori.ai/v1` with the same bearer token.
 Full authentication instructions: https://plori.ai/auth.md
@@ -39,7 +45,8 @@ Account and agents: `list_agents`, `get_agent`, `create_agent`
 
 Runs: `invoke_agent` sends a message and by default blocks until the turn finishes,
 returning the assistant's reply. Pass `wait=false` to get a `run_id` immediately and
-poll `get_run_result`. `list_runs` lists recent runs.
+poll `get_run_result`; pass `max_turn_tokens` to cap the turn. `cancel_run` stops an
+in-flight run asynchronously. `list_runs` lists recent runs.
 
 Human in the loop: a run can pause on an approval or input request (status
 `awaiting_input`). Read the queue with `list_pending_inputs` and reply with
@@ -53,14 +60,20 @@ Deferred work: `schedule_run` (agent_id, prompt, and delay_seconds or an RFC3339
 fire_at) invokes the agent later as an ordinary run.
 
 Connections: `list_connections` shows the account's third-party OAuth provider status,
-authorization and expiry times, and configured scopes. It never returns tokens or client secrets.
+authorization and expiry times, and configured scopes. `status` is the re-authentication
+predicate; an authorized grant with an old expiry refreshes lazily on use. It never returns
+tokens or client secrets.
 
 Workflows: `list_workflows` (optional agent_id UUID, or "none" for unassigned),
 `get_workflow` (workflow_id; returns metadata plus the pinned step projection),
+`get_workflow_version` (workflow_id + version; returns the full definition with parameter
+values), `edit_workflow` (workflow_id + base_version + constrained ops; creates a draft
+version under CAS and does not activate it),
 `create_workflow` (name, optional description/trigger_kind/cron_expr),
 `run_workflow` (runs a workflow now: a real execution billed like any run,
 returning the execution, terminal or still `running`), `list_workflow_executions`
-(workflow_id; recent execution history), and `get_workflow_execution` to poll one.
+(workflow_id; recent execution history), and `get_workflow_execution` to poll one and read
+its full per-step input/output payloads.
 A workflow's steps are built by an agent; these tools manage and run the result.
 
 ## CLI commands
@@ -68,6 +81,11 @@ A workflow's steps are built by an agent; these tools manage and run the result.
 The CLI mirrors the tools above; an agent is addressable by name or id, and every command
 accepts `--json`.
 
+- `plori attach <name|session-id>`: open a live session in the terminal (history, a
+  prompt, streaming output, and approvals answered in place). It is interactive and
+  expects a human at the keyboard: as a calling agent, prefer the one-shot commands
+  below, and use `--read-only` if you only need to tail a session. It writes plain
+  text, never JSON, and redirecting stdin or stdout already selects read-only.
 - `plori create <name>`: get or create an agent by name (reusing a name returns the
   existing agent). `plori agents`, `plori agent <name>`, `plori set-model <name> <model>`,
   `plori delete <name> --yes`.

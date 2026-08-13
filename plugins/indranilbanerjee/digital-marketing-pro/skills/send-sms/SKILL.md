@@ -1,6 +1,6 @@
 ---
 name: send-sms
-description: "Send SMS or WhatsApp messages. Use when: deploying marketing messages via Twilio or Brevo with compliance checks."
+description: "Send an SMS or WhatsApp marketing message through a connected Twilio or Brevo MCP, with consent verification (TCPA/GDPR/CASL), quiet-hours enforcement, opt-out and message-length checks, cost estimates, and delivery tracking. Nothing sends without an Execution Summary and explicit typed approval — the gate cannot be skipped. Triggers on \"/digital-marketing-pro:send-sms\", \"send an SMS blast\", \"send this WhatsApp message to the list\", \"text our customers about the sale\", \"schedule an SMS for tomorrow morning\". Reads the brand profile and compliance rules, scores the message with the brand-voice scorer, and logs every send to the execution audit trail."
 disable-model-invocation: false
 argument-hint: "[message-type]"
 ---

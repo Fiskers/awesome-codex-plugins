@@ -1,5 +1,7 @@
 # Platform Publishing Specs — API Requirements & Content Formats
 
+> **Benchmark provenance (as of 2026-08):** Dollar figures in this document are planning priors, not quotes — market and auction rates drift continuously. Before any figure enters a media plan, budget, or client deliverable, refresh it live (platform dashboards and current published reports beat memory) and record it with `python scripts/benchmark_book.py --action record ... --source <url>`; quote from the book thereafter (`--action quote`). Never present an unstamped figure as current market fact.
+
 This file defines the API-level requirements for publishing and managing content across marketing platforms. Use this reference when constructing payloads, mapping fields, and validating content before execution. For visual creative specs (image sizes, character limits for organic posts), see `platform-specs.md`.
 
 ---
@@ -290,6 +292,6 @@ This file defines the API-level requirements for publishing and managing content
 | Text message limit | 1,024 characters. |
 | Media types | Image (5 MB), Video (16 MB), Document (100 MB), Audio (16 MB), Sticker (100 KB static, 500 KB animated). |
 | Interactive messages | Buttons (up to 3 quick-reply buttons, 20 chars each) or lists (up to 10 items in up to 10 sections). |
-| Conversation pricing | Meta charges per 24-hour conversation window. Rates vary by country and conversation category. Marketing conversations: ~$0.02-$0.08 USD (varies by country). |
+| Message pricing | Per-message billing (since July 2025 — conversation-based billing is retired). Each delivered template message is charged by category (MARKETING, UTILITY, AUTHENTICATION), recipient country, and volume tier; marketing is the priciest (~$0.01-$0.14 USD/message by market, no volume discounts). Service replies within the 24h customer-service window are free. BSPs add per-message markup. |
 | Quality rating | Green (high), Yellow (medium), Red (low). Low quality = reduced throughput or template rejection. Maintain by keeping opt-out and block rates low. |
 | Opt-out requirement | Must provide opt-out mechanism. High block rates trigger quality rating drops. Honor opt-outs within 24 hours. |

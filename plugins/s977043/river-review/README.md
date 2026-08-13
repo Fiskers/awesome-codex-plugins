@@ -131,7 +131,7 @@ skill はあなたのリポジトリに置きます。レビュールールは�
 
 ### PlanGate に依存しているか？
 
-いいえ。PlanGate は有用なワークフロー形態の一つですが、River Review が単一のプランニング手法に依存することはありません。
+いいえ。PlanGate は有用なワークフロー形態の 1 つですが、River Review が単一のプランニング手法に依存することはありません。
 
 コア契約は **artifact-based** です。plan / diff / tests / JUnit / 既存レビューコメントなど、構造化された入力を評価できます。チームはまず PR 時点のチェックだけ採用し、後から plan / verify ゲートを追加することができます。
 
@@ -139,7 +139,7 @@ skill はあなたのリポジトリに置きます。レビュールールは�
 
 skill を CI job のように扱ってください。
 
-安価で決定論的なチェックを先に走らせる、変更に関係するアーティファクトと skill にだけ River Review を当てる、まずは小さな公式 skill pack から始めて、人間のレビューコストや回帰リスクが高い箇所にだけリポジトリ固有 skill を追加する、という運用が現実的です。
+現実的な運用は次のとおりです。安価で決定論的なチェックを先に走らせ、変更に関係するアーティファクトと skill にだけ River Review を当てます。skill はまず小さな公式 skill pack から始め、人間のレビューコストや回帰リスクが高い箇所にだけリポジトリ固有 skill を追加します。
 
 良い skill には fixture と golden output を必ず付け、レビュー信号が実行コストに見合うかを測定できる状態にします。Anthropic provider 利用時は prompt caching が自動適用され、`RIVER_USAGE_TELEMETRY=1` で使用量を JSONL に永続化できます。
 
@@ -238,7 +238,7 @@ jobs:
 
 <!-- x-release-please-start-version -->
 
-最新リリース: [v1.73.0](https://github.com/s977043/river-review/releases/latest)
+最新リリース: [v1.76.1](https://github.com/s977043/river-review/releases/latest)
 
 <!-- x-release-please-end -->
 
@@ -401,7 +401,7 @@ GitHub Actions では:
 
 ### v0.21〜v0.28 で追加された主な機能
 
-- **Riverbed Memory による suppression**（[#687](https://github.com/s977043/river-review/issues/687)）: `river suppression add --fingerprint <fp> --feedback accepted_risk` で確定済み指摘の再表示を抑止する。`memory.suppressionEnabled: false` で gate を一時バイパス可能。
+- **Riverbed Memory による suppression**（[#687](https://github.com/s977043/river-review/issues/687)）: `river suppression add --fingerprint <fp> --feedback accepted_risk` で確定済み指摘の再表示を抑止する。`memory.suppressionEnabled: false` で gate を一時バイパス可能。`--expires` で期限を付けると、その日時以降は抑制が外れて指摘が再び出る（[repo-wide review ガイド](pages/guides/repo-wide-review.md)）。
 - **Secret redaction**（[#692](https://github.com/s977043/river-review/issues/692)）: repo-wide context と LLM プロンプトに対する多段階 redaction。`security.redact.*` でカテゴリ／allowlist／denyFiles を制御する。
 - **Context budget / ranking / reviewMode**（[#689](https://github.com/s977043/river-review/issues/689)）: `context.budget` で token／char 上限を制御。`context.ranking.enabled` で近接度ベースの並び替えを有効化。`context.reviewMode: tiny | medium | large` でプリセット budget を切替。
 - **Repo-wide eval suite**（[#688](https://github.com/s977043/river-review/issues/688)）: `npm run eval:repo-context` が detection / context lift / false positive の 3 指標を出力する。
@@ -436,9 +436,9 @@ river-review は同一リポジトリ内のマーケットプレイスから Cla
 
 得られるもの（プラグイン名で名前空間化されます）:
 
-- コマンド: `/river-review:review-local`, `/river-review:challenge`, `/river-review:skill`, `/river-review:check`, `/river-review:pr`
+- コマンド: `/river-review:setup-team` / `/river-review:review-local` / `/river-review:review-team` / `/river-review:challenge` / `/river-review:skill` / `/river-review:check` / `/river-review:pr`
 - エージェント: `river-review`（スキルルーティング型のコードレビュー・オーケストレーター）
-- スキル: オーケストレーターに加えて `river-review-code`, `river-review-security`, `river-review-performance`, `river-review-architecture`, `river-review-testing`, `adversarial-review`, `river-review-docs`—`/river-review:<skill-name>` で呼び出せます
+- スキル: オーケストレーターの `river-review` に加えて `river-review-code` / `river-review-security` / `river-review-performance` / `river-review-architecture` / `river-review-testing` / `river-review-frontend` / `river-review-docs` / `adversarial-review` / `review-team` / `unknown-coverage-review`—`/river-review:<skill-name>` で呼び出せます
 
 管理: `/plugin enable|disable|uninstall river-review@river-review-marketplace`。
 
@@ -518,7 +518,7 @@ npm run codex:exec -- "review this branch"
 4. `--dry-run` は外部 API を呼ばず標準出力のみ。`--phase upstream|midstream|downstream` でフェーズ指定も可能（デフォルトは `RIVER_PHASE` 環境変数または `midstream`）
 5. コンテキスト/依存の制御: `RIVER_AVAILABLE_CONTEXTS=diff,tests` や `RIVER_AVAILABLE_DEPENDENCIES=code_search,test_runner` を設定すると、スキル選択時に要求を満たさないものを理由付きでスキップできます（未設定の場合は依存チェックをスキップ）。
 6. CLI で直接指定する場合: `--context diff,fullFile` や `--dependency code_search,test_runner` フラグで環境変数を上書きできます（逗号区切り）。
-7. 依存のスタブ有効化: `RIVER_DEPENDENCY_STUBS=1` を指定すると、既知の依存（`code_search`, `test_runner`, `coverage_report`, `adr_lookup`, `repo_metadata`, `tracing`）を「利用可能」とみなしてスキップを防ぎます。実装準備中の環境でプランだけ確認したいときに使用してください。
+7. 依存のスタブ有効化: `RIVER_DEPENDENCY_STUBS=1` を指定すると、既知の依存（`code_search` / `test_runner` / `coverage_report` / `adr_lookup` / `repo_metadata` / `tracing`）を「利用可能」とみなしてスキップを防ぎます。実装準備中の環境でプランだけ確認したいときに使用してください。
 
 ### 出力形式（`--output`）
 
@@ -727,10 +727,10 @@ River Review は、AI 支援開発におけるチーム所有の監査レイヤ�
 本リポジトリは複数ライセンス（ファイル種別ごと）を採用しています。
 
 - `LICENSE-CODE`（MIT）: コードとスクリプト
-  - 例: `src/**`, `scripts/**`, `tests/**`
+  - 例: `src/**` / `scripts/**` / `tests/**`
 - `LICENSE-CONTENT`（CC BY 4.0）: ドキュメント、テキスト、メディア
-  - 例: `pages/**`, `skills/**`, `assets/**`,（ルート直下の）`*.md`
+  - 例: `pages/**` / `skills/**` / `assets/**` /（ルート直下の）`*.md`
 - `LICENSE`（Apache-2.0）: リポジトリ構成（scaffolding）と設定（configuration）
-  - 例: `.github/**`, `docusaurus.config.js`, `sidebars.js`, `package*.json`, `*.config.*`, `.*rc*`
+  - 例: `.github/**` / `docusaurus.config.js` / `sidebars.js` / `package*.json` / `*.config.*` / `.*rc*`
 
 追加するファイルのライセンス方針に迷う場合は、PR で明示して相談してください。

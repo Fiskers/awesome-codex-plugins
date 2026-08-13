@@ -61,7 +61,7 @@ Channel and creative strategy must differentiate by tier. A campaign that works 
 - **Hinglish** (Hindi + English code-mix) is widely used, especially in urban tier-1 / tier-2.
 - **Vernacular video and audio convert significantly better in tier-2 / tier-3** than English equivalents.
 - **Indic script support** in ad platforms varies — test rendering before scaling.
-- Translation services for India: **Sarvam AI** (best for Indic languages), **Google Cloud Translation**, **Lara Translate**, **DeepL** (limited Indic support).
+- Translation for India: use an Indic-specialist capability — judge candidates on native model coverage of the specific target language, script-aware output, and code-mixed content handling (`language-router.py --action route` resolves from the brand preference or connected servers). General-purpose engines with limited Indic support need sample-testing before campaign use.
 - The plugin includes a multilingual layer; see [multilingual-execution-guide.md](multilingual-execution-guide.md).
 
 ### Seasonality patterns

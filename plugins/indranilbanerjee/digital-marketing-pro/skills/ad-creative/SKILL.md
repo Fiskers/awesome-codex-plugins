@@ -1,6 +1,6 @@
 ---
 name: ad-creative
-description: "Generate platform-specific ad copy. Use when: Google RSA, Meta, LinkedIn, TikTok ad variations with quality scoring."
+description: "Generate 3-5 ad copy variations per platform — headlines, descriptions, and CTAs formatted to Google, Meta, LinkedIn, TikTok, X, and Pinterest specs — each scored 1-10 with policy-compliance flags, A/B testing groupings, and a message-match check against the landing page. Triggers on \"/digital-marketing-pro:ad-creative\", \"write ad copy for Meta\", \"give me RSA headline variations\", \"we need LinkedIn ad copy\", \"draft TikTok ad creative\". Reads the brand profile, guidelines, and compliance rules; routes video ad scripts to /digital-marketing-pro:video-script and gates AI-generated visuals for EU campaigns through /digital-marketing-pro:c2pa-metadata and /digital-marketing-pro:check."
 argument-hint: "[platform]"
 ---
 
@@ -16,7 +16,7 @@ The user must provide (or will be prompted for):
 
 - **Product/service**: What is being advertised
 - **Platform(s)**: Google Ads, Meta (Facebook/Instagram), LinkedIn, TikTok, X, Pinterest
-- **Ad format**: RSA, single image, carousel, video script, story, etc.
+- **Ad format**: RSA, single image, carousel, video script, story, etc. For video ad scripts (6s bumper, 15s skippable, 30s spot, UGC-style), route to /digital-marketing-pro:video-script — its step 2.4 carries the per-format structural rules (the 5-second skip deadline, one-message bumpers, native-style disclosure) and its output passes the /check gate. This skill owns the copy layer around the video: headlines, descriptions, and CTAs.
 - **Campaign objective**: Awareness, traffic, leads, conversions, app installs
 - **Target audience**: Who the ads are for
 - **Key offer/CTA**: Promotion, value prop, or desired action

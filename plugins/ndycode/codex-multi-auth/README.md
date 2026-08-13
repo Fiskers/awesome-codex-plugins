@@ -257,7 +257,7 @@ For remote or headless shells, prefer `codex-multi-auth login --device-auth`.
 | Routing profiles | `~/.codex/multi-auth/routing-profiles.json` |
 | Budget guards | `~/.codex/multi-auth/budget-guards.json` |
 | Local client tokens | `~/.codex/multi-auth/local-client-tokens.json` |
-| Runtime app helper status | `~/.codex/multi-auth/runtime-rotation-app-helper.json` |
+| Runtime app helper status | `~/.codex/multi-auth/runtime-rotation-app-helper.<pid>.json` |
 | Runtime app helper owner metadata | `~/.codex/multi-auth/runtime-rotation-app-helper-owner.<pid>.json` |
 | Persistent app bind state/logs | `~/.codex/multi-auth/app-bind/` |
 | Logs | `~/.codex/multi-auth/logs/codex-plugin/` |
@@ -392,7 +392,8 @@ codex-multi-auth doctor --json
 
 ## Release Notes
 
-- Current stable: [docs/releases/v2.8.3.md](docs/releases/v2.8.3.md) — install via `npm i -g codex-multi-auth`
+- Current stable: [docs/releases/v2.8.5.md](docs/releases/v2.8.5.md) — install via `npm i -g codex-multi-auth`
+- Previous stable: [docs/releases/v2.8.3.md](docs/releases/v2.8.3.md)
 - Previous stable: [docs/releases/v2.8.2.md](docs/releases/v2.8.2.md)
 - Previous stable: [docs/releases/v2.7.1.md](docs/releases/v2.7.1.md)
 - Previous stable: [docs/releases/v2.7.0.md](docs/releases/v2.7.0.md)

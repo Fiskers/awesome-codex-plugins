@@ -2,8 +2,8 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "awesome-codex-plugins",
   "version": "1.0.0",
-  "last_updated": "2026-08-10",
-  "total": 194,
+  "last_updated": "2026-08-13",
+  "total": 195,
   "categories": [
     "Development & Workflow",
     "Tools & Integrations"
@@ -1938,6 +1938,16 @@
       "category": "Tools & Integrations",
       "source": "awesome-codex-plugins",
       "install_url": "https://raw.githubusercontent.com/nebelov/yandex-direct-for-all/HEAD/plugins/yandex-direct-for-all/.codex-plugin/plugin.json"
+    },
+    {
+      "name": "YouTube Skills by TranscriptAPI",
+      "url": "https://github.com/ZeroPointRepo/youtube-skills",
+      "owner": "ZeroPointRepo",
+      "repo": "youtube-skills",
+      "description": "Twelve drop-in agent skills for YouTube transcripts, timestamped captions and subtitles, video and channel search, playlists and channel browsing through the TranscriptAPI service.",
+      "category": "Tools & Integrations",
+      "source": "awesome-codex-plugins",
+      "install_url": "https://raw.githubusercontent.com/ZeroPointRepo/youtube-skills/HEAD/.codex-plugin/plugin.json"
     },
     {
       "name": "Zotero Research Tools",

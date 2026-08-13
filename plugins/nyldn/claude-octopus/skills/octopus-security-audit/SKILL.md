@@ -1,6 +1,7 @@
 ---
 name: octopus-security-audit
 description: "OWASP compliance, vulnerability scanning, and adversarial red team testing — use for security reviews"
+disable-model-invocation: true
 ---
 
 > **Host: Codex CLI** — This skill was designed for Claude Code and adapted for Codex.
@@ -148,9 +149,9 @@ This skill wraps the `security-auditor` persona defined in:
 For comprehensive security testing, use the squeeze workflow which runs a 4-phase adversarial cycle:
 
 1. **Blue Team** (Defense): Codex reviews code, identifies attack surface, proposes defenses
-2. **Red Team** (Attack): Gemini attempts to break defenses, generates exploit PoCs
+2. **Red Team** (Attack): Antigravity attempts to break defenses, generates exploit PoCs
 3. **Remediation** (Fix): Codex patches all vulnerabilities found
-4. **Validation** (Verify): Gemini re-tests, confirms fixes or fails
+4. **Validation** (Verify): Antigravity re-tests, confirms fixes or fails
 
 ```bash
 ${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh squeeze "[user's security request]"
