@@ -100,7 +100,8 @@ After collecting all information:
 
 1. Run: `python "${CLAUDE_PLUGIN_ROOT}/scripts/setup.py" --create-brand "[brand name]"`
 2. Update the created profile.json with all collected data
-3. Confirm to user: "Brand profile created for [brand_name]. All marketing modules will now use this context. You can update it anytime by saying 'update my brand profile.'"
+3. Add the AI-assistance disclosure block (defaults unless the user chooses otherwise): `"ai_disclosure": {"mode": "claude-surfaces", "text": null, "author": null}`. Modes: `claude-surfaces` (default — the disclosure attaches when content runs on a Claude surface or the surface is uncertain; skipped only on an affirmatively-detected non-Claude harness), `always` (every surface — safest for brands with their own AI-transparency obligations), `off` (never; the brand owns that choice). `author` is OPTIONAL and may stay null — the default wording ("reviewed by our editorial team") needs no name. Custom `text` replaces the default verbatim; note the default is vendor-neutral and claims only the review the pipeline performs
+4. Confirm to user: "Brand profile created for [brand_name]. All marketing modules will now use this context. You can update it anytime by saying 'update my brand profile.'"
 
 ## Switching Brands
 

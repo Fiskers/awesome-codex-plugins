@@ -1,6 +1,6 @@
 ---
 name: amq-cli
-version: 0.60.5 # x-release-please-version
+version: 0.61.0 # x-release-please-version
 description: >-
   Coordinate agents via the AMQ CLI for file-based inter-agent messaging. Use
   this skill whenever you need to send messages to another agent (codex, claude,
@@ -146,19 +146,56 @@ Before diving in, match the task to the right workflow — this avoids wasted ef
 
 ## Quick Start
 
-```bash
-# One-time project setup
-amq coop init
+The repository [README Quick Start](https://github.com/avivsinai/agent-message-queue#quick-start)
+is the canonical human onboarding path. The commands below keep the agent
+workflow self-contained.
 
-# Per-session (one command per terminal — defaults to --session collab)
-amq coop exec claude -- --dangerously-skip-permissions  # Terminal 1
-amq coop exec codex -- --dangerously-bypass-approvals-and-sandbox  # Terminal 2
-amq coop exec grok  # Terminal 3 (optional peer) — caller flags forwarded unchanged, no baked-in bypass
+```bash
+# Interactive one-time project setup
+amq setup
+
+# Non-interactive setup: re-pass the same explicit inputs on preview and apply
+setup_args=(--agents claude,codex --default-session collab --launcher-preference commands)
+setup_preview="$(amq setup --preview --json "${setup_args[@]}")"
+setup_digest="$(printf '%s\n' "$setup_preview" | jq -r '.preview.digest')"
+amq setup --apply "$setup_digest" "${setup_args[@]}"
+
+# Daily entry: reconcile the declared session (never creates an unknown name)
+amq launch
+amq session create feature-x   # once, before the first named-session launch
+amq launch --session feature-x
+amq session resume feature-x
 ```
+
+`setup --preview` performs zero writes. On a fresh non-interactive setup,
+`--agents`, `--default-session`, and `--launcher-preference` are required.
+`--apply` recomputes the preview and exits `6` without writes unless the
+approved `sha256:<hex>` digest matches. It is mutually exclusive with `-y`;
+`--preview` is also mutually exclusive with `-y`.
+
+Put provider flags in the committed `.amq/launch.json` `command` arrays. The
+launcher validates them and includes them in the semantic trust digest. The
+first semantic plan, and each plan change, needs an interactive trust
+confirmation stored outside the worktree. Non-interactive or `--json` calls
+exit `6` until that digest is trusted. An unknown `session resume` name exits
+`3` and writes nothing. The `commands` backend prints complete `coop exec`
+commands and exits `6` because running them is the remaining operator action.
+Paste the emitted lines exactly, one per terminal; do not reconstruct them from
+generic `coop exec` examples.
 
 Without `--session` or `--root`, `coop exec` uses the declared `default_session` from `.amq/launch.json`, or `collab` when none is declared. Creating a missing session or root from `coop exec` is deprecated and prints `warning: creating a missing session or root from coop exec is deprecated; use 'amq session create <name>' or 'amq init --root'. The next major release makes this exit 3.`
 
 Add `--no-gitignore` when `coop exec` should auto-initialize the project without changing `.gitignore`.
+
+Direct `coop exec` is legacy low-level plumbing. When an operator deliberately
+uses it, provider flags follow `--`; dangerous bypass flags belong only on this
+operator-controlled path and are rejected from committed launch arguments:
+
+```bash
+amq coop exec claude -- --dangerously-skip-permissions
+amq coop exec codex -- --dangerously-bypass-approvals-and-sandbox
+amq coop exec grok
+```
 
 ### Standalone wake interrupt safety
 
@@ -246,6 +283,7 @@ Treat AMQ's process exit code as the stable machine contract:
 | `3` | Not found. A requested resource such as a mailbox, message, session, agent, or configuration does not exist. |
 | `4` | Timeout. A watch, monitor, receipt wait, or delivery wait reached its deadline. |
 | `5` | Context mismatch. A syntactically valid route was refused, including a pin conflict or an ineligible implicit root inside Git. |
+| `6` | Action required. The command cannot proceed without an operator action (untrusted launch plan, unknown backend inspect, stale conversation token, blocked rebind, or emitted `coop exec` commands still to run). |
 
 Do not parse stderr prose as a stable discriminator. `--json` preserves the
 same process exit codes. A read-only `list` on a mismatched session pin warns
@@ -452,7 +490,7 @@ Note: The `agent@name` inline syntax (e.g., `codex@infra`) is for cross-project 
 2. If the name matches a session, use `--session <name>` on the send command
 3. If it matches both a session and an agent handle, prefer the session interpretation when the user's phrasing implies a group/context ("on X", "in X", "the X team"), and the agent interpretation when it implies a person ("ask X", "tell X")
 4. If the target session differs from your current session (`$AM_ROOT` basename), use `--session <name>`
-5. Never guess — if the name doesn't appear in `amq who --json` output, tell the user (it may need `coop exec --session <name>` to initialize)
+5. Never guess — if the name doesn't appear in `amq who --json` output, tell the user (it may need `amq session create <name>`)
 6. For cross-project routing (different repo), use `--project` instead — see Cross-Project Routing section
 
 ## Messaging
@@ -562,7 +600,7 @@ Prose like `operator-held`, `pending operator`, or `manual approval` **inside an
 | `decision` | — | normal |
 | `todo` | — | normal |
 | `status` | — | low |
-| `brainstorm` | — | low |
+| `brainstorm` | — | normal |
 
 ## References
 

@@ -263,6 +263,7 @@ For each agent in this wave:
       - Which files to read/modify (exact paths)
       - Acceptance criteria (how to verify done)
       - Relevant patterns — injected automatically as the <APPLICABLE-RULES> block (see Pre-Dispatch: Glob-Scoped Rule Injection below)
+      - Relevant past learnings — injected automatically as the <LEARNINGS-INDEX> block, computed PER AGENT from its file scope (see Pre-Dispatch: Learnings-Index Injection below)
       - Any repo-state fact carried from an earlier wave: in the ASSERTED/UNVERIFIED form, never as a bare value (see Pre-Dispatch: Fact-Staleness Annotation above)
       - VCS issue reference if applicable
       - What NOT to touch (other agents' files)
@@ -405,7 +406,7 @@ After `wave-scope.json` is written for this wave and before assembling the `Agen
     RULES_BLOCK="$(node "$PLUGIN_ROOT/scripts/print-applicable-rules.mjs" --context wave 2>/dev/null)"
 
 `--context wave` (issue #692) excludes `tier: coordinator-only` rules (owner-persona, lsp, mvp-scope, loop-and-monitor) from the wave-agent prompt — those are operator/coordinator-context rules a wave implementation agent does not need. `tier: always` and `tier: wave-only` rules are unaffected; omitting the flag (or passing `--context coordinator`) disables wave-tier exclusion. Use `--wave-scope <path>` only if `wave-scope.json` is not at the default `.claude/wave-scope.json`. The CLI returns:
-- a Markdown block (header `## Applicable Rules (scoped to this wave)` + each matching rule's raw content, separated by `---`) when one or more rules apply, OR
+- a Markdown block (header `## Applicable Rules (scoped to this wave)`, a preamble naming the block's fence token, then each matching rule's raw content wrapped in `<rule-<token> index="i/N" src="<repo-relative path>">` … `</rule-<token>>`) when one or more rules apply, OR
 - empty output (exit 0) when no rules match — in which case prepend nothing.
 
 **Prompt assembly:** when `$RULES_BLOCK` is non-empty, prepend it to EACH agent's prompt in this wave under a clear separator:
@@ -419,6 +420,55 @@ After `wave-scope.json` is written for this wave and before assembling the `Agen
 When `$RULES_BLOCK` is empty (no `.claude/rules/`, no matching rules, or any CLI failure), dispatch the agent unchanged. Because the block is computed once per wave, the same `$RULES_BLOCK` is reused for every agent dispatched in this wave — narrow waves (e.g. only `scripts/**` or only `tests/**` files) receive a smaller rule set, which is the #336 token-reduction payoff.
 
 This replaces the older prose slot "Relevant patterns from `<state-dir>/rules/`" in the `Agent()` template above: the `<APPLICABLE-RULES>` block IS that injection, now mechanically scoped to the wave instead of left to the coordinator's judgement.
+
+#### Pre-Dispatch: Learnings-Index Injection (#1014)
+
+> **Read this first — it is computed PER AGENT, unlike the block directly above.** The rule injection you just read states "Per-wave scoping (not per-agent): the rule set is computed ONCE per wave". This step is the opposite: **run the CLI once for EACH agent**, because per-agent differentiation IS the acceptance criterion — an agent scoped to `scripts/lib/learnings/**` must receive different entries than its sibling scoped to `skills/**`. Model it on **Pre-Dispatch Grounding Injection (#85)** above, not on its immediate neighbour. Computing it once and reusing it across the wave silently reduces this feature to a worse version of the coordinator banner that already exists.
+
+89 learnings have accumulated across 233 sessions, and a dispatched wave agent receives **zero** of them: the only read paths are a coordinator banner, an autopilot call, and a nudge banner — none reaches an agent prompt. This step closes that loop by prepending a compact, relevance-ranked INDEX of learnings to each agent's prompt.
+
+**Why this does not repeat the #931b mistake.** `docs/instruction-delivery.md` measured that adding a SECOND delivery path alongside Claude Code's native project-instruction loading costs **+72%** (292,836 B vs 169,961 B) — which is why the rule block above carries a "measure before you inject" warning. That warning does **not** transfer here, and not as a matter of argument: learnings have no native delivery path to duplicate. `learnings.jsonl` lives under `.orchestrator/metrics/`, is not a project-instruction file, is not `@`-imported from CLAUDE.md, and reaches nothing agent-facing today. This is the FIRST path, and it rides the dispatch-prompt channel this repo already owns and writes itself — no new mechanism is introduced. It is also bounded by a code constant (`LEARNINGS_INDEX_MAX_CHARS = 2000`, ~1.1% of the measured 178,095 B per-agent prompt baseline) with no `0 = unlimited` sentinel, so it cannot grow into the corpus it indexes.
+
+**An INDEX, not a corpus.** One line per learning plus a retrieval pointer; an agent that needs a full entry greps it by subject. Measured: 12 entries in this form = 1,469 B.
+
+**Gate:** runs when `.orchestrator/metrics/learnings.jsonl` exists. When it does not — or when nothing clears the confidence floor, or the corpus is unreadable — the CLI prints nothing and exits 0. Same best-effort convention as every injector above (Grounding `:307`, Frontmatter-Guard `:386`, Path-Cousin-Guard `:208`): silent no-op on any failure, **never blocks dispatch**. Any non-zero exit means "inject nothing, continue".
+
+**Zero new coordinator obligations.** The per-agent file scope this needs is the SAME `$AGENT_FILESCOPE_JSON` — `<state-dir>/filescopes/wave-<N>/<agent-id>.json` — that `## Scope Manifest` § 3.1 already requires you to write for every agent, and that the Scope-Union Assertion (#796) then consumes. Reuse that file — do not write a second one, and never a temp copy.
+
+**Invocation:** once per agent, immediately after that agent's `$AGENT_FILESCOPE_JSON` is written, capture stdout as `$LEARNINGS_INDEX`:
+
+    LEARNINGS_INDEX="$(node "$PLUGIN_ROOT/scripts/print-learnings-index.mjs" \
+      --file-scope "$AGENT_FILESCOPE_JSON" \
+      --task-text "<the agent's task title / one-line description>" 2>/dev/null)"
+
+`--task-text` is optional and feeds the token axis of the affinity primitive; omitting it yields path-only ranking. **Resolution ladder** (mirrors Grounding Injection `:309`): the agent's own `--file-scope` → the wave-level `allowedPaths` from `.claude/wave-scope.json` (automatic fallback when the agent has no declared "Files:" scope) → empty scope, in which case only the general tier is selected. Caps are `--max-scoped` (default 8) and `--max-global` (default 4) — **split, never shared**, so the general tier can never crowd out the per-agent signal.
+
+**Prompt assembly:** when `$LEARNINGS_INDEX` is non-empty, prepend it to THAT agent's prompt:
+
+    <LEARNINGS-INDEX>
+    $LEARNINGS_INDEX
+    </LEARNINGS-INDEX>
+
+    <original prompt>
+
+When it is empty (no corpus, no qualifying entries, or any CLI failure), dispatch that agent unchanged — the prompt is then byte-identical to the legacy one.
+
+**Instrumentation (why this one is measurable and its neighbours are not).** The rule injection above is a SHOULD and emits no signal either way, so "did the coordinator actually inject?" has been unanswerable after the fact — a gap the #1014 discovery wave had to leave open. This CLI emits `orchestrator.learnings.index.injected` to `.orchestrator/metrics/events.jsonl` (via `scripts/emit-event.mjs`, the canonical `emitEvent()` path — the same route `scripts/compute-grounding-injection.sh` uses for `orchestrator.grounding.injected`), carrying `count`, `scope_matched`, `global_count`, `candidates`, `truncated`, `bytes`, and `scope_source`. The before/after measurement is therefore a fact in the event log, not a matter of prose compliance. Emission is best-effort and suppressible with `--no-event`; a failed emit never blocks dispatch.
+
+#### Pre-Dispatch: File-Scope Injection (#1020)
+
+> **Read this first — this block is PER AGENT, unlike `#### Pre-Dispatch: Glob-Scoped Rule Injection (#336/#694)` above, which states "Per-wave scoping (not per-agent): the rule set is computed ONCE per wave".** Model it on **Pre-Dispatch Grounding Injection (#85)** — same cadence, same per-agent source. This injector legitimately has BOTH cadences (per-agent for the brief, per-wave for the § Scope Manifest union), which is exactly what makes the collapse tempting: reuse ONE agent's block for the whole batch and every agent reads the territory of every OTHER agent as its own. Deconfliction would then be **lifted rather than enforced**, and the double assignment § 3.2 exists to catch becomes invisible in the one channel where an agent could still notice it.
+
+**Invocation:** for each agent, read `<state-dir>/filescopes/wave-<N>/<agent-id>.json` (= `$AGENT_FILESCOPE_JSON`) — the SAME file written in § Scope Manifest 3.1, not a re-derivation from the session plan and not a temp copy — and prepend its entries to that agent's prompt, one path per line:
+
+    FILE-SCOPE — exactly these:
+    ```
+    <one path or glob per line, verbatim from that agent's scope file>
+    ```
+
+Marker line plus fenced block, in that order: `hooks/pre-task-scope-disjoint.mjs` extracts the scope from the prompt by finding the marker and taking the FIRST fenced block after it, so this shape is what makes an agent's declared territory machine-readable at dispatch time. An unparseable or absent block resolves to ALLOW there, so a malformed injection degrades to today's behaviour rather than blocking dispatch. When the scope file is missing or empty (Discovery waves), inject nothing and dispatch unchanged.
+
+> **Registration note.** That hook was armed in `hooks/hooks.json` on 2026-08-14, after a green Full Gate. Its `PreToolUse` matcher is **`Agent`** — measured over 12 archived transcripts of this repo, `Agent` accounts for 147 of 147 dispatch `tool_use` blocks. A `Task` matcher would hit the unrelated todo family (`TaskCreate`/`TaskUpdate`/`TaskGet`/…) and never once fire on a dispatch: armed and inert, the failure mode that reads as done. It is deliberately absent from `hooks-codex.json` / `hooks-cursor.json` / `hooks-pi.json` — those platforms have no `Agent` dispatch tool, so the asymmetry is registered in `DOCUMENTED_ASYMMETRIES` rather than papered over with a matcher that can never fire.
 
 #### Structured Reasoning (STATE:/PLAN:) — opt-in via `reasoning-output: true` (#79)
 
@@ -666,29 +716,6 @@ Per attempt:
 
 See `SKILL.md` § "Inter-Wave Quality-Gate (with Auto-Fix Loop — #521)" for
 the full invocation pattern.
-
-##### /goal Continuation Anchor (opt-in — #636)
-
-> Advisory-only continuation anchor at the inter-wave fix-loop seam. Never auto-invokes `/goal`, never blocks forward progress. `/goal` is a user slash-command; the operator decides whether to use it.
-
-**Gate conditions** — ALL must be true for this nudge to surface:
-
-1. `goal-integration.enabled: true` in Session Config (default: `false`).
-2. `inter-wave-fixloop` is listed in `goal-integration.seams`.
-
-When any gate condition is false, skip this step entirely — proceed to `##### STATE.md Deviation — Auto-Fix Result`.
-
-**What it does** — when the gate fires and the inter-wave Quality-Gate is failing (auto-fix retries in flight or about to begin), surface ONE suggested `/goal` command as an advisory bullet in the wave progress update. Example:
-
-```
-/goal Keep fixing Wave <N> quality-gate failures until 'npm run lint', 'npm run typecheck' and 'npm test' each print 0 failures in this turn's output, or stop after <max-retries+1> attempts.
-```
-
-**Advisory-only contract:** the `/goal` is the continuation anchor that keeps the coordinator working across turns while it iterates on the fix. The exit-code result of `runQualityGateWithRetry()` stays the judgment — `/goal` continues the loop, it never decides correctness. The hard-abort + diagnostics-bundle path (`.orchestrator/metrics/verification-failures/<ts>.json` after `max-retries`) is UNCHANGED: an active `/goal` does not extend, replace, or bypass the bounded retry ceiling. This step is informational prose only — no AskUserQuestion, no STATE.md write, no sidecar.
-
-The `/goal` evaluator reads the transcript only and runs NO tools — it anchors CONTINUATION, never JUDGMENT. The suggested condition therefore references freshly-run gate output "in this turn's output" and embeds a bound ("or stop after N attempts"). Cross-reference `.claude/rules/loop-and-monitor.md § LM-008` for the full `/goal` continuation-vs-judgment contract rather than restating it here.
-
-**One goal per session:** only ONE `/goal` can be active at a time. This inter-wave fix-loop seam and the session-end backlog seam (`skills/session-end/SKILL.md` § 1.3a) cannot both hold an active goal simultaneously — the operator picks one.
 
 ##### STATE.md Deviation — Auto-Fix Result
 
@@ -1037,53 +1064,6 @@ When the hook is skipped (gate condition false), omit the `persona_gate` field e
 
 **Motivating example:** a flagship product's W5 Buyer-Panel pattern (six buyer personas at `hard-gate-threshold` `6-of-6`, `mode: 'strict'`, `after: 'quality'`) — UI work is gate-checked against every persona before commit, abort on any dissent. See `docs/session-config-reference.md § Persona-Gate Wave (#458)` and `commands/persona-panel.md` for the standalone CLI equivalent.
 
-### 3c. Strategic Compact-Nudge (#620)
-
-> Advisory-only checkpoint. Never auto-compacts. `/compact` is a user slash-command; the coordinator/operator decides when to invoke it.
-
-**Gate conditions** — ALL must be true for the nudge to emit:
-
-1. `compact-nudge.enabled: true` in Session Config (default: `false`).
-2. The just-completed wave's role is listed in `compact-nudge.after` (default: `['discovery', 'impl']`). Compare the wave's canonical role string (lower-case) against the list.
-3. `compact-nudge.mode !== 'off'` (when `mode: 'off'` the nudge is a silent no-op even when `enabled: true`).
-
-When any gate condition is false, skip this step entirely — proceed to `### 4. Progress Update`.
-
-**Nudge format** — when the gate fires, append ONE advisory bullet to the wave progress update (step `### 4`):
-
-```
-- 💡 Compact checkpoint: Wave N (<Role>) complete — consider /compact before Wave N+1 (<NextRole>) to free context (advisory only; see decision table). Never auto-compacts.
-```
-
-**What survives `/compact` vs what is lost:**
-
-| Survives | Lost |
-|---|---|
-| CLAUDE.md, STATE.md (on disk), wave-scope.json, JSONL metrics (.orchestrator/), git history, all files on disk | Intermediate reasoning/thinking traces, previously-read file contents cached in context, tool-call history for prior waves |
-
-This frames the nudge: the persistent artefacts (plan, scope, STATE.md, git diff) are the distilled output of completed work; losing in-context file reads is the cost. Compact is worth it when the completed wave produced bulky research/audit output that is unlikely to be re-referenced verbatim.
-
-**Decision table:**
-
-| Wave boundary (completed → next) | Compact? | Why |
-|---|---|---|
-| Discovery → Impl-Core | Yes — **but only after** Discovery's repo-state facts are written into the plan in annotated form (value + measurement command + `measured_at`) | Research/audit context is bulky and the plan + wave-scope.json is the distilled output. But compacting discards the raw evidence and leaves the briefing text as the only source of truth — the structural amplifier of the #908 damage. Un-annotated facts: re-measure or record them first, else **No**. See Pre-Dispatch: Fact-Staleness Annotation. |
-| Impl-Core → Impl-Polish (long Core) | Maybe | Compact only if Polish targets different files; keep if Polish builds on Core's changes. |
-| Impl-Polish → Quality | No | Quality references the just-written code; losing it is costly. |
-| Quality → Finalization | No | Finalization needs the full session diff. |
-| Mid-implementation (within a wave) | No | Losing file paths + partial state is expensive. |
-| After a FAILED/aborted wave | Yes | Clear the dead-end reasoning before the adapted retry. |
-| Switching to an unrelated task block (deep session) | Yes | Debug/exploration traces pollute unrelated downstream work. |
-
-**Behaviour by mode:**
-
-| `mode` | Action |
-|--------|--------|
-| `off` | No nudge (gate condition above). |
-| `warn` | Emit the advisory bullet in the wave progress update. Coordinator/operator acts at their discretion. |
-
-The nudge is informational only — no AskUserQuestion, no state-md write, no sidecar. This step never blocks forward progress.
-
 ### 4. Progress Update
 
 After each wave, provide a brief status:
@@ -1134,18 +1114,33 @@ Before each wave dispatch:
    ```
    The `gates` field (optional) mirrors `enforcement-gates` from Session Config (#77). When present, hooks check each gate individually via `gate_enabled()`. Missing gate entries default to enabled, preserving default behavior.
 2. Validate by piping through `node "$PLUGIN_ROOT/scripts/validate-wave-scope.mjs"` (where `$PLUGIN_ROOT` is `$CLAUDE_PLUGIN_ROOT`, `$CODEX_PLUGIN_ROOT`, or `$CURSOR_RULES_DIR` per platform — see `skills/_shared/config-reading.md`). If validation fails (exit 1), fix the JSON based on stderr errors and retry.
-3. `allowedPaths` is the UNION of all agent file scopes for this wave
-   To compute `allowedPaths`: read each agent's specification from the session plan. Each agent lists its "Files:" scope (e.g., `skills/session-end/SKILL.md`, `scripts/*.sh`). Collect all file paths and glob patterns from all agents in this wave into a single flat array. Deduplicate entries. If an agent's scope uses globs (e.g., `scripts/*.sh`), include the glob pattern as-is — the enforcement hook resolves globs at check time.
+3. **`allowedPaths` is COMPUTED from per-agent scope files — never hand-transcribed (#1020).** Transcribing the union by hand produced 5 scope divergences in ONE session. Three steps, in this order; none of them is a judgement call. Globs stay verbatim (`scripts/*.sh`) — the enforcement hook resolves them at check time.
 
-   **Test-Sibling Expansion (#970):** an `allowedPaths` entry that names a production file but NOT its test sibling makes the wave's own regression test unwritable — the scope guard then mechanically enforces exactly the inconsistency the quality gate exists to catch. Cross-repo evidence, three occurrences in ONE session: a migrations glob without the SQL-test directory (the regression test could not be written); a lone `.actions.ts` file (the wave's cross-tenant security test stayed red); a dead-export deletion whose importing test lay outside every scope (the suite ended red). Do NOT hand-derive the sibling paths — expand through the shared helper so the hook, the validator and this prose state one rule:
+   **3.1 — one file per agent.** Write each agent's "Files:" scope from the session plan, verbatim, as a JSON array of strings to `<state-dir>/filescopes/wave-<N>/<agent-id>.json`. That path IS `$AGENT_FILESCOPE_JSON` — the same file `--assert-subset` (#796 below), Grounding Injection (#85), the Learnings-Index (#1014) and the File-Scope Injection (#1020) already consume. Do not write a second copy anywhere, and **never to a `$TMPDIR` temp path**: the injector and `hooks/pre-task-scope-disjoint.mjs` need an addressable, wave-keyed location that a temp file cannot be. Reading `$AGENT_FILESCOPE_JSON` as "some temp file" is the one failure that costs no error — the injector finds nothing, no `FILE-SCOPE` block reaches the prompt, `extractScopeFromPrompt` returns `[]`, and the dispatch is ALLOWed exactly as it was before #1020, signal-free. The coordinator's OWN planned direct edits go into `<state-dir>/filescopes/wave-<N>/coordinator.json` in the identical form and take part in both steps below: 2 of those 5 divergences were coordinator-direct edits, for which no agent scope file exists by construction, and the commit guard caught them only at the commit boundary.
 
-   ```js
-   import { expandTestSiblings } from '$PLUGIN_ROOT/scripts/lib/scope-gate.mjs';
+   > **`<state-dir>/filescopes/` is control state, like `wave-scope.json` itself — never a wave territory.** Step 3.1 necessarily runs BEFORE the union of 3.3 exists, so writing these files reports `bash-write-verify: N file(s) changed by a Bash call OUTSIDE the wave's allowedPaths` naming `filescopes/wave-<N>/*.json`. Expected once per wave rollover at this step; it is information, not a scope violation. Never widen `allowedPaths` to silence it — that would grant agents write access to the deconfliction record itself.
 
-   // unionScopes: the deduplicated flat array from the paragraph above.
-   // role: this wave's role, verbatim from the session plan — the helper GATES on it.
-   const allowedPaths = expandTestSiblings(unionScopes, { role });
+   **3.2 — assert disjointness BEFORE computing the union.** Build the sidecar — an ARRAY of `{id, files}` records (never an object map: a duplicated agent id must stay visible), one record per file written in 3.1, `coordinator.json` included — and run:
+
+   ```bash
+   node "$PLUGIN_ROOT/scripts/validate-wave-scope.mjs" \
+     --assert-disjoint "$WAVE_SCOPES_SIDECAR" < <state-dir>/wave-scope.json
    ```
+
+   Exit 1 (one stderr message per collision) means two agents were handed the same file: fix the session plan, rewrite the affected 3.1 files, re-assert. Never widen the union to make it pass. This runs **before** 3.3 because a union computed over colliding scopes launders the defect into the very artefact meant to prevent it — `allowedPaths` then grants the file and every later gate sees a legal write.
+
+   **3.3 — compute the union.** `--union` is a QUERY MODE that still requires a schema-valid manifest on stdin, so write the skeleton first with `"allowedPaths": []`, then:
+
+   ```bash
+   node "$PLUGIN_ROOT/scripts/validate-wave-scope.mjs" \
+     --union "$WAVE_SCOPES_SIDECAR" < <state-dir>/wave-scope.json
+   ```
+
+   It prints the computed `allowedPaths` array as JSON on stdout **instead of** the manifest echo — one JSON document per run, the flag decides which. Insert that array as `allowedPaths`, then write the final `wave-scope.json`. It already applies the Test-Sibling Expansion below (`expandTestSiblings(unionFileScopes(scopes), { role })`, role read from the manifest), so do not also run the helper by hand.
+
+   **The `--assert-subset` assertion (#796, below) stays unchanged and keeps running.** It checks a DIFFERENT property — each agent's scope ⊆ the union — and a double assignment is structurally invisible to it: a file claimed twice is a subset twice over. `--assert-disjoint` is an addition, never a replacement.
+
+   **Test-Sibling Expansion (#970):** an `allowedPaths` entry that names a production file but NOT its test sibling makes the wave's own regression test unwritable — the scope guard then mechanically enforces exactly the inconsistency the quality gate exists to catch. Cross-repo evidence, three occurrences in ONE session: a migrations glob without the SQL-test directory (the regression test could not be written); a lone `.actions.ts` file (the wave's cross-tenant security test stayed red); a dead-export deletion whose importing test lay outside every scope (the suite ended red). Do NOT hand-derive the sibling paths — step 3.3's `--union` runs `expandTestSiblings(…, { role })` for you, so the hook, the validator and this prose state one rule.
 
    The helper is pure (same input → same output, no filesystem writes) and is also surfaced by `scripts/validate-wave-scope.mjs`. **The role decides, inside the helper** — `scripts/lib/scope-gate.mjs` `TEST_SIBLING_EXPANSION_ROLES` is THE list (currently `Impl-Core`, `Impl-Polish` — exactly where the incident occurred), and #5/#6 below describe that gate rather than restating it. Pass the role string; do not pre-filter by role in prose, and do not hand-roll the equivalent `{ enabled: … }`. Matching is trimmed + case-insensitive, so `impl-core` behaves as `Impl-Core`.
 
@@ -1158,11 +1153,11 @@ Before each wave dispatch:
    **The sibling rule is repo-configurable, not a hardcoded layout.** THIS repo has zero `__tests__/` directories and no co-located tests; consumer-repo shapes (`<file>.test.*` beside the source, `<dir>/__tests__/**`, `supabase/migrations/** → supabase/tests/**`) are configured per repo and do not apply here.
 
    Three ordering constraints, all load-bearing:
-   - Expand each agent's `fileScope` **before** the overlap/deconfliction check, so a test file newly shared by two agents is visible to the check that exists to catch that collision.
+   - The deconfliction check (3.2) runs on the DECLARED per-agent scopes, **before** the union expands anything. Named ceiling: two agents whose production files share a basename receive the same emitted sibling glob, which a declared-scope check cannot see — revisit if a wave is ever scoped by basename family instead of by directory.
    - Expand **before** `wave-scope.json` is written, in ONE pass. `hooks/post-bash-write-verify.mjs` fingerprints `allowedPaths` via `scopeSignature()` and fires a control notice on change, so a later mutation reads as tampering.
    - Skip **absolute** entries entirely — expanding a Gate-5b out-of-repo grant would sprout a synthetic `tests/**` sibling outside the repo.
 
-   **Pre-Dispatch Scope-Union Assertion (#796):** `wave-scope.json` is GLOBAL per wave — `hooks/enforce-scope.mjs` Gate 7 checks EVERY agent against the same `allowedPaths` union, so a union that (re)written for only ONE agent silently denies its siblings' legitimate writes. Before each `Agent()` batch, mechanically assert — for EVERY agent in the batch — that its fileScope ⊆ `wave-scope.allowedPaths`. Write the agent's "Files:" scope as a JSON array of strings to a temp file (`$AGENT_FILESCOPE_JSON`) and run:
+   **Pre-Dispatch Scope-Union Assertion (#796):** `wave-scope.json` is GLOBAL per wave — `hooks/enforce-scope.mjs` Gate 7 checks EVERY agent against the same `allowedPaths` union, so a union that (re)written for only ONE agent silently denies its siblings' legitimate writes. Before each `Agent()` batch, mechanically assert — for EVERY agent in the batch — that its fileScope ⊆ `wave-scope.allowedPaths`. `$AGENT_FILESCOPE_JSON` is that agent's § 3.1 file — `<state-dir>/filescopes/wave-<N>/<agent-id>.json`, already written above and shared with every other consumer. Do not re-write it to a temp path here (§ 3.1 says why that degrades silently); just run:
 
    ```bash
    node "$PLUGIN_ROOT/scripts/validate-wave-scope.mjs" \
@@ -1193,4 +1188,4 @@ Before each wave dispatch:
    5. Delete `<state-dir>/wave-scope.json`
    6. Write Phase 2 wave-scope.json with test file allowedPaths (`**/*.test.*`, `**/*.spec.*`, `**/__tests__/**`)
    7. Dispatch test/review agents
-7. After the final wave completes, delete `<state-dir>/wave-scope.json` (cleanup)
+7. After the final wave completes, delete `<state-dir>/wave-scope.json` (cleanup). Delete `<state-dir>/filescopes/` in the same step — the per-agent scope files (§ 3.1) are wave-local working state, and a stale `wave-<N>/` directory left behind is a scope claim nobody re-verified.

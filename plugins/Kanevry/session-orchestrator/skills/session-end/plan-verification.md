@@ -70,17 +70,13 @@ Compare the files the plan said would be touched against the files actually chan
 - Create a VCS issue for the remaining work with:
   - Title: `[Carryover] <original task description>`
   - Labels: `priority::<original>`, `status:ready`
-  - Description: what's done, what's left, context for next session
+  - Description: what's done, what's left, context for next session, Revisit-Trigger (mandatory — a concrete reopen condition; a deferral with no named trigger is not a deferral; see `skills/gitlab-ops/SKILL.md § Carryover Template`)
 - Link to original issue if applicable
 
 ### 1.3 Not Started Items
 - Document WHY (blocked? de-scoped? out of time?)
 - If still relevant: ensure original issue remains `status:ready`
 - If no longer relevant: close with comment explaining why
-
-### 1.3a Optional /goal Backlog-Drain (opt-in — #636)
-
-When `goal-integration.enabled: true` with seam `session-end-backlog`, the close may surface ONE advisory `/goal` command to drain still-relevant §1.2/§1.3 items in-session instead of carrying them over. See `SKILL.md § 1.3a Optional /goal Backlog-Drain` for the full gate conditions, advisory-only contract, and the LM-008 cross-reference — the two files mirror each other; the prose lives in SKILL.md.
 
 ### 1.4 Emergent Work
 - Tasks that were NOT in the plan but were done (fixes, discoveries)

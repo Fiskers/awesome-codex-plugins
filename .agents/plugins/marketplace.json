@@ -656,6 +656,21 @@
       "icon": "./plugins/bcanfield/agentic-tech-debt/assets/icon.svg"
     },
     {
+      "name": "deepseek-minimal-anchor",
+      "displayName": "DeepSeek Mini-Router",
+      "source": {
+        "source": "local",
+        "path": "./plugins/hccccc01333/codex-deepseek-mini-router"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Development & Workflow",
+      "description": "Task-aware spec/react/flash working-contract plugin that fixes DeepSeek weak default reasoning inside Codex, with a measured BigCodeBench harness included.",
+      "icon": "./plugins/hccccc01333/codex-deepseek-mini-router/assets/icon.svg"
+    },
+    {
       "name": "designer-skill",
       "displayName": "Designer Skill",
       "source": {

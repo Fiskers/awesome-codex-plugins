@@ -33,10 +33,10 @@ The skill is **read-only** — it inspects state, never modifies it. It also **n
 
 | Dimension | What's checked | Severity |
 |---|---|---|
-| **Required identity** | `brand_name`, `industry`, `target_jurisdictions` non-empty | BLOCKER |
-| **Voice profile** | `voice.tone`, `voice.formality`, `voice.energy` populated | BLOCKER for content work |
+| **Required identity** | `brand_name`, `industry`, and a market/jurisdiction list non-empty — accept **`target_markets`** (what `brand-setup` actually writes) or `target_jurisdictions` (legacy). Checking only the legacy name made every freshly created brand fail its own validator on a BLOCKER | BLOCKER |
+| **Voice profile** | tone, formality and energy populated under **`brand_voice`** (what `brand-setup` writes, and what `content-engine` and `brand-voice-scorer.py` both read) or under `voice` (legacy). The generator is the source of truth here — two consumers already follow it, so this validator was the outlier | BLOCKER for content work |
 | **Audience profile** | `target_audience.primary_persona` with `role` + `reading_level` | WARNING |
-| **Guardrails** | `guardrails.prohibited_terms` + `guardrails.prohibited_claims` non-empty | BLOCKER for regulated industries (pharma, BFSI, healthcare, legal) |
+| **Guardrails** | `guardrails.prohibited_terms` + `guardrails.prohibited_claims` non-empty. `brand-setup` does not create this block, so report it as a WARNING with the exact command to add it for an unregulated brand, and reserve BLOCKER for regulated industries — where a missing guardrail is a real risk, not a setup gap | BLOCKER for regulated industries (pharma, BFSI, healthcare, legal); WARNING otherwise |
 | **Compliance jurisdictions** | Each declared jurisdiction has a matching rules entry in `skills/context-engine/compliance-rules.md` | BLOCKER |
 | **Connector config present** | Every connector named in `tracking.backend`, `integrations.*`, `analytics.*` has its env vars / `.mcp.json` entry present (local check; live reachability comes from the MCP/curl probe below) | BLOCKER per unconfigured connector |
 | **MCP server health** | Every entry in `.mcp.json` (if present) responds to a tools/list ping | WARNING |
