@@ -21,23 +21,62 @@ The mined profile loads where your agents already live: Claude Code and Codex na
 
 The [Emulo Proof v1 methodology](docs/proof/README.md) is an unexecuted methodology until a separately approved evidence release exists.
 
-## Open source and Emulo Pro
+## The video layer, and where it comes from
 
-Emulo's local engine stays MIT licensed and useful without an account. Your
-session extraction, redaction, caches, profile, and agent adapters remain on
-your machine unless you explicitly choose a model provider for mining.
+<p align="center"><img src="assets/vercel-spec-loop.webp" width="760" alt="A spec commercial made in Claude Design"></p>
 
-[Emulo Pro](https://emulo.vercel.app/#pricing) is the optional hosted layer for
-client-encrypted approved-generation continuity across up to five devices,
-managed pairing and revocation, conflict-preserving history, and a bounded
-encrypted recovery/export window. Raw session evidence, decryption keys, and
-model-provider tokens do not enter the hosted service. Ending Pro access never
-disables local Emulo, its history, or rollback.
+A spec commercial, made in Claude Design. No After Effects and no motion software:
+the whole thing is a composition rendered out to video.
 
-The hosted Worker source is public so its authentication, checkout, webhook,
-and entitlement rules can be audited. Production credentials and customer
-records are held by Cloudflare and Polar and are never stored in Git. Public
-source code is not public access to the hosted service or its data.
+It is **spec work**. It was not commissioned by Vercel and it was not made for
+them. A brand was picked to see how far the motion could go.
+
+It is here because `emulo:video` is mined from sessions like the one that
+produced it. The other layers work the same way: the profile is not a template,
+it is what survived from real work.
+
+## Install
+
+Inside Claude Code:
+
+```text
+/plugin marketplace add ohad6k/emulo
+/plugin install emulo@emulo
+```
+
+Inside Codex:
+
+```bash
+codex plugin marketplace add ohad6k/emulo --ref v0.6.2 --json
+codex plugin add emulo@emulo --json
+```
+
+Then run `emulo:mine` and point it at your session history. Everything below explains what that produces and why. If you want the CLI instead of the plugin, see [Quickstart](#quickstart).
+
+## Open source and privacy
+
+Emulo is MIT licensed, free, and works without an account. There is nothing to
+buy and no sign-in.
+
+Session extraction, redaction, caches, the profile itself, and the agent
+adapters all stay on your machine. The one exception is mining: if you point it
+at a hosted model, the selected evidence goes to that provider. Point it at a
+local model and the whole run stays on your machine.
+
+## Emulo Pro, $12 a month
+
+Everything above is free forever and it always will be. Pro adds one thing.
+
+Mining is a snapshot. The day after you run it, it starts drifting behind how you
+actually work, and keeping it current means running the miner again yourself. Pro
+scans new Claude Code and Codex sessions continuously on your own machine and
+folds them back in.
+
+That is the whole difference. The CLI, the mining, the profile, the export and
+the source stay free and MIT, and cancelling never touches anything you have
+already mined.
+
+$12 a month or $99 a year, at [emulo.vercel.app](https://emulo.vercel.app).
 
 ## Profile Build, $300
 
@@ -256,7 +295,7 @@ The plugin-install command itself scans no logs, writes no private profile state
 
 ### Native Claude Code plugin
 
-The Claude Code plugin exposes the same four skills. Install it from inside Claude Code:
+The Claude Code plugin exposes the same five skills. Install it from inside Claude Code:
 
 ```text
 /plugin marketplace add ohad6k/emulo
