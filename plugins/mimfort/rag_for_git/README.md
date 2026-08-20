@@ -465,9 +465,9 @@ context_limits:
   graph:
     hops: 1
   code_section:
-    max_files: 12
+    max_files: 20
     max_chunks_per_file: 1
-    chars_per_file: 1300
+    chars_per_file: 975
     max_augmented_files: 3
 ```
 
@@ -478,12 +478,16 @@ is no env layer (like `context_limits`), and an explicit empty list disables the
 `context_limits` has four subsections: `search_codebase` (hybrid + graph-expansion + Voyage
 rerank for `/ask`, priming, and PR review), `search_tasks` (RRF-only task retrieval), `graph`
 (traversal depth from top hits), and `code_section` — the file budget for the task context's
-`code` section (PRI-256). `code_section`'s budget unit is a file, not a chunk: the section holds
-up to `max_files` files, each contributing up to `max_chunks_per_file` chunks of `chars_per_file`
-characters. The section's
+`code` section (PRI-256, defaults widened in PRI-259). `code_section`'s budget unit is a file,
+not a chunk: the section holds up to `max_files` files, each contributing up to
+`max_chunks_per_file` chunks of `chars_per_file` characters. The section's
 character cap is not a separate key — it is derived: the operational budget is
 `max_files × max_chunks_per_file × chars_per_file`, while the post-render safety cap is
-`max_files × max_chunks_per_file × chars_per_file × 3 // 2`.
+`max_files × max_chunks_per_file × chars_per_file × 3 // 2`. The default trades width for depth
+(`12 × 1300` → `20 × 975`), growing the operational budget by 25 % (15,600 → 19,500) to raise
+bulk core-recall past the acceptance threshold; `chars_per_file` has a floor of 975 (enough to
+read a symbol's signature plus a few lines of body) because the recall metric only counts paths
+and is blind to fragment depth. See `eval/replay_report.md`, "Приёмка PRI-259".
 
 `code_section.max_augmented_files` (default 3, PRI-257) mixes actual diff paths from similar
 tasks into the `code` section — a single source (`similar-diffs`, from the `brief_quality`
@@ -499,7 +503,7 @@ covers (median core-recall 0.5 → 0.75, precision 0.167 → 0.333, 28 hits on 3
 
 ### Layered repository policy
 
-Policy is resolved in this exact order; each later source wins for the same top-level key:
+Policy is resolved in this exact order; each later source wins for the same leaf key:
 
 ```text
 ENV
@@ -508,14 +512,25 @@ ENV
   < $XDG_CONFIG_HOME/rag-reviewer/repos/<owner>/<name>.yml
 ```
 
-When `XDG_CONFIG_HOME` is unset, the home root is `~/.config/rag-reviewer`. Merging is only at the
-top level: a later mapping, list, or `null` replaces the complete earlier value; nested mappings
-are not deep-merged. That replacement is **shadowing**. Inspect the effective policy, source for
-each key, and shadowed sources with:
+When `XDG_CONFIG_HOME` is unset, the home root is `~/.config/rag-reviewer`. Merging is **recursive
+over mapping values**: a later layer that says nothing about a subsection does not erase it, so a
+home `context_limits: {graph: {hops: 2}}` keeps the committed `context_limits.code_section` pin.
+Everything else is replaced whole — lists, scalars, an explicit empty mapping, a `null`, and any
+change of type. `task_board` is the single atomic mapping key: it is a coherent contract (`type` +
+`project` + `create_target`/`done_target` + `options`), so a later layer replaces it completely
+rather than per subfield. Replacement of a value that an earlier layer also set is **shadowing**.
+Inspect the effective policy, the source of each key, and shadowed sources with:
 
 ```bash
 reviewer config show --repo group/service --branch main --json
 ```
+
+`sources` and `shadowed` are keyed by the **dotted path to the leaf**
+(`context_limits.code_section.max_files`), not by the top-level policy key — otherwise "the
+subsection was shadowed" is indistinguishable from "there was no subsection". `task_board` and any
+key a layer set as a whole (to a scalar or `null`) keep a single entry on the key itself. In the
+text output a key whose leaves all come from one layer stays a single `source:` line; when layers
+differ the line reads `source: mixed` and is followed by one line per leaf.
 
 The committed layer is fetched at the selected ref, so review/config resolution never reads an
 uncommitted worktree `.review.yml`.
@@ -531,11 +546,22 @@ was taken:
 
 ```bash
 reviewer config show --repo group/service --branch main --path /srv/clones/service
-# committed: local        ← resolved without a single network call
+# committed: git-blob     ← resolved without a single network call
 ```
 
-In JSON the same value is the `committed_source` key (`local` / `vcs`); the clone path itself is
-never printed.
+In JSON the same value is the `committed_source` key (`git-blob` / `vcs`); the clone path itself is
+never printed. The label names the object that was read — the committed git blob at the ref, never
+the file in the clone's working tree.
+
+Because of that distinction, `config show` also reports whether the working tree has drifted away
+from that blob. The `worktree_drift` key (JSON: `{"status": ..., "keys": [...]}`; text: a
+`worktree_drift:` line followed by the diverging keys) is present only when the committed layer was
+actually read from the clone. Statuses: `clean` (no difference in values — a comment-only or
+reformatting edit is not drift), `drifted` (diverging leaf keys are listed, **never their values**),
+`absent_in_worktree`, `absent_in_blob`, `ref_not_head` (the ref does not resolve to the clone's
+HEAD, so no comparison was made), and `unknown` (the diagnostic itself failed; it stays silent in
+the text output). Drift is a warning only: the effective policy still comes entirely from the
+committed blob, and the exit code is unaffected.
 
 To copy a safe committed policy into the repo-specific home
 layer without modifying the committed file, run:

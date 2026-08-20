@@ -1,6 +1,6 @@
 ---
 name: amq-cli
-version: 0.63.3 # x-release-please-version
+version: 0.65.3 # x-release-please-version
 description: >-
   Coordinate agents via the AMQ CLI for file-based inter-agent messaging. Use
   this skill whenever you need to send messages to another agent (codex, claude,
@@ -146,7 +146,7 @@ Before diving in, match the task to the right workflow — this avoids wasted ef
 
 ## Quick Start
 
-The repository [README Quick Start](https://github.com/avivsinai/agent-message-queue#quick-start)
+The repository [README Getting started](https://github.com/avivsinai/agent-message-queue#getting-started)
 is the canonical human onboarding path. The commands below keep the agent
 workflow self-contained.
 
@@ -172,6 +172,10 @@ amq session resume feature-x
 `--apply` recomputes the preview and exits `6` without writes unless the
 approved `sha256:<hex>` digest matches. It is mutually exclusive with `-y`;
 `--preview` is also mutually exclusive with `-y`.
+
+For Cursor, setup uses the current `agent` command when it is on `PATH`; if it
+is absent, the preview explains that setup is falling back to legacy
+`cursor-agent`.
 
 Put provider flags in the committed `.amq/launch.json` `command` arrays. The
 launcher validates them and includes them in the semantic trust digest. The
@@ -295,6 +299,15 @@ same process exit codes. A read-only `list` on a mismatched session pin warns
 and continues; commands that consume or mutate mailbox state fail with code
 `5`.
 
+When a command reports per-agent outcomes, whole-command failures that precede
+any per-agent work keep codes `2`, `5`, and `3` and preempt mixed results. Once
+per-agent work begins, the process exit code is the highest-precedence per-agent
+outcome: `6` over `4` over `1` over `0`. Expected dispositions (`disabled`,
+`unsupported`, and policy-consistent `fresh`) contribute `0`. Launch Apply and
+lifecycle JSON also carry a typed mutation disposition (`not_applied`,
+`committed`, or `uncertain`) for the backend binding; that field is not a
+process exit code.
+
 ## Delivery Receipts
 
 AMQ records delivery outcomes in consumer-local receipt files. The main stages are:
@@ -338,7 +351,10 @@ read-only and reports the running/current image path and version plus an exact
 running and hand off to its owning terminal or supervisor. For `unavailable`,
 preserve the state and diagnose it. Never kill a live raw wake from a non-TTY
 process, and never accept an attention-only fallback as a replacement for
-full-strength input delivery.
+full-strength input delivery. When the recorded image or restart stage lives
+under a directory that no longer exists, the check reports
+`reason_code=binary_dir_gone` and names `amq doctor --ops --fix-wake-locks`
+instead of a raw ENOENT.
 
 Current resume-eligible `coop exec` wakes automatically observe their stable
 AMQ launch symlink and adopt a strictly newer semantic version at a fully
