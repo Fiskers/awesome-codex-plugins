@@ -24,12 +24,29 @@ AMQ gives agents a **local interoperability bus**: they can send messages, reply
 - **Zero infrastructure** — Pure file-based. No server, no daemon, no database. Works anywhere files work.
 - **Crash-safe** — Atomic Maildir delivery (tmp→new→cur). Messages are never partially written or lost.
 - **Human-readable** — JSON frontmatter + Markdown body. Inspect with `cat`, debug with `grep`, version with `git`.
-- **Real-time notifications** — `amq wake` injects terminal notifications when messages arrive (experimental).
+- **Real-time notifications** — `amq wake` injects terminal notifications when messages arrive.
 - **Built for agents** — Priority levels, message kinds, threading, delivery receipts, and waitable handoffs.
 - **Cross-project federation** — Route messages across peer repos, preserve reply routing, and run decision threads that span projects.
 - **Swarm mode** — Join Claude Code Agent Teams, claim tasks, and bridge task notifications into AMQ.
 - **Optional adapters** — Lightweight Symphony hooks and an experimental Kanban bridge can emit normal AMQ messages with structured metadata.
 - **Operational diagnostics** — `amq doctor --ops` shows queue depth, sibling-session backlogs, DLQ state, presence freshness, and integration hints.
+- **Two-host fleets** — Companion `amq-bridge` hops signed envelopes between two local AMQ roots (`apply-file` today; HTTPS courier when an operator provisions a rendezvous).
+
+### v1 will not
+
+AMQ Core stays a local CLI. These stay out of the `amq` binary and out of v1
+product claims (see [two-host fleets](docs/adr-two-host-fleets.md) and
+[bridge protocol](docs/adr-bridge-protocol.md)):
+
+- sockets or listeners in `amq`
+- Maildir sync or remote drain of a foreign mailbox
+- git as the cross-host relay
+- OAuth MCP inside `amq`, ACP v2, or `--always-approve` in committed launch plans
+- prompt-selected `--root` / argv / env / executable
+- AMQ holding a Buzz nsec; Mac mailbox files on the Grok Bot VM
+- silent inject→notify or submit→prefill; Accessibility scraping of ChatGPT
+
+Cross-host mail is companion `amq-bridge` (alias send / local apply / same-thread reply), not Core. The proven hop is `amq-bridge apply-file` on the destination host. The HTTPS courier stays implemented for an operator-provided rendezvous; AMQ does not ship a hosted relay. See [amq-bridge](cmd/amq-bridge/README.md).
 
 ![AMQ Demo — Claude and Codex collaborating via split-pane terminal](docs/assets/demo.gif)
 
@@ -39,8 +56,9 @@ AMQ gives agents a **local interoperability bus**: they can send messages, reply
 
 About five minutes from install to the first delivered message. You need two
 agent CLIs on `PATH`. This walkthrough uses **Claude Code** (`claude`) and
-**Codex CLI** (`codex`) on one machine. `amq setup` also detects Cursor when
-`agent` is on `PATH` (or legacy `cursor-agent` if `agent` is absent).
+**Codex CLI** (`codex`) on one machine. `amq setup` also detects Grok Build
+(`grok`) and Cursor when `agent` is on `PATH` (or legacy `cursor-agent` if
+`agent` is absent).
 
 Native Windows can run the core queue from the Windows ZIP, but this
 walkthrough needs `coop exec` and `wake`, which are not supported natively.
@@ -101,7 +119,7 @@ In the repository the two agents will share:
 amq setup
 ```
 
-Setup probes for Claude and Codex (and Cursor when present), previews the
+Setup probes for Claude, Codex, and Grok (and Cursor when present), previews the
 roster and launcher preference, then writes `.amqrc`, `.amq/launch.json`,
 local preferences, the default session, and roster mailboxes. Confirm the
 preview.
@@ -230,6 +248,12 @@ The `commands` backend prints complete `coop exec` commands and exits `6`
 because executing them is the remaining operator action. Paste those emitted
 lines exactly, one per terminal. Managed `tmux`, `cmux`, and `ghostty`
 backends run the declared plan in-app instead of printing those lines.
+
+Grok Build is also supported by the managed launch adapter. It mints an exact
+`--session-id` from the AMQ launch nonce and resumes only with the stored
+`--resume <UUID>`; `--continue`, `--always-approve`, and `--yolo` are rejected
+from committed launch arguments. Grok uses `--tools` / `--disallowed-tools`
+with opaque provider names (not Claude `--allowedTools`).
 
 Each launched agent gets a session environment and wake notifications. See
 [COOP.md](COOP.md#running-co-op-mode) for co-op operations.
@@ -609,6 +633,10 @@ Building something on AMQ? Open an issue or PR to be listed here.
 - [Getting started](#getting-started) — Install, start two agents, send one message
 - [INSTALL.md](INSTALL.md) — Alternative installation methods
 - [docs/amq-keepalive.md](docs/amq-keepalive.md) — Keepalive command and safety reference
+- [cmd/amq-bridge/README.md](cmd/amq-bridge/README.md) — Two-host courier: identity, apply-file, HTTPS rendezvous
+- [docs/adr-two-host-fleets.md](docs/adr-two-host-fleets.md) — Two-host identity, aliases, receipts, v1 kill-list
+- [docs/adr-bridge-protocol.md](docs/adr-bridge-protocol.md) — Bridge envelope, auth, and transport
+- [cmd/amq-acp/README.md](cmd/amq-acp/README.md) — Preview ACP v1 stdio companion and Buzz BYOH JSON
 - [docs/session-routing.md](docs/session-routing.md) — Session selection, routing guards, and worktree behavior
 - [docs/wake-operations.md](docs/wake-operations.md) — Wake inspection, repair, recovery, and retirement
 - [docs/wake-lifecycle.md](docs/wake-lifecycle.md) — Wake lock/target state contract, self-upgrade, log retention, JSON schema, injector identity
@@ -626,7 +654,7 @@ Building something on AMQ? Open an issue or PR to be listed here.
 ```bash
 git clone https://github.com/avivsinai/agent-message-queue.git
 cd agent-message-queue
-make build   # Build binary
+make build   # Build amq plus companion binaries
 make test    # Run tests
 make ci      # Full CI: vet + lint + test + smoke
 ```
@@ -648,7 +676,7 @@ with the Linux binary for the complete co-op workflow. See the explicit
 For local development workflows, yes. AMQ is intentionally simple—it's not trying to be a distributed message broker.
 
 **How does AMQ compare to other multi-agent tools?**
-Tools like [MCP Agent Mail](https://github.com/Dicklesworthstone/mcp_agent_mail) (server-based coordination + SQLite), [Gas Town](https://github.com/steveyegge/gastown) (tmux-based orchestration), and others offer richer features. AMQ is intentionally minimal: single binary, no server, Maildir delivery. Best for 2-3 agents on one machine.
+Tools like [MCP Agent Mail](https://github.com/Dicklesworthstone/mcp_agent_mail) (server-based coordination + SQLite), [Gas Town](https://github.com/steveyegge/gastown) (tmux-based orchestration), and others offer richer features. AMQ is intentionally minimal: single Core binary, no server, Maildir delivery. Best for a handful of local agents. Two machines use companion `amq-bridge`, not a shared filesystem.
 
 ## License
 

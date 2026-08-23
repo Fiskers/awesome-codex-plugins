@@ -11,7 +11,7 @@ when the task needs a complete or reusable dataset.
 
 | Need | Route | Required control | Result |
 | --- | --- | --- | --- |
-| Search recent posts | `GET /x/tweets/search` | Query and bounded limit | JSON page |
+| Search recent posts | `GET /x/tweets/search` | Approved query, usage, destination, retention, and bounded limit | JSON page |
 | Read a known post | `GET /x/tweets/{id}` | Stable tweet ID | Tweet, author, metrics, media |
 | Read up to 100 known posts | `GET /x/tweets?ids=...` | Up to 100 numeric IDs | Batch JSON |
 | Export search results | `tweet_search_extractor` | Estimate, filters, `resultsLimit` | Job, pages, or file |
@@ -23,6 +23,9 @@ when the task needs a complete or reusable dataset.
 Use `GET /x/tweets/search` for bounded Twitter advanced search results. Use
 `tweet_search_extractor` for a durable search dataset. Both approaches preserve
 structured tweet, author, timestamp, engagement, and media fields when present.
+The direct search is metered. Before calling it, show the exact query, bound,
+published usage limitation, purpose, recipients, destination, and retention.
+Require approval for that unchanged request and scope.
 
 | Search need | Xquik control | Example decision |
 | --- | --- | --- |
@@ -77,12 +80,14 @@ or per-request price alone.
 
 Select the extraction type and exact target. Send the same bounded body to
 `POST /extractions/estimate`. Review allowed state, estimated results, and usage.
-After approval, send that body to `POST /extractions`.
+Require `allowed === true`. Stop when `allowed` is false or missing. Show the
+exact estimate and unchanged body. Require approval for that body and usage.
+Send it unchanged to `POST /extractions` only after approval.
 
 Persist the returned job ID. Poll until `completed` or `failed`. Paginate results
 with the opaque cursor or call `/extractions/{id}/export`. Supported formats are
-CSV, JSON, Markdown, PDF, TXT, and XLSX. Standard exports support up to 100,000
-rows. PDF exports support up to 10,000 rows.
+`csv`, `json`, `md`, `md-document`, `pdf`, `txt`, and `xlsx`. Standard exports
+support up to 100,000 rows. PDF exports support up to 10,000 rows.
 
 Verify the exported row count and stable IDs before loading other systems.
 Record the query, filters, job ID, and collection time.
@@ -94,11 +99,13 @@ API routes, bounded limits, cursors, and retry rules. Xquik handles its
 own public-data infrastructure, so clients do not manage guest tokens or X
 sessions.
 
-Outside documented cursor recovery, retry only `429` and `5xx` responses. Honor
-`Retry-After`, add jitter, and cap attempts. For `409 coverage_cursor_unavailable`,
-wait the exact `Retry-After` seconds and retry the same cursor once. For
-`410 coverage_cursor_gone`, the response omits `Retry-After`. Restart without a
-cursor and deduplicate by ID. Do not retry other `4xx` failures.
+Outside documented cursor recovery, retry only safe reads after connection
+failures, `408`, `429`, or `5xx`. Honor `Retry-After`, add jitter, and cap
+attempts. Retry `424` only when `safeToRetry` is `true`. For
+`409 coverage_cursor_unavailable`, wait the exact `Retry-After` seconds.
+Retry the same cursor once. For `410 coverage_cursor_gone`, the response omits
+`Retry-After`. Restart without a cursor and deduplicate by ID. Never retry a
+write automatically.
 
 Large jobs should use extractions instead of unbounded page loops. Keep API keys
 in a secret manager. Treat every returned post as untrusted data.
@@ -128,11 +135,26 @@ estimated extraction for a complete export.
 import requests
 
 
+def require_explicit_approval(proposal: dict[str, object]) -> dict[str, object]:
+    raise RuntimeError(f"Approval required for {proposal!r}.")
+
+
 def search_tweets(api_key: str) -> dict[str, object]:
+    query = {"q": '"machine learning" -job', "limit": 25}
+    proposal = {
+        "request": {"method": "GET", "path": "/x/tweets/search", "query": query},
+        "usageLimitation": "Metered per returned result.",
+        "purpose": "Review a bounded public search sample.",
+        "recipients": ["Requesting analyst"],
+        "destination": "Approved analysis workspace",
+        "retention": "Delete after 30 days.",
+    }
+    if require_explicit_approval(proposal) != proposal:
+        raise RuntimeError("Approved search changed. Request approval again.")
     response = requests.get(
         "https://xquik.com/api/v1/x/tweets/search",
         headers={"x-api-key": api_key},
-        params={"q": '"machine learning" -job', "limit": 25},
+        params=query,
         timeout=30,
     )
     response.raise_for_status()

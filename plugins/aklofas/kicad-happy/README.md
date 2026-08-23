@@ -439,7 +439,7 @@ Or set up the [GitHub Action](github-action.md) and get automated analysis on ev
 
 ## 🎯 Release notes
 
-**Current release: v2.1.0 — correctness batch.** Seventeen analyzer fixes from field reports and external reviews: inner power planes no longer fragment into false islands on 4+ layer boards (#24), via-in-pad and courtyard-overlap checks use real pad/courtyard geometry instead of bounding boxes (#28, #29), USB compliance failures surface as findings (new UC-001..UC-004), plus a dozen false-positive fixes across sleep-current, decoupling, derating, and lifecycle checks. Includes three fixes ported from Anya Sabo's fork. Upgrading from v2.0.0: expect finding churn in exactly those classes — overwhelmingly false positives disappearing; four additive JSON fields, no breaking schema changes.
+**Current release: v2.2.0 — hierarchical bus connectivity.** The schematic analyzer now resolves bus groups, bus entries, and hierarchical bus pins into real member nets, validated against `kicad-cli`'s own netlist export on golden boards (#25). Same-name local labels on different sheets no longer merge into one net, wire union joins every overlapping wire, and unresolvable bus connections are surfaced honestly instead of guessed. Findings no longer over-claim datasheet provenance, and the plugin installs on Google Antigravity. Upgrading: expect net-list corrections on hierarchical and bus-heavy designs (bus-free boards are byte-identical), and review bare net-name suppressions — they now also match hierarchical key tails.
 
 Per-release stories are in [release-notes.md](release-notes.md); line-level detail in the [CHANGELOG](CHANGELOG.md).
 

@@ -1,4 +1,4 @@
-# Xquik Twitter scraper API Skill
+# X (Twitter) Scraper API
 
 > Xquik is an independent third-party service. Not affiliated with X Corp.
 > "Twitter" and "X" are trademarks of X Corp.
@@ -27,14 +27,14 @@
   </tr>
 </table>
 
-[Xquik](https://docs.xquik.com) provides 128 REST API operations for X data and approved account actions. Search tweets, export followers, create monitors, or receive signed webhooks. Use REST directly or connect through MCP and an SDK.
+Use the X (Twitter) Scraper API to search tweets, export followers, create monitors, and receive signed webhooks. [Xquik](https://docs.xquik.com) provides 128 REST API operations for public X data and approved account actions. Use REST directly or connect through MCP and an SDK.
 
 The npm package `x-developer` contains this Skill and plugin bundle. The separate `x-twitter-scraper` package is the TypeScript SDK.
 
-The `x-developer` bundle is v2.6.5. Hosted MCP v2.6.0 exposes 120 catalog
+The `x-developer` bundle is v2.6.7. Hosted MCP v2.6.0 exposes 120 catalog
 routes through 2 tools. Of these, 119 support JSON or text. Use REST for binary
-downloads. Add `https://xquik.com/mcp`. Current clients negotiate MCP `2026-07-28` through
-`server/discover`, with no initialization session.
+downloads. Connect to `https://xquik.com/mcp`. Current clients negotiate
+MCP `2026-07-28` through `server/discover` without an initialization session.
 Stateless clients built for 2025 protocols remain compatible. See the
 [client compatibility guide](https://docs.xquik.com/mcp/overview#client-compatibility).
 OAuth-capable clients use OAuth 2.1. ChatGPT custom apps require OAuth.
@@ -42,14 +42,13 @@ Eight credential, checkout, or guest-wallet operations remain outside MCP.
 
 > Use Codex CLI 0.147.0 or later for OAuth. These releases preserve RFC 9207 `iss` values.
 
-## Compare Twitter API pricing for filtered results
+## Compare X (Twitter) Scraper API pricing
 
-Xquik bills delivered results for supported filtered workflows. Supported
-filters run before billing, so excluded rows are not delivered-result charges.
+Xquik bills delivered results for supported filtered workflows. Supported filters run before billing, so excluded rows are not delivered-result charges.
 To compare Twitter API cost, use the same query, filters, fields, and row count.
 Use `POST /extractions/estimate` before each bulk job.
 
-## Xquik developer guides
+## X (Twitter) Scraper API guides
 
 - [API questions and route selection](skills/x-twitter-scraper/references/twitter-api-alternative-faq.md)
 - [Twitter search, advanced filters, exports, and Python](skills/x-twitter-scraper/references/scrape-export-twitter-data.md)
@@ -173,7 +172,7 @@ Add `--scope workspace` for a trusted project-only installation.
 | X writes | Approved tweet, delete, like, unlike, retweet, follow, unfollow, DM, profile, avatar, banner, media upload, and community actions |
 | Support | Create, list, get, update, reply, and download attachments |
 
-## Xquik Twitter scraper SDKs and tools
+## X (Twitter) Scraper API SDKs and tools
 
 | Repo | Language | Install |
 |------|----------|---------|
@@ -181,12 +180,12 @@ Add `--scope workspace` for a trusted project-only installation.
 | [x-twitter-scraper-python](https://github.com/Xquik-dev/x-twitter-scraper-python) | Python | `pip install x-twitter-scraper` |
 | [x-twitter-scraper-go](https://github.com/Xquik-dev/x-twitter-scraper-go) | Go | `go get github.com/Xquik-dev/x-twitter-scraper-go` |
 | [x-twitter-scraper-ruby](https://github.com/Xquik-dev/x-twitter-scraper-ruby) | Ruby | `gem install x-twitter-scraper` |
-| [x-twitter-scraper-java](https://github.com/Xquik-dev/x-twitter-scraper-java) | Java | Build from source while Maven Central publication is pending |
-| [x-twitter-scraper-kotlin](https://github.com/Xquik-dev/x-twitter-scraper-kotlin) | Kotlin | Build from source while Maven Central publication is pending |
+| [x-twitter-scraper-java](https://github.com/Xquik-dev/x-twitter-scraper-java) | Java | [Install with Gradle or Maven](https://github.com/Xquik-dev/x-twitter-scraper-java#install) |
+| [x-twitter-scraper-kotlin](https://github.com/Xquik-dev/x-twitter-scraper-kotlin) | Kotlin | [Install with Gradle or Maven](https://github.com/Xquik-dev/x-twitter-scraper-kotlin#install) |
 | [x-twitter-scraper-csharp](https://github.com/Xquik-dev/x-twitter-scraper-csharp) | C# and .NET | `dotnet add package XTwitterScraper` |
 | [x-twitter-scraper-php](https://github.com/Xquik-dev/x-twitter-scraper-php) | PHP | `composer require xquik/x-twitter-scraper` |
-| [x-twitter-scraper-cli](https://github.com/Xquik-dev/x-twitter-scraper-cli) | CLI | Build from source or install a pinned release tag |
-| [terraform-provider-x-twitter-scraper](https://github.com/Xquik-dev/terraform-provider-x-twitter-scraper) | Terraform | Build from source ([release page](https://github.com/Xquik-dev/terraform-provider-x-twitter-scraper/releases)) |
+| [x-twitter-scraper-cli](https://github.com/Xquik-dev/x-twitter-scraper-cli) | CLI | [Install with Go](https://github.com/Xquik-dev/x-twitter-scraper-cli#installation) |
+| [terraform-provider-x-twitter-scraper](https://github.com/Xquik-dev/terraform-provider-x-twitter-scraper) | Terraform | [Install from the Terraform Registry](https://registry.terraform.io/providers/Xquik-dev/x-twitter-scraper/latest) |
 
 ## Documentation and support
 
@@ -194,7 +193,6 @@ Add `--scope workspace` for a trusted project-only installation.
 - [API reference](https://docs.xquik.com/api-reference/overview)
 - [MCP server guide](https://docs.xquik.com/mcp/overview)
 - Use the framework guides for [Mastra](https://docs.xquik.com/guides/mastra), [CrewAI](https://docs.xquik.com/guides/crewai), [LangChain](https://docs.xquik.com/guides/langchain), [Pydantic AI](https://docs.xquik.com/guides/pydantic-ai), [Google ADK](https://docs.xquik.com/guides/google-adk), [Microsoft Agent Framework](https://docs.xquik.com/guides/microsoft-agent-framework), [n8n](https://docs.xquik.com/guides/n8n), [Zapier](https://docs.xquik.com/guides/zapier), [Make](https://docs.xquik.com/guides/make), [Pipedream](https://docs.xquik.com/guides/pipedream), and [Composio migration](https://docs.xquik.com/guides/composio-migration).
-- [skills.sh page](https://skills.sh/xquik-dev/x-twitter-scraper)
 - [skills.sh primary Skill page](https://skills.sh/xquik-dev/x-twitter-scraper/x-twitter-scraper)
 - [Organization support policy](https://github.com/Xquik-dev/.github/blob/main/SUPPORT.md)
 - [Organization security policy](https://github.com/Xquik-dev/.github/blob/main/SECURITY.md)

@@ -11,7 +11,7 @@ API keys.
 | Endpoint | `https://xquik.com/mcp` |
 | Authentication | OAuth 2.1 discovery; API key fallback |
 | Hosted MCP version | `2.6.0` |
-| Skill bundle version | `2.6.5` |
+| Skill bundle version | `2.6.7` |
 
 Current clients negotiate MCP `2026-07-28` through `server/discover`.
 Use a current MCP SDK. It adds request `_meta` and protocol headers.
@@ -80,7 +80,12 @@ Run `/mcp`, select `xquik`, then authenticate.
 
 ChatGPT cannot present a custom API key. Business and Enterprise/Edu
 workspaces support full MCP, including write tools. Pro supports read and fetch
-tools only. Custom MCP apps are web-only.
+tools only. Custom MCP apps are web-only. Business workspaces limit Developer
+mode enablement, use, and publishing to admins and owners. On Enterprise and
+Edu workspaces, Developer mode access follows admin-assigned role-based access.
+Each permitted user still toggles Developer mode in personal settings.
+Workspace publishing is limited to admins and owners. Check the current
+workspace policy before setup.
 
 ### Codex CLI
 
@@ -143,6 +148,7 @@ async def run_xquik(api_key: str) -> str:
             "url": "https://xquik.com/mcp",
             "headers": {"Authorization": f"Bearer {api_key}"},
         },
+        require_approval={"explore": "never", "xquik": "always"},
     ) as server:
         agent = Agent(
             name="Xquik agent",
@@ -291,8 +297,10 @@ Of these, 119 support JSON or text. Binary support downloads use REST.
 | `xquik` | Send confirmed Xquik API requests | Varies by endpoint |
 
 `explore` searches the credential-scoped catalog. `xquik` sends authenticated
-operations with normalized snake_case responses. Authentication is injected, so
-tool code must never include credentials.
+operations and returns the selected REST response object. Original field names
+remain unchanged, including `safeToRetry`, `allowed`, `monitorId`, and
+`nextCursor`. Authentication is injected, so tool code must never include
+credentials.
 
 Hosted MCP v2.6.0 catalogs 120 of 128 documented REST operations. These 8 credential,
 checkout, or guest-wallet operations remain direct REST or dashboard workflows:

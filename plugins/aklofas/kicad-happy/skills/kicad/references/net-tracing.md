@@ -109,6 +109,32 @@ Components like LM324 (4 opamps), CD4066 (4 switches), or STM32 (multi-bank pin 
 
 To find all units of a component: search for placed symbols where the `lib_id` base name matches (ignoring the `_U_V` suffix) and the `reference` property is the same.
 
+## Hierarchical buses
+
+Bus connectivity (GH #25) is resolved by a dedicated per-sheet bus graph,
+separate from the point-to-point tracing above.
+
+- **Expansion.** Vectors (`D[0..7]` -> D0..D7) and groups (`{TX RX}` -> TX,
+  RX) expand to an ordered member list; group members may themselves be
+  project bus aliases, expanded recursively. `~{...}`/`_{...}`/`^{...}`
+  markup around a bus distributes over each member; markup around a
+  non-bus name (`~{OE}`) is not a bus.
+- **Member attachment.** A member net joins its bus via an unlabelled
+  bus-entry tap, or a same-sheet member label matching the bus's own
+  member naming.
+- **Sheet pins.** A parent bus reaching a child sheet's pin maps onto the
+  child's hierarchical-label bus positionally, per instance — never by
+  matching bare bus names across instances.
+- **Hier/local join.** A genuine (non-sheet-pin) hierarchical label joins
+  same-name local labels on its own sheet into one net; a sheet-pin label
+  does not — its bare name belongs to the child and repeats per instance.
+- **Naming.** A resolved member net is named from the parent (lowest sheet) label.
+- **Qualified keys.** Bare-name collisions across sheet scopes use the
+  `/<sheet>/<name>` key (KH-359), same as any other net.
+- **Unresolved.** `bus_topology.unresolved` (`[{reason, name}]`) lists
+  every bus construct the resolver could not confidently resolve — those
+  connections are not asserted.
+
 ## Complete Example
 
 To verify Q4 (P-FET) gate connects to R13 -> GND:

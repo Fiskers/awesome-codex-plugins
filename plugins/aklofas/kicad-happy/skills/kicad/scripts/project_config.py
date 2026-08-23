@@ -729,8 +729,17 @@ def matches_suppression(finding: Dict[str, Any],
         finding_nets = finding.get('nets', [])
         if not finding_nets:
             return False
-        if not any(fnmatch(fn, sp) for fn in finding_nets
-                   for sp in sup_nets):
+        # KH-359: finding nets may carry sheet-qualified keys
+        # (/<sheet>/<name>); fall back to matching the bare tail so
+        # existing suppression patterns written against bare names
+        # still apply.
+        def _net_candidates(fn: str) -> set:
+            candidates = {fn}
+            if fn.startswith("/") and fn.count("/") >= 2:
+                candidates.add(fn.rsplit("/", 1)[-1])
+            return candidates
+        if not any(fnmatch(c, sp) for fn in finding_nets
+                   for c in _net_candidates(fn) for sp in sup_nets):
             return False
 
     return True

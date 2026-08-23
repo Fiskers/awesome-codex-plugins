@@ -1,4 +1,4 @@
-# X API alternative comparison: Xquik, official X API, and Apify
+# X API alternative comparison across 5 providers
 
 Compare Twitter APIs with one controlled acceptance workload. Fix the query,
 filters, fields, date range, output format, and delivered row count. Record raw
@@ -80,7 +80,7 @@ Run the same pack against each provider. Save raw evidence. Compare total
 workload cost, including discarded rows, cleanup, retries, storage, and
 engineering time.
 
-### What are the top tweet scraping tools?
+### What are the top tweet-scraping tools?
 
 Shortlist tools by execution model. APIs suit reusable applications. Hosted
 actors suit scheduled platform jobs. Browser automation may suit narrow visual
@@ -136,9 +136,14 @@ needs, and total workload cost. Choose from evidence, not brand position.
 
 ## Compare Twitter data API cost per usable result
 
-Use this model:
+Compare provider usage, unwanted rows, retries, cleanup, storage, and
+engineering time as separate quantities. Convert each quantity with a declared
+monetary rate before calculating a total:
 
-`total cost = provider usage + unwanted rows + retries + cleanup + storage + engineering`
+`total monetary cost = sum(quantity × monetary rate)`
+
+Do not add raw credits, row counts, retry counts, bytes, and engineering hours.
+Keep the factors separate when a defensible monetary rate is unavailable.
 
 Xquik does not charge separately for supported extraction filters. Excluded
 rows do not become delivered-result charges. Use `POST /extractions/estimate`
