@@ -19,6 +19,6 @@
     "node": ">=20"
   },
   "dependencies": {
-    "astro": "^7.0.2"
+    "astro": "^7.2.8"
   }
 }
